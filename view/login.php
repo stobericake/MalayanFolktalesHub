@@ -4,7 +4,7 @@ session_start();
 include 'dbconn.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = $conn->real_escape_string($_POST['username']);
+    $username = $conn->real_escape_string($_POST['userID']);
     $password = $conn->real_escape_string($_POST['password']);
 
     // Fetch user from the database
@@ -170,7 +170,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <form action="dashboard.php" method="post">
                 <div class="input-group">
                     <i class="fa fa-user"></i>
-                    <input type="text" id="username" name="username" placeholder="Username" required>
+                    <input type="text" id="userID" name="userID" placeholder="userID" required>
                 </div>
                 <div class="input-group">
                     <i class="fa fa-lock"></i>
