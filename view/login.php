@@ -1,17 +1,7 @@
 <?php
 session_start();
 
-// Database connection
-$host = "localhost";
-$user = "root";
-$password = "";
-$db = "malayanfolktales_hub";
-$port = "3306";
-
-$conn = new mysqli($host, $user, $password, $db, $port);
-if ($conn->connect_error) {
-    die("Database connection failed: " . $conn->connect_error);
-}
+include 'dbconn.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $conn->real_escape_string($_POST['username']);
