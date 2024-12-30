@@ -10,8 +10,9 @@ if (isset($_POST['submit'])) {
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $phone_number = mysqli_real_escape_string($conn, $_POST['phone_number']);
     $name = mysqli_real_escape_string($conn, $_POST['name']);
-    $password = mysqli_real_escape_string($conn, $_POST['password']);
-    $confirm_password = mysqli_real_escape_string($conn, $_POST['confirmpassword']);
+    $phoneNum = mysqli_real_escape_string($conn, $_POST['phonenum']);
+    $password = mysqli_real_escape_string($conn, md5($_POST['password']));
+    $confirm_password = mysqli_real_escape_string($conn, md5($_POST['confirmpassword']));
 
     // Check if email already exists
     $select = "SELECT * FROM user WHERE email = '$email'";
@@ -27,8 +28,8 @@ if (isset($_POST['submit'])) {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
             // Insert new user into the database
-            $insert = "INSERT INTO user (userID, email, phone_number, name, password) 
-                       VALUES ('$userID', '$email', '$phone_number', '$name', '$hashed_password')";
+            $insert = "INSERT INTO user(email, phoneNum, name, password) 
+                       VALUES ('$email', '$phoneNum', '$name', '$password')";
             if (mysqli_query($conn, $insert)) {
                 header('Location: login.php');
                 exit();
@@ -82,7 +83,7 @@ if (isset($_POST['submit'])) {
     }
 
     .image-section img {
-      max-width: 90%;
+      max-width: 100%;
       height: auto;
     }
 
@@ -97,6 +98,7 @@ if (isset($_POST['submit'])) {
     }
 
     .form-section h1 {
+      margin-top:0px;
       font-size: 2rem;
       margin-bottom: 10px;
     }
@@ -160,7 +162,7 @@ if (isset($_POST['submit'])) {
 <body>
   <div class="container">
     <div class="image-section">
-      <img src="image.png" alt="Nature illustration">
+      <img src="..\assets\ILLUSTRATIONS.png" alt="Illustration">
     </div>
     <div class="form-section">
       <h1>WELCOME!</h1>
@@ -180,9 +182,11 @@ if (isset($_POST['submit'])) {
           <input type="email" id="email" name="email" placeholder="Email" required>
         </div>
         <div class="form-group">
-          <input type="text" id="phone_number" name="phone_number" placeholder="Phone Number" required>
+          <label for="phonenum"></label>
+          <input type="phonenum" id="phonenum" name="phonenum" placeholder="Phone Number" required>
         </div>
         <div class="form-group">
+          <label for="password"></label>
           <input type="password" id="password" name="password" placeholder="Password" required>
         </div>
         <div class="form-group">

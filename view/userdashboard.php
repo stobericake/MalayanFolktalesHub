@@ -18,7 +18,7 @@
     
     body {
     font-family: 'Poppins', sans-serif;
-    background: url('background.png') no-repeat center center/cover; /* Set the background image */
+    background: url('../assets/background.png') no-repeat center center/cover; /* Set the background image */
     display: flex;
     flex-direction: column;
     align-items: center;

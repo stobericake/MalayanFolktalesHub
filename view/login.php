@@ -1,25 +1,20 @@
 <?php
-// Include the database connection file
-include('dbconn.php');
-
-// Start the session
 session_start();
 
-// Initialize variables
-$error = '';
+include 'dbconn.php';
 
 // Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Validate input data
-    $email = trim($_POST['email']);
+    $userID = trim($_POST['userID']);
     $password = trim($_POST['password']);
 
-    if (!empty($email) && !empty($password)) {
+    if (!empty($userID) && !empty($password)) {
         // Escape input data to prevent SQL injection
-        $email = mysqli_real_escape_string($conn, $email);
+        $userID = mysqli_real_escape_string($conn, $userID);
 
-        // Query the database for the user using email
-        $query = "SELECT `userID`, `email`, `phone_number`, `name`, `password` FROM `user` WHERE `email` = '$email'";
+        // Query the database for the user
+        $query = "SELECT `userID`, `name`, `password` FROM `user` WHERE `userID` = '$userID'";
         $result = mysqli_query($conn, $query);
 
         if (!$result) {
@@ -29,54 +24,65 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (mysqli_num_rows($result) > 0) {
             // Fetch user data
             $row = mysqli_fetch_assoc($result);
-            $hashedPassword = $row['password'];
+
+            // Debug: Print the hashed password
+            // echo "Hashed Password from DB: " . $row['password'];
 
             // Verify the hashed password
-            if (password_verify($password, $hashedPassword)) {
+            if (password_verify($password, $row['password'])) {
                 // Password is correct, set session variables
                 $_SESSION['userID'] = $row['userID'];
-                $_SESSION['email'] = $row['email'];
                 $_SESSION['name'] = $row['name'];
-                $_SESSION['phone_number'] = $row['phone_number'];
 
                 // Redirect to the user's dashboard
                 header("Location: userdashboard.php");
                 exit;
             } else {
                 // Incorrect password
-                $error = "Invalid email or password.";
+                $error = "Invalid userID or password.";
             }
         } else {
             // User not found
-            $error = "Invalid email or password.";
+            $error = "Invalid userID or password.";
         }
     } else {
-        $error = "Please fill in all fields.";
+        echo "<script>alert('Invalid email or password. Please try again.');</script>";
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
-    <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
     <style>
-        <style>
         body {
+            body {
     margin: 0;
     padding: 0;
     font-family: 'Poppins', sans-serif;
     background-color: #f5f5f5;
     display: flex;
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
+    justify-content: center;
+    align-items: center;
     height: 100vh;
     overflow: hidden; /* Prevent scrollbars */
 }
+
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
 
 .container {
     display: flex;
@@ -113,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         .input-group {
-            width: 80%;
+            width: 100%;
             margin-top: 20px;
             position: relative;
         }
@@ -180,21 +186,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <p>Welcome back! We missed you!</p>
             <form action="" method="post">
                 <div class="input-group">
-                    <i class="fa fa-envelope"></i>
-                    <input type="email" id="email" name="email" placeholder="Email" required>
+                    <i class="fa fa-user"></i>
+                    <input type="text" id="userID" name="userID" placeholder="userID" required>
                 </div>
                 <div class="input-group">
                     <i class="fa fa-lock"></i>
                     <input type="password" id="password" name="password" placeholder="Password" required>
                 </div>
-                <button type="submit" class="btn">Sign In</button>
+                <button type="submit" name="submit" class="btn">Sign In</button>
             </form>
             <?php if (!empty($error)): ?>
                 <p style="color: red;"><?= $error ?></p>
             <?php endif; ?>
         </div>
         <div class="image-section">
-            <img src="assets/ILLUSTRATIONS.png?v=1" alt="Illustration">
+        <img src="assets/ILLUSTRATIONS.png?v=1" alt="Illustration">
         </div>
     </div>
 </body>
