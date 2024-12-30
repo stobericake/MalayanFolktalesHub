@@ -9,6 +9,7 @@ $errors = [];
 if (isset($_POST['submit'])) {
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $name = mysqli_real_escape_string($conn, $_POST['name']);
+    $phoneNum = mysqli_real_escape_string($conn, $_POST['phonenum']);
     $password = mysqli_real_escape_string($conn, md5($_POST['password']));
     $confirm_password = mysqli_real_escape_string($conn, md5($_POST['confirmpassword']));
 
@@ -23,8 +24,8 @@ if (isset($_POST['submit'])) {
             $errors[] = 'Passwords do not match!';
         } else {
             // Insert new user into the database
-            $insert = "INSERT INTO user (email, name, password) 
-                       VALUES ('$email', '$name', '$password')";
+            $insert = "INSERT INTO user(email, phoneNum, name, password) 
+                       VALUES ('$email', '$phoneNum', '$name', '$password')";
             if (mysqli_query($conn, $insert)) {
                 header('Location: login.php');
                 exit();
@@ -79,7 +80,7 @@ if (isset($_POST['submit'])) {
     }
 
     .image-section img {
-      max-width: 90%;
+      max-width: 100%;
       height: auto;
     }
 
@@ -95,6 +96,7 @@ if (isset($_POST['submit'])) {
     }
 
     .form-section h1 {
+      margin-top:0px;
       font-size: 2rem;
       margin-bottom: 10px;
     }
@@ -158,7 +160,7 @@ if (isset($_POST['submit'])) {
 <body>
   <div class="container">
     <div class="image-section">
-      <img src="image.png" alt="Nature illustration">
+      <img src="..\assets\ILLUSTRATIONS.png" alt="Illustration">
     </div>
     <div class="form-section">
       <h1>WELCOME!</h1>
@@ -171,6 +173,10 @@ if (isset($_POST['submit'])) {
         <div class="form-group">
           <label for="email"></label>
           <input type="email" id="email" name="email" placeholder="Email" required>
+        </div>
+        <div class="form-group">
+          <label for="phonenum"></label>
+          <input type="phonenum" id="phonenum" name="phonenum" placeholder="Phone Number" required>
         </div>
         <div class="form-group">
           <label for="password"></label>
