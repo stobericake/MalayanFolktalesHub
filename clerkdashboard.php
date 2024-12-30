@@ -10,6 +10,7 @@
 		<link rel="stylesheet" href="css/style.css">
     </head>
     <body>
-<?php include 'sidebar.html'; ?> 
+    <!-- code untuk include sidebar -->
+    <?php include 'sidebar.html'; ?> 
 </body>
 
