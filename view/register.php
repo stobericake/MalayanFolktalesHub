@@ -48,12 +48,25 @@ if (isset($_POST['submit'])) {
       padding: 0;
       font-family: Arial, sans-serif;
       display: flex;
+      justify-content: center;
+      align-items: center;
       height: 100vh;
+      background-color: #f5f5f5;
     }
 
     .container {
       display: flex;
-      width: 100%;
+      flex-direction: row;
+      width: 60%;
+      height: 70%;
+      background-color: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
 
     /* Image section styling */

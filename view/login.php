@@ -167,7 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="form-section">
             <h1>HELLO AGAIN!</h1>
             <p>Welcome back! We missed you!</p>
-            <form action="dashboard.php" method="post">
+            
                 <div class="input-group">
                     <i class="fa fa-user"></i>
                     <input type="text" id="userID" name="userID" placeholder="userID" required>
