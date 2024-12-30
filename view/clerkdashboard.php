@@ -8,8 +8,7 @@
     <body>
     <!-- code untuk include sidebar -->
     <?php include 'sidebar.php'; ?> 
-    <!-- Page Content -->
-    <div id="content" class="p-4 p-md-5 pt-5">
+    <div id="content">
         <h2>Welcome, <?php echo ucfirst($user_role); ?>!</h2>
         <p>This is your role-based dashboard.</p>
       </div>
