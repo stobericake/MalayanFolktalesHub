@@ -1,38 +1,60 @@
 <?php
+// Include the database connection file
+include('dbconn.php');
+
+// Start the session
 session_start();
 
-include 'dbconn.php';
+// Initialize variables
+$error = '';
 
+// Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = $conn->real_escape_string($_POST['userID']);
-    $password = $conn->real_escape_string($_POST['password']);
+    // Validate input data
+    $userID = trim($_POST['userID']);
+    $password = trim($_POST['password']);
 
-    // Fetch user from the database
-    $query = "SELECT * FROM user WHERE username = '$username'";
-    $result = $conn->query($query);
+    if (!empty($userID) && !empty($password)) {
+        // Escape input data to prevent SQL injection
+        $userID = mysqli_real_escape_string($conn, $userID);
 
-    if ($result && $result->num_rows > 0) {
-        $user = $result->fetch_assoc();
-        // Verify password (assuming passwords are hashed in the database)
-        if (password_verify($password, $user['password'])) {
-            // Store user info in session and redirect
-            $_SESSION['userID'] = $user['userID'];
-            $_SESSION['username'] = $user['username'];
-            $_SESSION['email'] = $user['email'];
-        
-            echo "<script>
-                    alert('Login successful!');
-                    window.location.href = 'dashboard.php'; // Redirect to a dashboard or homepage
-                  </script>";
-        } else {
-            echo "<script>alert('Invalid password.');</script>";
+        // Query the database for the user
+        $query = "SELECT `userID`, `name`, `password` FROM `user` WHERE `userID` = '$userID'";
+        $result = mysqli_query($conn, $query);
+
+        if (!$result) {
+            die("Error executing query: " . mysqli_error($conn));
         }
-        
-}
+
+        if (mysqli_num_rows($result) > 0) {
+            // Fetch user data
+            $row = mysqli_fetch_assoc($result);
+
+            // Debug: Print the hashed password
+            // echo "Hashed Password from DB: " . $row['password'];
+
+            // Verify the hashed password
+            if (password_verify($password, $row['password'])) {
+                // Password is correct, set session variables
+                $_SESSION['userID'] = $row['userID'];
+                $_SESSION['name'] = $row['name'];
+
+                // Redirect to the user's dashboard
+                header("Location: userdashboard.php");
+                exit;
+            } else {
+                // Incorrect password
+                $error = "Invalid userID or password.";
+            }
+        } else {
+            // User not found
+            $error = "Invalid userID or password.";
+        }
+    } else {
+        $error = "Please fill in all fields.";
+    }
 }
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -167,6 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="form-section">
             <h1>HELLO AGAIN!</h1>
             <p>Welcome back! We missed you!</p>
+            <form action="" method="post">
             
                 <div class="input-group">
                     <i class="fa fa-user"></i>
