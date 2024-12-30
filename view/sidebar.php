@@ -56,17 +56,18 @@ $user_role = 'normal_user'; // Change this to 'normal_user', 'manager', or 'cler
           <?php elseif ($user_role === 'clerk'): ?>
             <p class="p">Clerk</p>
           <?php endif; ?>
+
         <ul class="list-unstyled components mb-5">
           <li class="active">
-            <a href="#"><span class="fa fa-home mr-3"></span> Home</a>
+            <a href="userhomedashboard.php"><span class="fa fa-home mr-3"></span> Home</a>
           </li>
           <?php if ($user_role === 'normal_user'): ?>
-            <li><a href="#"><span class="fa fa-book mr-3"></span> Folktales List</a></li>
-            <li><a href="#"><span class="fa fa-bookmark mr-3"></span> Bookmarks</a></li>
+            <li><a href="folktalelist.php"><span class="fa fa-book mr-3"></span> Folktales List</a></li>
+            <li><a href="bookmark.php"><span class="fa fa-bookmark mr-3"></span> Bookmarks</a></li>
           <?php elseif ($user_role === 'manager'): ?>
-            <li><a href="#"><span class="fa fa-chart-line mr-3"></span> Generate Report</a></li>
+            <li><a href="generatereport.php"><span class="fa fa-chart-line mr-3"></span> Generate Report</a></li>
           <?php elseif ($user_role === 'clerk'): ?>
-            <li><a href="#"><span class="fa fa-cog mr-3"></span> Folktales Management</a></li>
+            <li><a href="clerkdashboard"><span class="fa fa-cog mr-3"></span> Folktales Management</a></li>
           <?php endif; ?>
         </ul>
 
