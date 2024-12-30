@@ -11,15 +11,15 @@ $error = '';
 // Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Validate input data
-    $userID = trim($_POST['userID']);
+    $email = trim($_POST['email']);
     $password = trim($_POST['password']);
 
-    if (!empty($userID) && !empty($password)) {
+    if (!empty($email) && !empty($password)) {
         // Escape input data to prevent SQL injection
-        $userID = mysqli_real_escape_string($conn, $userID);
+        $email = mysqli_real_escape_string($conn, $email);
 
-        // Query the database for the user
-        $query = "SELECT `userID`, `name`, `password` FROM `user` WHERE `userID` = '$userID'";
+        // Query the database for the user using email
+        $query = "SELECT `userID`, `email`, `phone_number`, `name`, `password` FROM `user` WHERE `email` = '$email'";
         $result = mysqli_query($conn, $query);
 
         if (!$result) {
@@ -29,26 +29,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (mysqli_num_rows($result) > 0) {
             // Fetch user data
             $row = mysqli_fetch_assoc($result);
-
-            // Debug: Print the hashed password
-            // echo "Hashed Password from DB: " . $row['password'];
+            $hashedPassword = $row['password'];
 
             // Verify the hashed password
-            if (password_verify($password, $row['password'])) {
+            if (password_verify($password, $hashedPassword)) {
                 // Password is correct, set session variables
                 $_SESSION['userID'] = $row['userID'];
+                $_SESSION['email'] = $row['email'];
                 $_SESSION['name'] = $row['name'];
+                $_SESSION['phone_number'] = $row['phone_number'];
 
                 // Redirect to the user's dashboard
                 header("Location: userdashboard.php");
                 exit;
             } else {
                 // Incorrect password
-                $error = "Invalid userID or password.";
+                $error = "Invalid email or password.";
             }
         } else {
             // User not found
-            $error = "Invalid userID or password.";
+            $error = "Invalid email or password.";
         }
     } else {
         $error = "Please fill in all fields.";
@@ -64,41 +64,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-
     <style>
+        <style>
         body {
-            body {
     margin: 0;
     padding: 0;
     font-family: 'Poppins', sans-serif;
     background-color: #f5f5f5;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
     height: 100vh;
     overflow: hidden; /* Prevent scrollbars */
 }
 
-            margin: 0;
-            padding: 0;
-            font-family: 'Poppins', sans-serif;
-            background-color: #f5f5f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+.container {
+    display: flex;
+    flex-direction: row;
+    width: 60%;
+    height: 70%;
+    background-color: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
 
-        .container {
-            display: flex;
-            flex-direction: row;
-            width: 60%;
-            height: 70%;
-            background-color: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
 
         .form-section {
             flex: 1;
@@ -152,7 +142,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             font-size: 14px;
             color: #aaa;
         }
-
         .btn {
             margin-top: 20px;
             width: 100px;
@@ -190,10 +179,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <h1>HELLO AGAIN!</h1>
             <p>Welcome back! We missed you!</p>
             <form action="" method="post">
-            
                 <div class="input-group">
-                    <i class="fa fa-user"></i>
-                    <input type="text" id="userID" name="userID" placeholder="userID" required>
+                    <i class="fa fa-envelope"></i>
+                    <input type="email" id="email" name="email" placeholder="Email" required>
                 </div>
                 <div class="input-group">
                     <i class="fa fa-lock"></i>
@@ -201,9 +189,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
                 <button type="submit" class="btn">Sign In</button>
             </form>
+            <?php if (!empty($error)): ?>
+                <p style="color: red;"><?= $error ?></p>
+            <?php endif; ?>
         </div>
         <div class="image-section">
-        <img src="assets/ILLUSTRATIONS.png?v=1" alt="Illustration">
+            <img src="assets/ILLUSTRATIONS.png?v=1" alt="Illustration">
         </div>
     </div>
 </body>

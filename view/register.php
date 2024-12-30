@@ -1,16 +1,17 @@
 <?php
 session_start();
-
 include 'dbconn.php';
 
 // Handle registration
 $errors = [];
 
 if (isset($_POST['submit'])) {
+    $userID = uniqid('USR'); // Generate a unique userID
     $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $phone_number = mysqli_real_escape_string($conn, $_POST['phone_number']);
     $name = mysqli_real_escape_string($conn, $_POST['name']);
-    $password = mysqli_real_escape_string($conn, md5($_POST['password']));
-    $confirm_password = mysqli_real_escape_string($conn, md5($_POST['confirmpassword']));
+    $password = mysqli_real_escape_string($conn, $_POST['password']);
+    $confirm_password = mysqli_real_escape_string($conn, $_POST['confirmpassword']);
 
     // Check if email already exists
     $select = "SELECT * FROM user WHERE email = '$email'";
@@ -19,12 +20,15 @@ if (isset($_POST['submit'])) {
     if (mysqli_num_rows($result) > 0) {
         $errors[] = 'An account with this email already exists.';
     } else {
-        if ($password != $confirm_password) {
+        if ($password !== $confirm_password) {
             $errors[] = 'Passwords do not match!';
         } else {
+            // Hash the password
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
             // Insert new user into the database
-            $insert = "INSERT INTO user (email, name, password) 
-                       VALUES ('$email', '$name', '$password')";
+            $insert = "INSERT INTO user (userID, email, phone_number, name, password) 
+                       VALUES ('$userID', '$email', '$phone_number', '$name', '$hashed_password')";
             if (mysqli_query($conn, $insert)) {
                 header('Location: login.php');
                 exit();
@@ -69,10 +73,9 @@ if (isset($_POST['submit'])) {
       transform: translate(-50%, -50%);
     }
 
-    /* Image section styling */
     .image-section {
       flex: 1;
-      background-color: #d4f0fc; /* Light blue */
+      background-color: #d4f0fc;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -83,7 +86,6 @@ if (isset($_POST['submit'])) {
       height: auto;
     }
 
-    /* Form section styling */
     .form-section {
       flex: 1;
       background-color: #fff;
@@ -163,21 +165,27 @@ if (isset($_POST['submit'])) {
     <div class="form-section">
       <h1>WELCOME!</h1>
       <p>Register your account.</p>
+      <?php if (!empty($errors)) : ?>
+        <ul>
+          <?php foreach ($errors as $error) : ?>
+            <li style="color: red;"><?php echo $error; ?></li>
+          <?php endforeach; ?>
+        </ul>
+      <?php endif; ?>
       <form action="" method="POST">
         <div class="form-group">
-          <label for="name"></label>
           <input type="text" id="name" name="name" placeholder="Name" required>
         </div>
         <div class="form-group">
-          <label for="email"></label>
           <input type="email" id="email" name="email" placeholder="Email" required>
         </div>
         <div class="form-group">
-          <label for="password"></label>
+          <input type="text" id="phone_number" name="phone_number" placeholder="Phone Number" required>
+        </div>
+        <div class="form-group">
           <input type="password" id="password" name="password" placeholder="Password" required>
         </div>
         <div class="form-group">
-          <label for="confirmpassword"></label>
           <input type="password" id="confirmpassword" name="confirmpassword" placeholder="Confirm Password" required>
         </div>
         <button type="submit" name="submit" class="submit-btn">Sign Up</button>
