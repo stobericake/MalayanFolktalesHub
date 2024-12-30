@@ -15,8 +15,8 @@ $user_role = 'normal_user'; // Change this to 'normal_user', 'manager', or 'cler
     <link rel="stylesheet" href="../css/style.css">
     <style>
        #content {
-        margin-left: 250px; /* Push content to the right of the sidebar */
-        padding: 20px; /* Add some padding to the content */
+        margin-left: 200px; /* Push content to the right of the sidebar */
+        padding: 10px; /* Add some padding to the content */
         width: calc(100% - 250px); /* Adjust width to fit beside the sidebar */
       }
       #sidebar .img {
