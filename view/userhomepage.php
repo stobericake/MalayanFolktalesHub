@@ -20,7 +20,7 @@
     .container-fluid {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       width: 90%;
       max-width: 1200px;
       height: 90%;
@@ -68,63 +68,70 @@
 
     .user-info img {
       border-radius: 50%;
+      width: 80px;  /* Added width for image size */
+      height: 80px; /* Added height for image size */
+      object-fit: cover; /* Ensures the image doesn't get distorted */
       margin-bottom: 15px;
     }
+
   </style>
 </head>
 <body>
-  <div class="container-fluid">
-    <!-- Main Content -->
-    <div class="py-4" style="width: 60%;">
-      <div class="row mt-4">
-        <!-- Folktale Genre -->
-        <div class="col-md-6">
-          <div class="card">
-            <h5 class="text-center mb-3">FOLKTALE GENRE</h5>
-            <button class="btn btn-genre">Legend</button>
-            <button class="btn btn-genre">Moral</button>
-            <button class="btn btn-genre">History</button>
-            <button class="btn btn-genre">Joke</button>
-            <button class="btn btn-genre">Fable</button>
-            <button class="btn btn-genre">Allegory</button>
-            <button class="btn btn-genre">Myth</button>
-            <button class="btn btn-genre">Folk</button>
-            <button class="btn btn-genre">Children</button>
-            <button class="btn btn-genre">Adventure</button>
-            <button class="btn btn-genre">Example</button>
+  <?php include 'sidebar.php'; ?>  
+  <div id="content">
+    <div class="container-fluid">
+      <!-- Main Content -->
+      <div class="py-4" style="width: 60%;">
+        <div class="row mt-4">
+          <!-- Folktale Genre -->
+          <div class="col-md-6">
+            <div class="card">
+              <h5 class="text-center mb-3">FOLKTALE GENRE</h5>
+              <button class="btn btn-genre">Legend</button>
+              <button class="btn btn-genre">Moral</button>
+              <button class="btn btn-genre">History</button>
+              <button class="btn btn-genre">Joke</button>
+              <button class="btn btn-genre">Fable</button>
+              <button class="btn btn-genre">Allegory</button>
+              <button class="btn btn-genre">Myth</button>
+              <button class="btn btn-genre">Folk</button>
+              <button class="btn btn-genre">Children</button>
+              <button class="btn btn-genre">Adventure</button>
+              <button class="btn btn-genre">Example</button>
+            </div>
           </div>
-        </div>
 
-        <!-- Folktale State -->
-        <div class="col-md-6">
-          <div class="card">
-            <h5 class="text-center mb-3">FOLKTALE STATE</h5>
-            <button class="btn btn-state">Johor</button>
-            <button class="btn btn-state">Kedah</button>
-            <button class="btn btn-state">Kelantan</button>
-            <button class="btn btn-state">Melaka</button>
-            <button class="btn btn-state">Negeri Sembilan</button>
-            <button class="btn btn-state">Pahang</button>
-            <button class="btn btn-state">Pulau Pinang</button>
-            <button class="btn btn-state">Perak</button>
-            <button class="btn btn-state">Perlis</button>
-            <button class="btn btn-state">Sabah</button>
-            <button class="btn btn-state">Sarawak</button>
-            <button class="btn btn-state">Selangor</button>
-            <button class="btn btn-state">Terengganu</button>
-            <button class="btn btn-state">Nasional</button>
+          <!-- Folktale State -->
+          <div class="col-md-6">
+            <div class="card">
+              <h5 class="text-center mb-3">FOLKTALE STATE</h5>
+              <button class="btn btn-state">Johor</button>
+              <button class="btn btn-state">Kedah</button>
+              <button class="btn btn-state">Kelantan</button>
+              <button class="btn btn-state">Melaka</button>
+              <button class="btn btn-state">Negeri Sembilan</button>
+              <button class="btn btn-state">Pahang</button>
+              <button class="btn btn-state">Pulau Pinang</button>
+              <button class="btn btn-state">Perak</button>
+              <button class="btn btn-state">Perlis</button>
+              <button class="btn btn-state">Sabah</button>
+              <button class="btn btn-state">Sarawak</button>
+              <button class="btn btn-state">Selangor</button>
+              <button class="btn btn-state">Terengganu</button>
+              <button class="btn btn-state">Nasional</button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- User Info -->
-    <div class="py-4" style="width: 30%; display: flex; align-items: center; justify-content: center;">
-      <div class="user-info">
-        <img src="https://via.placeholder.com/80" alt="User Image">
-        <h5>Nur Ain</h5>
-        <p>+019-9452728</p>
-        <p>abc123@gmail.com</p>
+      <!-- User Info -->
+      <div class="py-4" style="width: 30%; display: flex; align-items: center; justify-content: center;">
+        <div class="user-info">
+          <img src="https://via.placeholder.com/80" alt="User Image">
+          <h5>Nur Ain</h5>
+          <p>+019-9452728</p>
+          <p>abc123@gmail.com</p>
+        </div>
       </div>
     </div>
   </div>
