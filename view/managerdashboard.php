@@ -1,247 +1,103 @@
-<?php
-session_start();
-include 'dbconn.php'; // Ensure this file exists and contains your database connection code
-
-// Example data (replace with dynamic data from your database)
-$totalUsers = 150;
-$totalFolktales = 74;
-$activeUsers = 20;
-$newUsers = 7;
-
-$topFolktales = [
-    "Siapa Lebih Bijak" => 150,
-    "Gajah Yang Setia" => 50,
-    "Seuncang Padi" => 20
-];
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manager Dashboard</title>
+    <title>Report Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        /* General styling */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-}
-
-/* Sidebar styling */
-.sidebar {
-    background-color: #bcd6e7;
-    width: 250px;
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    left: 0;
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    transition: width 0.3s;
-}
-
-.sidebar.closed {
-    width: 60px;
-}
-
-.sidebar h1 {
-    font-size: 18px;
-    color: #333;
-    transition: opacity 0.3s;
-}
-
-.sidebar.closed h1 {
-    opacity: 0;
-}
-
-.sidebar .toggle-btn {
-    margin-bottom: 20px;
-    border: none;
-    background-color: transparent;
-    font-size: 20px;
-    cursor: pointer;
-    color: #333;
-}
-
-.sidebar ul {
-    list-style: none;
-    padding: 0;
-    margin: 20px 0;
-}
-
-.sidebar ul li {
-    margin: 10px 0;
-}
-
-.sidebar ul li a {
-    text-decoration: none;
-    color: #333;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-}
-
-.sidebar ul li a:hover {
-    color: #0066cc;
-}
-
-/* Dashboard styling */
-.dashboard {
-    margin-left: 270px;
-    padding: 20px;
-    transition: margin-left 0.3s;
-}
-
-.sidebar.closed ~ .dashboard {
-    margin-left: 80px;
-}
-
-.stats {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-}
-
-.left {
-    flex: 3;
-}
-
-.right {
-    flex: 1;
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-/* Stat cards */
-.stat-card {
-    background-color: white;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.stat-card h3 {
-    font-size: 18px;
-    margin-bottom: 10px;
-}
-
-.progress-bar {
-    height: 15px;
-    background-color: #e0e0e0;
-    border-radius: 5px;
-    overflow: hidden;
-    margin-top: 10px;
-}
-
-.progress-bar span {
-    display: block;
-    height: 100%;
-    background-color: #007BFF;
-}
-
-/* Top folktales section */
-.bar-chart {
-    display: flex;
-    justify-content: space-around;
-    align-items: flex-end;
-    height: 200px;
-}
-
-.bar {
-    width: 20%;
-    text-align: center;
-    background-color: #fce8d5;
-    border-radius: 5px;
-    position: relative;
-}
-
-.bar:nth-child(2) {
-    background-color: #daf4eb;
-}
-
-.bar:nth-child(3) {
-    background-color: #edd4fc;
-}
-
-.bar span {
-    position: absolute;
-    bottom: -20px;
-    width: 100%;
-    font-size: 14px;
-}
-
-    </style>
-    <link rel="stylesheet" href="dashboard.css">
-    <script>
-        function toggleSidebar() {
-            const sidebar = document.querySelector('.sidebar');
-            sidebar.classList.toggle('closed');
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background: url('background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
-    </script>
+
+        .container {
+            width: 80%;
+            background-color: #C3DFE6;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .top-section {
+            width: 100%;
+            height: 200px;
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .card-section {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .card {
+            flex: 1;
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .card img {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 10px;
+        }
+
+        .card h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .card a {
+            text-decoration: none;
+            color: inherit;
+        }
+    </style>
 </head>
 <body>
-    <div class="sidebar">
-        <h1>MalayanFolktalesHub</h1>
-        <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
-        <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Generate Report</a></li>
-        </ul>
-        <a href="#" style="margin-top: auto; color: #333;">Log Out</a>
-    </div>
+    <div class="container">
+        <!-- Top Section -->
+        <div class="top-section"></div>
 
-    <div class="dashboard">
-        <div class="stats">
-            <div class="left">
-                <div class="stat-card">
-                    <h3>Total Users:</h3>
-                    <div class="progress-bar">
-                        <span style="width: <?= ($totalUsers / 200) * 100; ?>%;"></span>
-                    </div>
-                    <p><?= $totalUsers; ?></p>
-                </div>
-                <div class="stat-card">
-                    <h3>Total Folktales:</h3>
-                    <div class="progress-bar">
-                        <span style="width: <?= ($totalFolktales / 100) * 100; ?>%;"></span>
-                    </div>
-                    <p><?= $totalFolktales; ?></p>
-                </div>
-                <div class="stat-card">
-                    <h3>Active Users:</h3>
-                    <div class="progress-bar">
-                        <span style="width: <?= ($activeUsers / $totalUsers) * 100; ?>%;"></span>
-                    </div>
-                    <p><?= $activeUsers; ?></p>
-                </div>
-                <div class="stat-card">
-                    <h3>New Users:</h3>
-                    <div class="progress-bar">
-                        <span style="width: <?= ($newUsers / $totalUsers) * 100; ?>%;"></span>
-                    </div>
-                    <p><?= $newUsers; ?></p>
-                </div>
-            </div>
-            <div class="right">
-                <div class="top-folktales">
-                    <h3>Top 3 Most Viewed Folktales</h3>
-                    <div class="bar-chart">
-                        <?php foreach ($topFolktales as $title => $views): ?>
-                            <div class="bar" style="height: <?= ($views / max($topFolktales)) * 100; ?>%;">
-                                <span><?= $title; ?></span>
-                                <span><?= $views; ?></span>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-            </div>
+        <!-- Card Section -->
+        <div class="card-section">
+            <!-- Card 1: User Report -->
+            <a href="user-report.php" class="card">
+                <img src="user-icon.png" >
+                <h3>USER REPORT</h3>
+            </a>
+
+            <!-- Card 2: Folktales Origin -->
+            <a href="folktales-origin.php" class="card">
+                <img src="location-icon.png" >
+                <h3>FOLKTALES ORIGIN</h3>
+            </a>
+
+            <!-- Card 3: Folktales Genre -->
+            <a href="folktales-genre.php" class="card">
+                <img src="calendar-icon.png" >
+                <h3>FOLKTALES GENRE</h3>
+            </a>
         </div>
     </div>
 </body>
