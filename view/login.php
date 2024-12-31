@@ -200,7 +200,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <?php endif; ?>
         </div>
         <div class="image-section">
-        <img src="../assets/ILLUSTRATIONS.png?v=1" alt="Illustration">
+        <img src="../assets/illustration.png?v=1" alt="Illustration">
         </div>
     </div>
 </body>
