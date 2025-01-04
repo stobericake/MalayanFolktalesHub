@@ -44,11 +44,8 @@
 <div id="content">
     <div class="container mt-1">
         <h3 class="mb-4">User Home Page</h3>
-        <div class="row">
-            <!-- Folktale Genre and State Section -->
-            <div class="col-md-8">
-                <div class="row g-2">
-                    <div class="col-md-6 genre-state-panel">
+                <div class="row">
+                    <div class="col-md-5 genre-state-panel">
                         <h5> FOLKTALE GENRE</h5>
                         <button>Legend</button>
                         <button>Moral</button>
@@ -63,7 +60,7 @@
                         <button>Example</button>
                     </div>
                     <div class="col-md-1"></div>
-                    <div class="col-md-6 genre-state-panel">
+                    <div class="col-md-5 genre-state-panel">
                         <h5> FOLKTALE STATE</h5>
                         <button>Johor</button>
                         <button>Kedah</button>
@@ -83,18 +80,9 @@
                 </div>
             </div>
 
-            <!-- Profile Section -->
-            <div class="col">
-                <div class="profile-section">
-                    <img src="profile-picture-url" alt="Profile Picture">
-                    <h5>Nur Ain</h5>
-                    <p>+019-9452728</p>
-                    <p><a href="mailto:abcd123@gmail.com">abcd123@gmail.com</a></p>
-                </div>
-            </div>
+            
         </div>
-    </div>
-</div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
