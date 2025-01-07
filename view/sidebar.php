@@ -14,70 +14,136 @@ $user_role = 'normal_user'; // Change this to 'normal_user', 'manager', or 'cler
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="../css/style.css">
     <style>
-       #content {
-        margin: 0px; /* Push content to the right of the sidebar */
-        padding: 0px; /* Add some padding to the content */
-        box-sizing: border-box; /* Adjust width to fit beside the sidebar */
-      }
-      #sidebar .img {
-        margin-top: 20px; /* Gap from top */
-        margin-left: 20px; /* Align logo */
-        display: block;
-        width: 80%; 
-      }
 
-      #sidebar .p {
-        margin-top: 0px; /* Gap from top */
-        margin-left: 20px; /* Align logo */
-        margin-bottom: 30px;
-        color: black;
-      }
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color:rgb(255, 255, 255);
+            margin: 0;
+        }
 
+        #sidebar {
+            width: 300px;
+            height: 100vh;
+            background-color: #C3DFE6;
+            color: black;
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+            padding: 20px;
+        }
+      
 
-      #sidebar .logout {
-        margin-bottom: 0px; /* Push to bottom */
-        text-align: center;
-        padding: 10px;
-      }
+        #sidebar .img {
+            display: block;
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        #sidebar p {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        #sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #sidebar ul li {
+            margin: 15px 0;
+        }
+
+        #sidebar ul li a {
+            color: black;
+            text-decoration: none;
+            font-size: 16px;
+            display: block;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        #sidebar ul li a:hover {
+            background-color: #D4EBF8;
+            color: #000;
+        }
+
+        #sidebar .logout {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #sidebar .logout a {
+            color: white;
+            font-size: 16px;
+            text-decoration: none;
+        }
+
+        #content {
+            margin-left: 320px;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) {
+            #sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            #content {
+                margin-left: 0;
+            }
+
+            #sidebar ul li.active a {
+             background-color: #D4EBF8; 
+            color: #000; 
+            transform: translateY(-3px); 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+        }
     </style>
   </head>
   <body>
     <div class="wrapper d-flex align-items-stretch">
       <nav id="sidebar">
-      <div class="custom-menu">
-					<button type="button" id="sidebarCollapse" class="btn btn-primary">
-	        </button>
-        </div>
         <img class="img" src="../images/logo.png" alt="Logo">
-        <?php if ($user_role === 'normal_user'): ?>
-            <p class="p">Reader</p>
-          <?php elseif ($user_role === 'manager'): ?>
-            <p class="p">Manager</p>
-          <?php elseif ($user_role === 'clerk'): ?>
-            <p class="p">Clerk</p>
-          <?php endif; ?>
+        <p>
+          <?php 
+          if ($user_role === 'normal_user') echo 'Reader';
+          elseif ($user_role === 'manager') echo 'Manager';
+          elseif ($user_role === 'clerk') echo 'Clerk'; 
+          ?>
+        </p>
 
         <ul class="list-unstyled components mb-5">
           <li class="active">
-            <a href="userhomedashboard.php"><span class="fa fa-home mr-3"></span> Home</a>
+            <a href="userhomedashboard.php"><i class="fa fa-home mr-3"></i> Home</a>
           </li>
           <?php if ($user_role === 'normal_user'): ?>
-            <li><a href="folktalelist.php"><span class="fa fa-book mr-3"></span> Folktales List</a></li>
-            <li><a href="bookmark.php"><span class="fa fa-bookmark mr-3"></span> Bookmarks</a></li>
+            <li><a href="folktalelist.php"><i class="fa fa-book mr-3"></i> Folktales List</a></li>
+            <li><a href="bookmark.php"><i class="fa fa-bookmark mr-3"></i> Bookmarks</a></li>
           <?php elseif ($user_role === 'manager'): ?>
-            <li><a href="generatereport.php"><span class="fa fa-chart-line mr-3"></span> Generate Report</a></li>
+            <li><a href="generatereport.php"><i class="fa fa-chart-line mr-3"></i> Generate Report</a></li>
           <?php elseif ($user_role === 'clerk'): ?>
-            <li><a href="clerkdashboard"><span class="fa fa-cog mr-3"></span> Folktales Management</a></li>
+            <li><a href="clerkdashboard.php"><i class="fa fa-cog mr-3"></i> Folktales Management</a></li>
           <?php endif; ?>
         </ul>
 
         <div class="logout">
-          <a href="#"><span class="fa fa-sign-out mr-3"></span> Sign Out</a>
+          <a href="#"><i class="fa fa-sign-out mr-3"></i> Sign Out</a>
         </div>
       </nav>
-    <script src="../js/jquery.min.js"></script>
-    <script src="../js/popper.js"></script>
-    <script src="../js/bootstrap.min.js"></script>
-    <script src="../js/main.js"></script>
+
+
   </body>
 </html>

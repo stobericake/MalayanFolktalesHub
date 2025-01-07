@@ -73,7 +73,7 @@
 
     <div class="table-responsive table-container">
         <table class="table table-bordered table-striped">
-            <thead class="thead">
+        <thead class="thead"><thead class="thead">
                 <tr>
                     <th>Title</th>
                     <th>State</th>
