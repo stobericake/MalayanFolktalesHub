@@ -1,3 +1,26 @@
+<?php
+session_start();
+
+// Database connection
+include 'dbconn.php';
+
+
+// Fetch total origin of folktales
+$totalOriginResult = $conn->query("SELECT COUNT(DISTINCT state) AS total_origin FROM folktales");
+$totalOriginRow = $totalOriginResult->fetch_assoc();
+$totalOrigins = $totalOriginRow['total_origin'];
+
+// Fetch total user
+$totalUserResult = $conn->query("SELECT COUNT(*) as total_user FROM user");
+$totalUserRow = $totalUserResult->fetch_assoc();
+$totalUser = $totalUserRow['total_user'];
+
+// Fetch total user
+$totalGenreResult = $conn->query("SELECT COUNT(DISTINCT genre) AS genre_count FROM folktales");
+$totalGenreRow = $totalGenreResult->fetch_assoc();
+$totalGenre = $totalGenreRow['genre_count'];
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +28,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Report Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body {
             margin: 0;
@@ -72,6 +96,10 @@
             text-decoration: none;
             color: inherit;
         }
+        .icon-pic {
+            font-size: 80px;
+            color: black;
+        }
     </style>
 </head>
 <body>
@@ -82,21 +110,27 @@
         <!-- Card Section -->
         <div class="card-section">
             <!-- Card 1: User Report -->
+            <!--<img src="../year.png" alt="Calendar Icon"> -->
             <a href="user-report.php" class="card">
-                <img src="user-icon.png" >
+                <i class="bi bi-person-heart icon-pic"></i>
                 <h3>USER REPORT</h3>
+                <p class="total">Total: <span id="genre-total"><?php echo $totalUser; ?></span></p>
             </a>
 
             <!-- Card 2: Folktales Origin -->
+             <!--<img src="../year.png" alt="Calendar Icon"> -->
             <a href="folktales-origin.php" class="card">
-                <img src="location-icon.png" >
+            <i class="bi bi-geo-fill icon-pic"></i>
                 <h3>FOLKTALES ORIGIN</h3>
+                <p class="total">Total: <span id="genre-total"><?php echo $totalOrigins; ?></span></p>
             </a>
 
             <!-- Card 3: Folktales Genre -->
+             <!--<img src="../year.png" alt="Calendar Icon"> -->
             <a href="folktales-genre.php" class="card">
-                <img src="calendar-icon.png" >
+            <i class="bi bi-journal icon-pic"></i>
                 <h3>FOLKTALES GENRE</h3>
+                <p class="total">Total: <span id="genre-total"><?php echo $totalGenre; ?></span></p>
             </a>
         </div>
     </div>

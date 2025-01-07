@@ -1,6 +1,14 @@
 <?php
 session_start();
-include 'dbconn.php'; // Include database connection if needed for dynamic data
+
+// Database connection
+include 'dbconn.php';
+
+
+// Fetch folktale data
+$sql = "SELECT * FROM folktales";
+$result = $conn->query($sql);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -61,7 +69,7 @@ include 'dbconn.php'; // Include database connection if needed for dynamic data
       text-align: left;
       border: 1px solid #ddd;
     }
-
+    
     .tag {
       display: inline-block;
       padding: 2px 8px;
@@ -69,13 +77,13 @@ include 'dbconn.php'; // Include database connection if needed for dynamic data
       color: #fff;
       font-size: 12px;
     }
-
+    
     .tag.teladan {
       background-color: #28a745;
     }
 
     .tag.legenda {
-      background-color: #17a2b8;
+      background-color:rgb(23, 184, 109);
     }
 
     .tag.jenaka {
@@ -86,8 +94,40 @@ include 'dbconn.php'; // Include database connection if needed for dynamic data
       background-color: #fd7e14;
     }
 
-    .tag.mitos {
+    .tag.alegori {
       background-color: #6f42c1;
+    }
+
+    .tag.moral {
+      background-color:rgb(66, 74, 193);
+    }
+
+    .tag.sejarah {
+      background-color:rgb(159, 193, 66);
+    }
+
+    .tag.ceritarakyat {
+      background-color:rgb(66, 117, 193);
+    }
+
+    .tag.kanak-kanak {
+      background-color:rgb(66, 142, 193);
+    }
+
+    .tag.pengembaraan {
+      background-color:rgb(193, 134, 66);
+    }
+
+    .tag.dongeng {
+      background-color:rgb(66, 110, 193);
+    }
+
+    .tag.rakyat {
+      background-color:rgb(193, 66, 66);
+    }
+
+    .tag.mitos {
+      background-color:rgb(102, 193, 66);
     }
 
     .pagination {
@@ -130,57 +170,20 @@ include 'dbconn.php'; // Include database connection if needed for dynamic data
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Siapa Lebih Bijak</td>
-            <td><span class="tag teladan">Teladan</span></td>
-            <td>Kedah</td>
-          </tr>
-          <tr>
-            <td>Gajah Yang Setia</td>
-            <td><span class="tag legenda">Legenda</span></td>
-            <td>Perak</td>
-          </tr>
-          <tr>
-            <td>Awang Yang Lurus</td>
-            <td><span class="tag jenaka">Jenaka</span></td>
-            <td>Perlis</td>
-          </tr>
-          <tr>
-            <td>Asal Usul Pekan Teluk Sengat</td>
-            <td><span class="tag legenda">Legenda</span></td>
-            <td>Johor</td>
-          </tr>
-          <tr>
-            <td>Seuncang Padi</td>
-            <td><span class="tag teladan">Teladan</span></td>
-            <td>Pahang</td>
-          </tr>
-          <tr>
-            <td>Mabuk Laut Mabuk Darat</td>
-            <td><span class="tag jenaka">Jenaka</span></td>
-            <td>Pulau Pinang</td>
-          </tr>
-          <tr>
-            <td>Tempua Bersarang Rendah</td>
-            <td><span class="tag fabel">Fabel</span></td>
-            <td>Nasional</td>
-          </tr>
-          <tr>
-            <td>Gajah Bermata Kecil</td>
-            <td><span class="tag fabel">Fabel</span></td>
-            <td>Negeri Sembilan</td>
-          </tr>
-          <tr>
-            <td>Buntat Teloh</td>
-            <td><span class="tag mitos">Mitos</span></td>
-            <td>Sarawak</td>
-          </tr>
-          <tr>
-            <td>Isteri Yang Bongkak</td>
-            <td><span class="tag teladan">Teladan</span></td>
-            <td>Selangor</td>
-          </tr>
-        </tbody>
+        <?php
+                    if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            echo "<tr>";
+                            echo "<td>" . $row["title"] . "</td>";
+                            echo "<td><span class='tag " . strtolower($row["genre"]) . "'>" . $row["genre"] . "</span></td>";
+                            echo "<td>" . $row["state"] . "</td>";
+                            echo "</tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='3'>No results found.</td></tr>";
+                    }
+                    ?>
+                </tbody>
       </table>
 
       <div class="pagination">
@@ -190,5 +193,6 @@ include 'dbconn.php'; // Include database connection if needed for dynamic data
       </div>
     </main>
   </div>
+  <?php $conn->close(); ?>
 </body>
 </html>

@@ -11,9 +11,11 @@
         .comments-section {
             max-height: 400px;
             overflow-y: auto;
+            
         }
         .comment-box {
             resize: none;
+            
         }
         .folktale-header {
             border-bottom: 1px solid #ddd;
@@ -22,30 +24,23 @@
         .tabs {
             margin-top: 5px;
         }
-        /* Styling for inactive tabs */
         .nav-tabs .nav-link {
-            color: black; /* Default tab text color */
-            background-color: #f8f9fa; /* Background for inactive tabs */
-            border-bottom: 1px solid #BF2C24; /* Border color */
-            margin-right: 2px; /* Space between tabs */
-            border-radius: 5px; /* Optional rounded corners */
+            color: black;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #BF2C24;
+            margin-right: 2px;
+            border-radius: 5px;
         }
-
-        /* Styling for the active tab */
         .nav-tabs .nav-link.active {
-            color: #BF2C24; /* Text color for the active tab */
-            background-color: #fff; /* Background for the active tab */
-            border-color: #BF2C24; /* Border color for the active tab */
+            color: #BF2C24;
+            background-color: #fff;
+            border-color: #BF2C24;
             border-bottom: 2px solid #BF2C24;
         }
-
-        /* Optional hover effect for tabs */
         .nav-tabs .nav-link:hover {
-            color: #BF2C24; /* Text color on hover */
-            background-color: #e2e6ea; /* Background color on hover */
+            color: #BF2C24;
+            background-color: #e2e6ea;
         }
-
-       
         .btn-custom {
             background-color: #EFEFF4;
             border-color: transparent;
@@ -54,12 +49,18 @@
             max-height: 50px;
             width: 150px;
         }
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
 <?php include 'sidebar.php'; ?> 
-<div id="content">
-    <div class="container">
+<div id="content" class="d-flex">
+    <div class="container flex-grow-1">
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
@@ -82,19 +83,19 @@
             </div>
             <div class="col-md-4">
                 <p><i class="bi bi-star-fill"></i><strong> 4.8</strong> Bookmarks</p>
-        </div>  
+            </div>  
         </div>
         <div class="row mb-3">
-        <div class="col-md-2">
+            <div class="col-md-2">
                 <button class="btn-custom"><i class="bi bi-box-arrow-down"></i> Download</button>
-                </div>
-                <div class="col-md-2">
-                <button class="btn-custom"><i class="bi bi-chat-quote"></i> Comments</button>
-                </div>
-                <div class="col-md-2">
-                <button class="btn-custom"><i class="bi bi-bookmark-star"></i> Bookmark</button>
-                </div>
             </div>
+            <div class="col-md-2">
+                <button class="btn-custom"><i class="bi bi-chat-quote"></i> Comments</button>
+            </div>
+            <div class="col-md-2">
+                <button class="btn-custom"><i class="bi bi-bookmark-star"></i> Bookmark</button>
+            </div>
+        </div>
 
         <!-- Tabs -->
         <ul class="nav nav-tabs tabs mb-3">
@@ -102,7 +103,7 @@
                 <a class="nav-link active" data-bs-toggle="tab" href="#introduction">Introduction</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="tab" href="#bookmarks">Bookmarks (499)</a>
+                <a class="nav-link" data-bs-toggle="tab" href="#bookmarks">Bookmarks (100)</a>
             </li>
         </ul>
 
@@ -123,26 +124,40 @@
                 <p>Bookmark content here...</p>
             </div>
         </div>
+    </div>
 
-        <!-- Comments Section -->
-        <div class="row mt-4">
-            <div class="col-md-8">
-                <h5>Comments</h5>
-                <div class="comments-section border p-3">
-                    <?php for ($i = 0; $i < 4; $i++): ?>
-                        <div class="mb-3">
-                            <strong>Sharifah Nur Ain</strong>
-                            <p>GREAT STORY. LOVED THE CHARACTERS. HIGHLY RECOMMENDED.</p>
-                        </div>
-                    <?php endfor; ?>
-                </div>
-                <textarea class="form-control comment-box mt-3" rows="3" placeholder="Leave a comment"></textarea>
-                <button class="btn btn-primary mt-2">Post</button>
+    <!-- Comments Section with Profile Picture -->
+    <div class="comments-section mt-5 p-4 border rounded">
+    <h5 class="mb-4">Comments <span class="badge bg-secondary">14</span></h5>
+    <div class="comment-list mb-4">
+        <div class="comment-item d-flex align-items-start mb-4">
+            <img src="profile1.jpg" alt="User Profile" class="rounded-circle me-3" width="50">
+            <div>
+                <strong>Sharifah Nur Ain</strong>
+                <p>GREAT STORY. LOVED THE CHARACTERS. HIGHLY RECOMMENDED.</p>
+            </div>
+        </div>
+        <div class="comment-item d-flex align-items-start mb-4">
+            <img src="profile2.jpg" alt="User Profile" class="rounded-circle me-3" width="50">
+            <div>
+                <strong>Sharifah Nur Ain</strong>
+                <p>GREAT STORY. LOVED THE CHARACTERS. HIGHLY RECOMMENDED.</p>
             </div>
         </div>
     </div>
+    <div class="comment-form" style="background-color:rgb(255, 240, 249); border-radius: 8px; padding: 15px;">
+        <div class="d-flex align-items-start mb-3">
+            <img src="user-profile.jpg" alt="Your Profile" class="rounded-circle me-3" width="50">
+            <textarea class="form-control" placeholder="Leave a comment" style="background-color: #fafafa; border-color: #ccc;"></textarea>
+        </div>
+        <button class="btn btn-primary">Post</button>
+    </div>
 </div>
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+</div>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

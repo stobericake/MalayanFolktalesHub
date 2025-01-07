@@ -6,11 +6,18 @@
     <title>Folktales List</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <style>
-        .total-bookmarks {
-            font-size: 1.5rem;
+        .total-bookmarks-card {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .total-bookmarks-card span {
+            font-size: 1.8rem;
             font-weight: bold;
             color: #5e72e4;
-            margin-bottom: 20px;
         }
         .table-container {
             margin-top: 20px;
@@ -20,14 +27,25 @@
         }
         .search-bar {
             display: flex;
-            gap: 10px;
+            justify-content: flex-end;
             margin-bottom: 20px;
         }
-        .search-bar input, .search-bar select {
-            flex: 1;
+        .search-bar input {
+            width: 50%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
-        .th {
+        .search-bar input::placeholder {
+            color: #6c757d; /* A visible color */
+            font-size: 16px; /* Adjust font size if necessary */
+            opacity: 1; /* Ensure full visibility */
+        }
+
+        .thead th {
             background-color: #C3DFE6;
+            color: black;
         }
     </style>
 </head>
@@ -37,37 +55,25 @@
 <div class="container mt-5">
     <h2 class="mb-4">Folktales List</h2>
 
-    <!-- Total Bookmarks -->
-    <div class="d-flex justify-content-between align-items-center">
-        <div class="total-bookmarks">
-            📖 Total Folktales: <span>100</span>
+   <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="total-bookmarks-card">
+                📖 <br>
+                Total Folktales: <br>
+                <span>100</span>
+            </div>
         </div>
     </div>
 
     <!-- Search Filters -->
     <div class="search-bar">
-        <input type="text" class="form-control" placeholder="Search by title...">
-        <select class="form-select">
-            <option selected>Select State</option>
-            <option>Kedah</option>
-            <option>Perak</option>
-            <option>Johor</option>
-            <!-- Add more states here -->
-        </select>
-        <select class="form-select">
-            <option selected>Select Genre</option>
-            <option>Teladan</option>
-            <option>Lagenda</option>
-            <option>Fabel</option>
-            <!-- Add more genres here -->
-        </select>
-        <button class="btn btn-success">Search</button>
+    <input type="text" id="search-input" class="form-control" placeholder="Search folktales details.." oninput="filterTable()">
+
     </div>
 
-    <!-- Bookmarks Table -->
     <div class="table-responsive table-container">
         <table class="table table-bordered table-striped">
-            <thead>
+            <thead class="thead">
                 <tr>
                     <th>Title</th>
                     <th>State</th>
@@ -95,7 +101,7 @@
                     <td>Johor</td>
                     <td>Teladan</td>
                 </tr>
-                <!-- Add more rows here -->
+                
             </tbody>
         </table>
     </div>
@@ -114,5 +120,21 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script>
+    
+    function filterTable() {
+        const searchInput = document.getElementById('search-input').value.toLowerCase();
+        const tableRows = document.querySelectorAll('#bookmarks-table-body tr');
+
+        tableRows.forEach(row => {
+            const title = row.cells[0].textContent.toLowerCase();
+            if (title.includes(searchInput)) {
+                row.style.display = ''; // Show matching rows
+            } else {
+                row.style.display = 'none'; // Hide non-matching rows
+            }
+        });
+    }
+</script>
 </body>
 </html>
