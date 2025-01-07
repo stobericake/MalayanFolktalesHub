@@ -9,6 +9,21 @@ include 'dbconn.php';
 $sql = "SELECT * FROM folktales";
 $result = $conn->query($sql);
 
+// Pagination setup
+$limit = 10; // Number of records per page
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$start = ($page - 1) * $limit;
+
+// Fetch total records
+$totalResult = $conn->query("SELECT COUNT(*) AS total FROM folktales");
+$totalRow = $totalResult->fetch_assoc();
+$totalRecords = $totalRow['total'];
+$totalPages = ceil($totalRecords / $limit);
+
+// Fetch paginated folktale data
+$sql = "SELECT * FROM folktales LIMIT $start, $limit";
+$result = $conn->query($sql);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -187,12 +202,21 @@ $result = $conn->query($sql);
       </table>
 
       <div class="pagination">
-        <span class="page-info">Displaying 1-10 of 100</span>
-        <button class="pagination-button">&lt;</button>
-        <button class="pagination-button">&gt;</button>
+        <?php if ($page > 1): ?>
+          <a href="?page=<?php echo $page - 1; ?>" class="pagination-button">&lt;</a>
+        <?php endif; ?>
+
+        <?php if ($page < $totalPages): ?>
+          <a href="?page=<?php echo $page + 1; ?>" class="pagination-button">&gt;</a>
+        <?php endif; ?>
+
+        <span class="page-info">Displaying <?php echo $start + 1; ?>-<?php echo min($start + $limit, $totalRecords); ?> of <?php echo $totalRecords; ?></span>
       </div>
+
+      
     </main>
   </div>
   <?php $conn->close(); ?>
 </body>
 </html>
+
