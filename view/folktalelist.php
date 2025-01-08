@@ -69,6 +69,10 @@ $result = $conn->query($sql);
             background-color: #C3DFE6;
             color: black;
         }
+        .view-details-column {
+        width: 1%; /* Shrink-wrap to content */
+        white-space: nowrap; /* Prevent wrapping */
+    }
     </style>
 </head>
 <body>
@@ -100,6 +104,7 @@ $result = $conn->query($sql);
                     <th>Title</th>
                     <th>State</th>
                     <th>Genre</th>
+                    <th class="view-details-column"></th>
                 </tr>
             </thead>
             <tbody id="bookmarks-table-body">
@@ -112,6 +117,9 @@ $result = $conn->query($sql);
                                 <td>{$row['title']}</td>
                                 <td>{$row['state']}</td>
                                 <td>{$row['genre']}</td>
+                                <td class='view-details-column'>
+                                    <a href='folktaledetails.php?id={$row['folktaleID']}' class='btn btn-primary btn-sm'>View Details</a>
+                                </td>
                               </tr>";
                         $bil++; // Increment serial number
                     }
