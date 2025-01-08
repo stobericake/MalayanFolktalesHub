@@ -1,3 +1,26 @@
+<?php
+session_start();
+
+// Database connection
+include 'dbconn.php';
+
+// Fetch total records for bookmarks count
+$totalResult = $conn->query("SELECT COUNT(*) AS total FROM folktales");
+$totalRow = $totalResult->fetch_assoc();
+$totalRecords = $totalRow['total'];
+
+// Pagination setup
+$limit = 10; // Number of records per page
+$page = isset($_GET['page']) && $_GET['page'] > 0 ? (int)$_GET['page'] : 1; // Ensure valid page number
+$totalPages = ceil($totalRecords / $limit); // Calculate total pages
+$page = min($page, $totalPages); // Adjust if page exceeds total pages
+$start = ($page - 1) * $limit; // Calculate the offset for the SQL query
+
+// Fetch paginated folktale data
+$sql = "SELECT * FROM folktales LIMIT $start, $limit";
+$result = $conn->query($sql);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,9 +61,9 @@
             border-radius: 5px;
         }
         .search-bar input::placeholder {
-            color: #6c757d; /* A visible color */
-            font-size: 16px; /* Adjust font size if necessary */
-            opacity: 1; /* Ensure full visibility */
+            color: #6c757d;
+            font-size: 16px;
+            opacity: 1;
         }
 
         .thead th {
@@ -61,15 +84,14 @@
             <div class="total-bookmarks-card">
                 📖 <br>
                 Total Bookmarks: <br>
-                <span>12</span>
+                <span><?php echo $totalRecords; ?></span> 
             </div>
         </div>
     </div>
 
     <!-- Search Filters -->
     <div class="search-bar">
-    <input type="text" id="search-input" class="form-control" placeholder="Search by title..." oninput="filterTable()">
-
+        <input type="text" id="search-input" class="form-control" placeholder="Search by title..." oninput="filterTable()">
     </div>
 
     <!-- Bookmarks Table -->
@@ -83,52 +105,55 @@
                 </tr>
             </thead>
             <tbody id="bookmarks-table-body">
-                <tr>
-                    <td>Siapa Lebih Bijak</td>
-                    <td>Kedah</td>
-                    <td>Teladan</td>
-                </tr>
-                <tr>
-                    <td>Gajah Yang Setia</td>
-                    <td>Perak</td>
-                    <td>Teladan</td>
-                </tr>
-                <tr>
-                    <td>Awang Yang Lurus</td>
-                    <td>Perlis</td>
-                    <td>Lagenda</td>
-                </tr>
-                <tr>
-                    <td>Asal Usul Pekan Teluk Sengat</td>
-                    <td>Johor</td>
-                    <td>Teladan</td>
-                </tr>
-                <tr>
-                    <td>Seuncang Padi</td>
-                    <td>Pahang</td>
-                    <td>Lagenda</td>
-                </tr>
-                
-            </tbody>
+<?php
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        echo "<tr>";
+        echo "<td>" . htmlspecialchars($row['title']) . "</td>";
+        echo "<td>" . htmlspecialchars($row['state']) . "</td>";
+        echo "<td>" . htmlspecialchars($row['genre']) . "</td>";
+        echo "</tr>";
+    }
+} else {
+    echo "<tr><td colspan='3'>No records found</td></tr>";
+}
+?>
+</tbody>
         </table>
     </div>
 
-    <!-- Pagination -->
-    <nav aria-label="Page navigation">
+     <!-- Pagination -->
+     <nav aria-label="Page navigation">
         <ul class="pagination">
-            <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+            <!-- Previous Button -->
+            <li class="page-item <?php echo ($page <= 1) ? 'disabled' : ''; ?>">
+                <a class="page-link" href="?page=<?php echo $page - 1; ?>" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+
+            <!-- Page Numbers -->
+            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
+                    <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                </li>
+            <?php endfor; ?>
+
+            <!-- Next Button -->
+            <li class="page-item <?php echo ($page >= $totalPages) ? 'disabled' : ''; ?>">
+                <a class="page-link" href="?page=<?php echo $page + 1; ?>" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
         </ul>
     </nav>
-    </div>
+</div>
+
+</div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script>
-  
     function filterTable() {
         const searchInput = document.getElementById('search-input').value.toLowerCase();
         const tableRows = document.querySelectorAll('#bookmarks-table-body tr');

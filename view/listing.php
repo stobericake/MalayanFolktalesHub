@@ -98,7 +98,7 @@ $result = $conn->query($sql);
     }
 
     .tag.legenda {
-      background-color:rgb(23, 184, 109);
+      background-color:rgb(184, 160, 23);
     }
 
     .tag.jenaka {
@@ -130,7 +130,7 @@ $result = $conn->query($sql);
     }
 
     .tag.pengembaraan {
-      background-color:rgb(193, 134, 66);
+      background-color:rgb(193, 66, 125);
     }
 
     .tag.dongeng {

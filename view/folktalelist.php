@@ -1,3 +1,26 @@
+<?php
+session_start();
+
+// Database connection
+include 'dbconn.php';
+
+// Fetch total records for bookmarks count
+$totalResult = $conn->query("SELECT COUNT(*) AS total FROM folktales");
+$totalRow = $totalResult->fetch_assoc();
+$totalRecords = $totalRow['total'];
+
+// Pagination setup
+$limit = 10; // Number of records per page
+$page = isset($_GET['page']) && $_GET['page'] > 0 ? (int)$_GET['page'] : 1; // Ensure valid page number
+$totalPages = ceil($totalRecords / $limit); // Calculate total pages
+$page = min($page, $totalPages); // Adjust if page exceeds total pages
+$start = ($page - 1) * $limit; // Calculate the offset for the SQL query
+
+// Fetch paginated folktale data
+$sql = "SELECT * FROM folktales LIMIT $start, $limit";
+$result = $conn->query($sql);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,7 +65,6 @@
             font-size: 16px; /* Adjust font size if necessary */
             opacity: 1; /* Ensure full visibility */
         }
-
         .thead th {
             background-color: #C3DFE6;
             color: black;
@@ -60,48 +82,43 @@
             <div class="total-bookmarks-card">
                 📖 <br>
                 Total Folktales: <br>
-                <span>100</span>
+                <span><?php echo $totalRecords; ?></span>
             </div>
         </div>
     </div>
 
     <!-- Search Filters -->
     <div class="search-bar">
-    <input type="text" id="search-input" class="form-control" placeholder="Search folktales details.." oninput="filterTable()">
-
+        <input type="text" id="search-input" class="form-control" placeholder="Search folktales details.." oninput="filterTable()">
     </div>
 
     <div class="table-responsive table-container">
         <table class="table table-bordered table-striped">
-        <thead class="thead"><thead class="thead">
+            <thead class="thead">
                 <tr>
+                    <th>Bil</th>
                     <th>Title</th>
                     <th>State</th>
                     <th>Genre</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>Siapa Lebih Bijak</td>
-                    <td>Kedah</td>
-                    <td>Teladan</td>
-                </tr>
-                <tr>
-                    <td>Gajah Yang Setia</td>
-                    <td>Perak</td>
-                    <td>Teladan</td>
-                </tr>
-                <tr>
-                    <td>Awang Yang Lurus</td>
-                    <td>Perlis</td>
-                    <td>Lagenda</td>
-                </tr>
-                <tr>
-                    <td>Asal Usul Pekan Teluk Sengat</td>
-                    <td>Johor</td>
-                    <td>Teladan</td>
-                </tr>
-                
+            <tbody id="bookmarks-table-body">
+                <?php
+                if ($result->num_rows > 0) {
+                    $bil = $start + 1; // Serial number starts from the offset + 1
+                    while ($row = $result->fetch_assoc()) {
+                        echo "<tr>
+                                <td>{$bil}</td>
+                                <td>{$row['title']}</td>
+                                <td>{$row['state']}</td>
+                                <td>{$row['genre']}</td>
+                              </tr>";
+                        $bil++; // Increment serial number
+                    }
+                } else {
+                    echo "<tr><td colspan='4'>No folktales found</td></tr>";
+                }
+                ?>
             </tbody>
         </table>
     </div>
@@ -109,25 +126,30 @@
     <!-- Pagination -->
     <nav aria-label="Page navigation">
         <ul class="pagination">
-            <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+            <li class="page-item <?php echo ($page <= 1) ? 'disabled' : ''; ?>">
+                <a class="page-link" href="?page=<?php echo $page - 1; ?>">Previous</a>
+            </li>
+            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
+                    <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                </li>
+            <?php endfor; ?>
+            <li class="page-item <?php echo ($page >= $totalPages) ? 'disabled' : ''; ?>">
+                <a class="page-link" href="?page=<?php echo $page + 1; ?>">Next</a>
+            </li>
         </ul>
     </nav>
-    </div>
+</div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script>
-    
     function filterTable() {
         const searchInput = document.getElementById('search-input').value.toLowerCase();
         const tableRows = document.querySelectorAll('#bookmarks-table-body tr');
 
         tableRows.forEach(row => {
-            const title = row.cells[0].textContent.toLowerCase();
+            const title = row.cells[1].textContent.toLowerCase(); // Search in title column
             if (title.includes(searchInput)) {
                 row.style.display = ''; // Show matching rows
             } else {

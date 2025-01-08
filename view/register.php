@@ -28,8 +28,8 @@ if (isset($_POST['submit'])) {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
             // Insert new user into the database
-            $insert = "INSERT INTO user(email, phoneNum, name, password) 
-                       VALUES ('$email', '$phoneNum', '$name', '$password')";
+            $insert = "INSERT INTO user(email, phone_number, name, password) 
+                       VALUES ('$email', '$phone_number', '$name', '$password')";
             if (mysqli_query($conn, $insert)) {
                 header('Location: login.php');
                 exit();
@@ -162,7 +162,7 @@ if (isset($_POST['submit'])) {
 <body>
   <div class="container">
     <div class="image-section">
-      <img src="..\assets\ILLUSTRATIONS.png" alt="Illustration">
+    <img src="../assets/illustration.png?v=1" alt="Illustration">
     </div>
     <div class="form-section">
       <h1>WELCOME!</h1>
