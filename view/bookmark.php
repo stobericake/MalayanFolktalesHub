@@ -16,9 +16,17 @@ $totalPages = ceil($totalRecords / $limit); // Calculate total pages
 $page = min($page, $totalPages); // Adjust if page exceeds total pages
 $start = ($page - 1) * $limit; // Calculate the offset for the SQL query
 
-// Fetch paginated folktale data
-$sql = "SELECT * FROM folktales LIMIT $start, $limit";
-$result = $conn->query($sql);
+$userID = 12;
+// Fetch bookmarked folktales for the user
+$sql = "SELECT f.title, f.genre, f.state, bf.count
+    FROM bookmark b
+    JOIN bookmark_folktale bf ON b.bookmarkID = bf.bookmarkID
+    JOIN folktales f ON bf.folktalesID = f.folktaleID
+    WHERE b.userID = ? LIMIT $start, $limit";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $userID);
+$stmt->execute();
+$result = $stmt->get_result();
 ?>
 
 <!DOCTYPE html>
