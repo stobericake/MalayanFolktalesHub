@@ -1,3 +1,6 @@
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -70,13 +73,13 @@
             </ol>
         </nav>
 
-        <!-- Folktale Header -->
+        <!-- Folktale Header** -->
         <div class="folktale-header">
             <h2>Anak Yang Taat</h2>
             <p><i class="bi bi-bookmark"></i> Teladan | <i class="bi bi-geo-alt"></i> Perak</p>
         </div>
 
-        <!-- Folktale Statistics -->
+        <!-- Folktale Statistics **-->
         <div class="row">
             <div class="col-md-4">
                 <p><i class="bi bi-eye-fill"></i><strong> 5.6M</strong> Views</p>
@@ -126,7 +129,7 @@
         </div>
     </div>
 
-    <!-- Comments Section with Profile Picture -->
+    <!-- Comments Section with Profile Picture **-->
     <div class="comments-section mt-5 p-4 border rounded">
     <h5 class="mb-4">Comments <span class="badge bg-secondary">14</span></h5>
     <div class="comment-list mb-4">

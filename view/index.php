@@ -38,6 +38,7 @@
             <h5>View Pages</h5>
             <a href="bookmark.php">Bookmark</a>
             <a href="clerklisting.php">Clerk Listing</a>]
+            <a href="addfolktales.php">Add Folktales</a>
             <a href="editfolktales.php">Edit Folktales</a>
             <a href="folktaledetails.php">Folktale Details</a>
             <a href="folktalelist.php">Folktale List</a>
@@ -50,6 +51,7 @@
             <a href="userhome.php">User Home</a>
             <a href="listing.php">Report Listing</a>
             <a href="userprofile.php">User Profile</a>
+            
        
         </div>
     </div>
