@@ -36,6 +36,7 @@
         <h2 class="mb-4">Index of Pages</h2>
         <div class="link-list">
             <h5>View Pages</h5>
+            <a href="userdashboard.php">landing</a>
             <a href="bookmark.php">Bookmark</a>
             <a href="clerklisting.php">Clerk Listing</a>]
             <a href="addfolktales.php">Add Folktales</a>
