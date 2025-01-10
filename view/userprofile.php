@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -37,15 +38,12 @@
             margin-bottom: 20px;
         }
 
-        .profile-card {
+        .profile-card, .stat-card {
             background: #fff;
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             padding: 20px;
             flex: 1;
-        }
-
-        .profile-info {
             text-align: center;
         }
 
@@ -60,19 +58,10 @@
             margin: 5px 0;
         }
 
-        .stat-card {
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            flex: 1;
-            text-align: center;
-        }
-
-        .stat-card h4 {
+        .stat-card .icon {
+            font-size: 36px;
+            color: #007bff;
             margin-bottom: 10px;
-            font-size: 24px;
-            color: #333;
         }
 
         table {
@@ -140,7 +129,6 @@
             <input type="text" placeholder="Search">
         </div>
         
-
         <div class="profile">
             <div class="profile-card">
                 <div class="profile-info">
@@ -152,12 +140,15 @@
             </div>
 
             <div class="stat-card">
+
                 <h4>Total Bookmarks</h4>
+                <i class="bi bi-bookmark-heart icon"></i>
                 <p>12</p>
             </div>
 
             <div class="stat-card">
                 <h4>Viewed Story</h4>
+                <i class="bi bi-eye icon"></i>
                 <p>25</p>
             </div>
         </div>

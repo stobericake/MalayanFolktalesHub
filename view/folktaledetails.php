@@ -16,21 +16,13 @@ $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $folktale = $result->fetch_assoc();
+    $pdfData = base64_encode($folktale['pdfPath']); // Convert the blob to base64
 } else {
     die("Folktale not found.");
 }
 
 $userID = 12; 
 
-$sql2 = "SELECT pdfID, pdfPath FROM test WHERE pdfID = 1"; // Replace `your_table` with your table name
-$result2 = $conn->query($sql2);
-
-if ($result2->num_rows > 0) {
-    $row = $result2->fetch_assoc();
-    $pdfData = base64_encode($row['pdfPath']); // Convert the blob to base64
-} else {
-    die("PDF not found.");
-}
 ?>
 
 <!DOCTYPE html>
@@ -137,7 +129,7 @@ if ($result2->num_rows > 0) {
         </div>
         <div class="row mb-3">
         <div class="col-md-2">
-            <button class="btn-custom download-btn" data-folktales-id="<?php echo $pdfID; ?>">
+            <button class="btn-custom download-btn" data-folktales-id="<?php echo $folktalesID; ?>">
                 <i class="bi bi-box-arrow-down"></i> Download
             </button>
         </div>
@@ -175,22 +167,22 @@ if ($result2->num_rows > 0) {
                         <canvas id="pdf-render"></canvas>
                     </div>
                     <div class="modal-footer">
-    <?php
-    if (isset($row) && $pdfData) {
-        $fileName = "file_" . $row["pdfID"] . ".pdf";
-        $filePath = "uploads/" . $fileName;
+                    <?php
+                    if (isset($folktale) && $pdfData) {
+                        $fileName = "file_" . $folktale["title"] . ".pdf";
+                        $filePath = "uploads/" . $fileName;
 
-        // Save the PDF to a file if it doesn't exist
-        if (!file_exists($filePath)) {
-            file_put_contents($filePath, base64_decode($pdfData));
-        }
+                        // Save the PDF to a file if it doesn't exist
+                        if (!file_exists($filePath)) {
+                            file_put_contents($filePath, base64_decode($pdfData));
+                        }
 
-        // Display the download button with a valid link
-        echo "<a href='$filePath' download='$fileName' class='btn btn-primary'>Download</a>";
-    } else {
-        echo "<p>No file available for download.</p>";
-    }
-    ?>   
+                        // Display the download button with a valid link
+                        echo "<a href='$filePath' download='$fileName' class='btn btn-primary'>Download</a>";
+                    } else {
+                        echo "<p>No file available for download.</p>";
+                    }
+                    ?>   
 
   
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
