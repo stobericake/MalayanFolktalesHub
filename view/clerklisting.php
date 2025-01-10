@@ -45,7 +45,6 @@ $result = $conn->query($sql);
         }
         .action-icons i {
             cursor: pointer;
-            margin-right: 8px;
         }
         .action-icons i:hover {
             color: #007bff; /* Bootstrap primary color */
@@ -72,7 +71,6 @@ $result = $conn->query($sql);
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
-                        <th>Bil</th>
                         <th></th>
                         <th>Title</th>
                         <th>State</th>
@@ -85,14 +83,12 @@ if ($result && $result->num_rows > 0) {
     $bil = $start + 1; // Serial number starts from the current page start
     while ($row = $result->fetch_assoc()) {
         $editLink = "editfolktales.php?id=" . $row['folktaleID']; // Edit URL
-        $deleteLink = "deleteFolktale.php?id=" . $row['folktaleID']; // Delete URL
         echo "<tr>
-                <td>{$bil}</td>
-                <td class='action-icons'>
-                    <a href='{$editLink}' title='Edit'>
-                        <i class='bi bi-pen'></i>
+                <td class='action-icons text-center align-middle' style='width: 80px;'>
+                    <a href='<?php echo $editLink; ?>' title='Edit'>
+                        <i class='bi bi-pen me-3'></i>
                     </a>
-                    <a href='{$deleteLink}' title='Delete' onclick='return confirm(\"Are you sure you want to delete this folktale?\")'>
+                    <a href='#' title='Delete' onclick='deleteFolktale(\"{$row['folktaleID']}\")'>
                         <i class='bi bi-trash3'></i>
                     </a>
                 </td>
@@ -138,6 +134,27 @@ if ($result && $result->num_rows > 0) {
             const genre = row.cells[4].textContent.toLowerCase();
             row.style.display = (title.includes(input) || state.includes(input) || genre.includes(input)) ? "" : "none";
         });
+    }
+</script>
+<script>
+    function deleteFolktale(folktaleID) {
+        if (confirm("Are you sure you want to delete this folktale?")) {
+            // Send AJAX request to delete the folktale
+            fetch(`delete_folktale.php?id=${folktaleID}`, { method: "GET" })
+                .then(response => response.text())
+                .then(data => {
+                    if (data.trim() === "success") {
+                        alert("Folktale deleted successfully!");
+                        location.reload(); // Reload the page to refresh the table
+                    } else {
+                        alert("Error deleting folktale: " + data);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("An error occurred while trying to delete the folktale.");
+                });
+        }
     }
 </script>
 </body>

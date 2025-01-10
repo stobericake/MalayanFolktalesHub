@@ -21,7 +21,37 @@ if ($result->num_rows > 0) {
     die("Folktale not found.");
 }
 
-$userID = 12; 
+$userID = 20; 
+
+// Fetch comments from the database for the specified folktaleID
+$commentsQuery = "
+    SELECT c.commentID, c.content, c.datePosted, u.name 
+    FROM comment c 
+    JOIN user u ON c.userID = u.userID 
+    WHERE c.folktaleID = ?
+    ORDER BY c.datePosted DESC";
+$stmt = $conn->prepare($commentsQuery);
+$stmt->bind_param("i", $folktalesID);
+$stmt->execute();
+$commentsResult = $stmt->get_result();
+
+// Handle new comment submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_content'])) {
+    $commentContent = trim($_POST['comment_content']);
+    $userID = $_SESSION['userID']; // Assuming user is logged in and userID is stored in session
+
+    if (!empty($commentContent)) {
+        $insertCommentQuery = "INSERT INTO comment (content, datePosted, userID, folktaleID) VALUES (?, NOW(), ?, ?)";
+        $insertStmt = $conn->prepare($insertCommentQuery);
+        $insertStmt->bind_param("sii", $commentContent, $userID, $folktalesID);
+        $insertStmt->execute();
+        $insertStmt->close();
+
+        // Refresh the page to display the new comment
+        header("Location: ?id=$folktalesID");
+        exit;
+    }
+}
 
 ?>
 
@@ -212,24 +242,33 @@ $userID = 12;
 
     <!-- Comments Section -->
     <div class="comments-section mt-5 p-4 border rounded">
-        <h5 class="mb-4">Comments <span class="badge bg-secondary">14</span></h5>
+        <h5 class="mb-4">Comments <span class="badge bg-secondary"><?php echo $commentsResult->num_rows; ?></span></h5>
         <div class="comment-list mb-4">
-            <!-- Example Comments -->
-            <div class="comment-item d-flex align-items-start mb-4">
-                <img src="profile1.jpg" alt="User Profile" class="rounded-circle me-3" width="50">
-                <div>
-                    <strong>Sharifah Nur Ain</strong>
-                    <p>GREAT STORY. LOVED THE CHARACTERS. HIGHLY RECOMMENDED.</p>
-                </div>
-            </div>
+            <?php if ($commentsResult->num_rows > 0): ?>
+                <?php while ($comment = $commentsResult->fetch_assoc()): ?>
+                    <div class="comment-item d-flex align-items-start mb-4">
+                        <img src="default-profile.png" alt="User Profile" class="rounded-circle me-3" width="50">
+                        <div>
+                            <strong><?php echo htmlspecialchars($comment['name']); ?></strong>
+                            <p><?php echo htmlspecialchars($comment['content']); ?></p>
+                            <small class="text-muted"><?php echo date("F j, Y, g:i a", strtotime($comment['datePosted'])); ?></small>
+                        </div>
+                    </div>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <p>No comments yet. Be the first to comment!</p>
+            <?php endif; ?>
         </div>
+
         <!-- Add Comment -->
         <div class="comment-form" style="background-color:rgb(255, 240, 249); border-radius: 8px; padding: 15px;">
-            <div class="d-flex align-items-start mb-3">
-                <img src="user-profile.jpg" alt="Your Profile" class="rounded-circle me-3" width="50">
-                <textarea class="form-control" placeholder="Leave a comment" style="background-color: #fafafa; border-color: #ccc;"></textarea>
-            </div>
-            <button class="btn btn-primary">Post</button>
+            <form method="POST">
+                <div class="d-flex align-items-start mb-3">
+                    <img src="user-profile.jpg" alt="Your Profile" class="rounded-circle me-3" width="50">
+                    <textarea name="comment_content" class="form-control" placeholder="Leave a comment" style="background-color: #fafafa; border-color: #ccc;" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Post</button>
+            </form>
         </div>
     </div>
 </div>
