@@ -52,6 +52,9 @@
             <a href="userhome.php">User Home</a>
             <a href="listing.php">Report Listing</a>
             <a href="userprofile.php">User Profile</a>
+            <a href="user_report.php">User Report</a>
+            <a href="genre_report.php">Genre List  Report</a>
+            <a href="origin_report.php">Origin List  Report</a>
             
        
         </div>

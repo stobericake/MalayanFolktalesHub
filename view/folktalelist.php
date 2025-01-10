@@ -93,9 +93,8 @@ $result = $conn->query($sql);
 
     <!-- Search Filters -->
     <div class="search-bar">
-        <input type="text" id="search-input" class="form-control" placeholder="Search folktales details.." oninput="filterTable()">
-    </div>
-
+    <input type="text" id="search-input" class="form-control" placeholder="Search folktales details.." oninput="filterTable()">
+</div>
     <div class="table-responsive table-container">
         <table class="table table-bordered table-striped">
             <thead class="thead">
@@ -153,18 +152,23 @@ $result = $conn->query($sql);
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script>
     function filterTable() {
-        const searchInput = document.getElementById('search-input').value.toLowerCase();
-        const tableRows = document.querySelectorAll('#bookmarks-table-body tr');
+    const searchInput = document.getElementById('search-input').value.toLowerCase();
+    const tableRows = document.querySelectorAll('#bookmarks-table-body tr');
 
-        tableRows.forEach(row => {
-            const title = row.cells[1].textContent.toLowerCase(); // Search in title column
-            if (title.includes(searchInput)) {
-                row.style.display = ''; // Show matching rows
-            } else {
-                row.style.display = 'none'; // Hide non-matching rows
-            }
-        });
-    }
+    tableRows.forEach(row => {
+        const title = row.cells[1].textContent.toLowerCase(); // Title column
+        const state = row.cells[2].textContent.toLowerCase(); // State column
+        const genre = row.cells[3].textContent.toLowerCase(); // Genre column
+
+        // Show the row if any column matches the search input
+        if (title.includes(searchInput) || state.includes(searchInput) || genre.includes(searchInput)) {
+            row.style.display = ''; // Show matching rows
+        } else {
+            row.style.display = 'none'; // Hide non-matching rows
+        }
+    });
+}
+
 </script>
 </body>
 </html>
