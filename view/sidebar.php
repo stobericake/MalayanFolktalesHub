@@ -116,7 +116,7 @@ $user_role = 'normal_user'; // Change this to 'normal_user', 'manager', or 'cler
   <body>
     <div class="wrapper d-flex align-items-stretch">
       <nav id="sidebar">
-        <img class="img" src="../images/logo.png" alt="Logo">
+        <img class="img" src="../assets/logo.png" alt="Logo">
         <p>
           <?php 
           if ($user_role === 'normal_user') echo 'Reader';
