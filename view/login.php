@@ -203,5 +203,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <img src="../assets/illustration.png?v=1" alt="Illustration">
         </div>
     </div>
+    
+    // hashed pass ??
+    // Verify password (assuming hashed password storage)
+        if ($moderator && password_verify($password, $moderator['mod_password'])) {
+            return $moderator;
+        }
+   
 </body>
-</html>
+</html> 
