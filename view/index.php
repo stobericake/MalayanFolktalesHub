@@ -52,6 +52,8 @@
             <a href="userhome.php">User Home</a>
             <a href="listing.php">Report Listing</a>
             <a href="userprofile.php">User Profile</a>
+            <a href="getPdf.php">User Profile</a>
+            <a href="fetchPdf.php">User Profile</a>
             
        
         </div>

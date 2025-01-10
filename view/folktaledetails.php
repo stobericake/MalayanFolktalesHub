@@ -20,8 +20,17 @@ if ($result->num_rows > 0) {
     die("Folktale not found.");
 }
 
-// Temporary placeholder for user ID (for demonstration)
 $userID = 12; 
+
+$sql2 = "SELECT pdfID, pdfPath FROM test WHERE pdfID = 1"; // Replace `your_table` with your table name
+$result2 = $conn->query($sql2);
+
+if ($result2->num_rows > 0) {
+    $row = $result2->fetch_assoc();
+    $pdfData = base64_encode($row['pdfPath']); // Convert the blob to base64
+} else {
+    die("PDF not found.");
+}
 ?>
 
 <!DOCTYPE html>
@@ -90,7 +99,21 @@ $userID = 12;
         padding: 10px; 
         background-color: #f8f9fa; 
         border-radius: 5px; 
-}
+    }
+        #pdf-render {
+            width: 100%;
+            margin: 10px auto;
+            border: 0px;
+        }
+        .controls {
+            text-align: center;
+            margin: 10px;
+        }
+        button {
+            padding: 10px;
+            margin: 0 5px;
+        }
+
     </style>
 </head>
 <body>
@@ -113,9 +136,11 @@ $userID = 12;
             </div>
         </div>
         <div class="row mb-3">
-            <div class="col-md-2">
-                <button class="btn-custom"><i class="bi bi-box-arrow-down"></i> Download</button>
-            </div>
+        <div class="col-md-2">
+            <button class="btn-custom download-btn" data-folktales-id="<?php echo $pdfID; ?>">
+                <i class="bi bi-box-arrow-down"></i> Download
+            </button>
+        </div>
             <div class="col-md-2">
                 <button class="btn-custom bookmark-btn" data-folktales-id="<?php echo $folktalesID; ?>" data-user-id="<?php echo $userID; ?>">
                     <i class="bi bi-bookmark-star"></i> Bookmark
@@ -137,6 +162,42 @@ $userID = 12;
 ; ?>
     </div>
 </div>
+
+        <!-- Download Modal -->
+        <div class="modal fade" id="downloadModal" tabindex="-1" aria-labelledby="downloadModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="downloadModalLabel">Folktale Preview</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <canvas id="pdf-render"></canvas>
+                    </div>
+                    <div class="modal-footer">
+    <?php
+    if (isset($row) && $pdfData) {
+        $fileName = "file_" . $row["pdfID"] . ".pdf";
+        $filePath = "uploads/" . $fileName;
+
+        // Save the PDF to a file if it doesn't exist
+        if (!file_exists($filePath)) {
+            file_put_contents($filePath, base64_decode($pdfData));
+        }
+
+        // Display the download button with a valid link
+        echo "<a href='$filePath' download='$fileName' class='btn btn-primary'>Download</a>";
+    } else {
+        echo "<p>No file available for download.</p>";
+    }
+    ?>   
+
+  
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     <!-- Bookmark Modal -->
     <div class="modal fade" id="bookmarkModal" tabindex="-1" aria-labelledby="bookmarkModalLabel" aria-hidden="true">
@@ -222,5 +283,59 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const downloadButtons = document.querySelectorAll('.download-btn');
+
+        downloadButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                // Retrieve PDF data
+                const pdfData = 'data:application/pdf;base64,<?php echo $pdfData; ?>';
+                const pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+                // PDF.js setup
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+                let pdfDoc = null;
+                let currentPage = 1;
+                const canvas = document.getElementById('pdf-render');
+                const ctx = canvas.getContext('2d');
+
+                // Render a specific page
+                function renderPage(pageNum) {
+                    pdfDoc.getPage(pageNum).then(page => {
+                        const viewport = page.getViewport({ scale: 1.5 }); // Adjust scale for better readability
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+
+                        const renderContext = {
+                            canvasContext: ctx,
+                            viewport: viewport
+                        };
+                        page.render(renderContext);
+                    });
+                }
+
+                // Load the PDF and display the first page
+                pdfjsLib.getDocument(pdfData).promise.then(doc => {
+                    pdfDoc = doc;
+                    renderPage(currentPage);
+                    // Show the modal
+                    const modal = new bootstrap.Modal(document.getElementById('downloadModal'));
+                    modal.show();
+                }).catch(error => {
+                    console.error('Error loading PDF:', error);
+                    alert('Failed to load the PDF. Please try again.');
+                });
+            });
+        });
+    });
+</script>
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
 </body>
 </html>
+<?php
+$conn->close();
+?>
