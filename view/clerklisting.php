@@ -85,12 +85,12 @@ $result = $conn->query($sql);
 if ($result && $result->num_rows > 0) {
     $bil = $start + 1; // Serial number starts from the current page start
     while ($row = $result->fetch_assoc()) {
-        $editLink = "editfolktale.php?id=" . $row['folktaleID']; // Edit URL
-        $deleteLink = "addfolktale.php?id=" . $row['folktaleID']; // Delete URL
+        $editLink = "editFolktale.php?id=" . $row['folktaleID']; // Edit URL
+        $deleteLink = "deleteFolktale.php?id=" . $row['folktaleID']; // Delete URL
         echo "<tr>
                 <td>{$bil}</td>
                 <td class='action-icons'>
-                    <a href='{$editfolktales}' title='Edit' onclick='>
+                    <a href='{$editLink}' title='Edit'>
                         <i class='bi bi-pen'></i>
                     </a>
                     <a href='{$deleteLink}' title='Delete' onclick='return confirm(\"Are you sure you want to delete this folktale?\")'>
