@@ -4,8 +4,11 @@ session_start();
 // Database connection
 include 'dbconn.php';
 
+
+
+
 // Fetch total records for bookmarks count
-$totalResult = $conn->query("SELECT COUNT(*) AS total FROM folktales");
+$totalResult = $conn->query("SELECT COUNT(*) AS total FROM user");
 $totalRow = $totalResult->fetch_assoc();
 $totalRecords = $totalRow['total'];
 
@@ -16,9 +19,8 @@ $totalPages = ceil($totalRecords / $limit); // Calculate total pages
 $page = min($page, $totalPages); // Adjust if page exceeds total pages
 $start = ($page - 1) * $limit; // Calculate the offset for the SQL query
 
-// Fetch paginated folktale data
-$sql = "SELECT * FROM folktales LIMIT $start, $limit";
-$result = $conn->query($sql);
+$query = "SELECT u.userID, u.name, u.email, COALESCE(SUM(bff.count), 0) AS total_bookmarks, COALESCE(COUNT(c.commentID), 0) AS total_comments FROM user u LEFT JOIN bookmark bf ON u.userID = bf.userID LEFT JOIN bookmark_folktale bff ON bf.bookmarkID = bff.bookmarkID LEFT JOIN comment c ON u.userID = c.userID GROUP BY u.userID ORDER BY u.name ASC LIMIT $start, $limit";
+$result = mysqli_query($conn, $query);
 ?>
 
 <!DOCTYPE html>
@@ -28,6 +30,7 @@ $result = $conn->query($sql);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Folktales List</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/style.css">
     <style>
         .total-bookmarks-card {
             background-color: #f8f9fa;
@@ -99,7 +102,27 @@ $result = $conn->query($sql);
                     <th class="view-details-column"></th>
                 </tr>
             </thead>
-          
+            <tbody>
+            <?php
+                if ($result && mysqli_num_rows($result) > 0) {
+                    $bil = 1;
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        echo "<tr>";
+                        echo "<td>{$bil}</td>";
+                        echo "<td>{$row['name']}</td>";
+                        echo "<td>{$row['email']}</td>";
+                        echo "<td>{$row['total_bookmarks']}</td>";
+                        echo "<td>{$row['total_comments']}</td>";
+                        echo "<td>
+                                <a href='view_user_details.php?userID={$row['userID']}' class='btn btn-primary btn-sm'>View Details</a>
+                              </td>";
+                        echo "</tr>";
+                        $bil++;
+                    }
+                } else {
+                    echo "<tr><td colspan='6' class='text-center'>No users found</td></tr>";
+                }
+                ?>
             </tbody>
         </table>
     </div>

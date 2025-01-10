@@ -19,6 +19,18 @@ $totalGenreResult = $conn->query("SELECT COUNT(DISTINCT genre) AS genre_count FR
 $totalGenreRow = $totalGenreResult->fetch_assoc();
 $totalGenre = $totalGenreRow['genre_count'];
 
+// Fetch top 5 folktales with the highest bookmark counts
+$query = "SELECT f.title, bf.count FROM bookmark_folktale bf JOIN folktales f ON bf.folktalesID = f.folktaleID ORDER BY bf.count DESC LIMIT 5";
+$result = mysqli_query($conn, $query);
+
+// Prepare data for the chart
+$folktaleTitles = [];
+$bookmarkCounts = [];
+
+while ($row = mysqli_fetch_assoc($result)) {
+    $folktaleTitles[] = $row['title'];
+    $bookmarkCounts[] = $row['count'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -119,21 +131,21 @@ $totalGenre = $totalGenreRow['genre_count'];
         <!-- Card Section -->
         <div class="card-section">
             <!-- Card 1: User Report -->
-            <a href="user-report.php" class="card">
+            <a href="user_report.php" class="card">
                 <i class="bi bi-person-heart icon-pic"></i>
                 <h3>USER REPORT</h3>
                 <p class="total">Total: <span id="genre-total"><?php echo $totalUser; ?></span></p>
             </a>
 
             <!-- Card 2: Folktales Origin -->
-            <a href="folktales-origin.php" class="card">
+            <a href="origin_report.php" class="card">
                 <i class="bi bi-geo-fill icon-pic"></i>
                 <h3>FOLKTALES ORIGIN</h3>
                 <p class="total">Total: <span id="genre-total"><?php echo $totalOrigins; ?></span></p>
             </a>
 
             <!-- Card 3: Folktales Genre -->
-            <a href="folktales-genre.php" class="card">
+            <a href="genre_report.php" class="card">
                 <i class="bi bi-journal icon-pic"></i>
                 <h3>FOLKTALES GENRE</h3>
                 <p class="total">Total: <span id="genre-total"><?php echo $totalGenre; ?></span></p>
@@ -142,36 +154,36 @@ $totalGenre = $totalGenreRow['genre_count'];
 
         <!-- Chart Section -->
         <div class="chart-section">
-            <canvas id="salesChart" width="1300" height="400"></canvas>
-        </div>
-    </div>
+                <canvas id="salesChart" width="1300" height="400"></canvas>
+         </div>
 
-    <script>
+         <script>
+        // Pass PHP data to JavaScript
+        const folktaleTitles = <?php echo json_encode($folktaleTitles); ?>;
+        const bookmarkCounts = <?php echo json_encode($bookmarkCounts); ?>;
+
+        // Render Chart
         const ctx = document.getElementById('salesChart').getContext('2d');
         const salesChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Purple', 'Grey'],
+                labels: folktaleTitles,
                 datasets: [{
                     label: 'Bookmarks',
-                    data: [32, 45, 67, 23, 89, 45, 12],
+                    data: bookmarkCounts,
                     backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(255, 159, 64, 0.2)',
-                        'rgba(255, 205, 86, 0.2)',
                         'rgba(75, 192, 192, 0.2)',
+                        'rgba(255, 159, 64, 0.2)',
                         'rgba(54, 162, 235, 0.2)',
                         'rgba(153, 102, 255, 0.2)',
-                        'rgba(201, 203, 207, 0.2)'
+                        'rgba(255, 99, 132, 0.2)'
                     ],
                     borderColor: [
-                        'rgb(255, 99, 132)',
-                        'rgb(255, 159, 64)',
-                        'rgb(255, 205, 86)',
                         'rgb(75, 192, 192)',
+                        'rgb(255, 159, 64)',
                         'rgb(54, 162, 235)',
                         'rgb(153, 102, 255)',
-                        'rgb(201, 203, 207)'
+                        'rgb(255, 99, 132)'
                     ],
                     borderWidth: 1
                 }]
@@ -180,7 +192,17 @@ $totalGenre = $totalGenreRow['genre_count'];
                 responsive: true,
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Bookmark Count'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Folktales'
+                        }
                     }
                 }
             }

@@ -4,8 +4,7 @@ session_start();
 // Database connection
 include 'dbconn.php';
 
-// Fetch total records for bookmarks count
-$totalResult = $conn->query("SELECT COUNT(*) AS total FROM folktales");
+$totalResult = $conn->query("SELECT COUNT(DISTINCT state) AS total FROM folktales");
 $totalRow = $totalResult->fetch_assoc();
 $totalRecords = $totalRow['total'];
 
@@ -17,7 +16,7 @@ $page = min($page, $totalPages); // Adjust if page exceeds total pages
 $start = ($page - 1) * $limit; // Calculate the offset for the SQL query
 
 // Fetch paginated folktale data
-$sql = "SELECT * FROM folktales LIMIT $start, $limit";
+$sql = "SELECT state AS origin, COUNT(folktaleID) AS total_folktales FROM folktales GROUP BY state ORDER BY total_folktales DESC LIMIT $start, $limit";
 $result = $conn->query($sql);
 ?>
 
@@ -28,6 +27,7 @@ $result = $conn->query($sql);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Folktales List</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/style.css">
     <style>
         .total-bookmarks-card {
             background-color: #f8f9fa;
@@ -97,7 +97,25 @@ $result = $conn->query($sql);
                     <th class="view-details-column"></th>
                 </tr>
             </thead>
-          
+            <tbody>
+                <?php
+                if ($result && mysqli_num_rows($result) > 0) {
+                    $bil = 1;
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        echo "<tr>";
+                        echo "<td>{$bil}</td>";
+                        echo "<td>{$row['origin']}</td>";
+                        echo "<td>{$row['total_folktales']}</td>";
+                        echo "<td>
+                                <a href='view_folktales_by_origin.php?origin=" . urlencode($row['origin']) . "' class='btn btn-primary btn-sm'>View Details</a>
+                              </td>";
+                        echo "</tr>";
+                        $bil++;
+                    }
+                } else {
+                    echo "<tr><td colspan='4' class='text-center'>No data found</td></tr>";
+                }
+                ?>
             </tbody>
         </table>
     </div>
