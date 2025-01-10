@@ -4,8 +4,6 @@ session_start();
 // Database connection
 include 'dbconn.php';
 
-// Initialize result variable
-$result = null;
 
 // Get total records
 $totalRecordsQuery = "SELECT COUNT(*) as total FROM folktales";
@@ -35,6 +33,7 @@ $result = $conn->query($sql);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
     <style>
         /* Custom styles */
         thead th {
@@ -59,7 +58,7 @@ $result = $conn->query($sql);
     <div class="container mt-3">
         <h1 class="mb-2">Folktales Management</h1>
         <div class="d-flex align-items-center mb-3">
-            <button class="btn btn-success btn-sm">+ New</button>
+            <a class="btn btn-success btn-sm" href="addfolktales.php">+ New</a>
             <div class="ms-auto">
                 <div class="search-box">
                     <input type="text" id="searchInput" placeholder="Search folktales" oninput="filterTable()">
@@ -85,7 +84,7 @@ $result = $conn->query($sql);
 if ($result && $result->num_rows > 0) {
     $bil = $start + 1; // Serial number starts from the current page start
     while ($row = $result->fetch_assoc()) {
-        $editLink = "editFolktale.php?id=" . $row['folktaleID']; // Edit URL
+        $editLink = "editfolktales.php?id=" . $row['folktaleID']; // Edit URL
         $deleteLink = "deleteFolktale.php?id=" . $row['folktaleID']; // Delete URL
         echo "<tr>
                 <td>{$bil}</td>

@@ -11,8 +11,8 @@ if (isset($_POST['submit'])) {
     $phone_number = mysqli_real_escape_string($conn, $_POST['phone_number']);
     $name = mysqli_real_escape_string($conn, $_POST['name']);
     $phoneNum = mysqli_real_escape_string($conn, $_POST['phonenum']);
-    $password = mysqli_real_escape_string($conn, md5($_POST['password']));
-    $confirm_password = mysqli_real_escape_string($conn, md5($_POST['confirmpassword']));
+    $password = mysqli_real_escape_string($conn, $_POST['password']);
+    $confirm_password = mysqli_real_escape_string($conn, $_POST['confirmpassword']);
 
     // Check if email already exists
     $select = "SELECT * FROM user WHERE email = '$email'";
@@ -24,8 +24,6 @@ if (isset($_POST['submit'])) {
         if ($password !== $confirm_password) {
             $errors[] = 'Passwords do not match!';
         } else {
-            // Hash the password
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
             // Insert new user into the database
             $insert = "INSERT INTO user(email, phone_number, name, password) 

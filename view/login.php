@@ -25,22 +25,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Fetch user data
             $row = mysqli_fetch_assoc($result);
 
-            // Debug: Print the hashed password
-            // echo "Hashed Password from DB: " . $row['password'];
+            // Password is correct, set session variables
+            $_SESSION['userID'] = $row['userID'];
+            $_SESSION['name'] = $row['name'];
 
-            // Verify the hashed password
-            if (password_verify($password, $row['password'])) {
-                // Password is correct, set session variables
-                $_SESSION['userID'] = $row['userID'];
-                $_SESSION['name'] = $row['name'];
-
-                // Redirect to the user's dashboard
-                header("Location: userdashboard.php");
-                exit;
-            } else {
-                // Incorrect password
-                $error = "Invalid userID or password.";
-            }
+            // Redirect to the user's dashboard
+            header("Location: userdashboard.php");
+            exit;
+            
         } else {
             // User not found
             $error = "Invalid userID or password.";
@@ -77,23 +69,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             margin: 0;
             padding: 0;
             font-family: 'Poppins', sans-serif;
-            background-color: #f5f5f5;
+            background-color:rgb(250, 245, 245);
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
         }
 
-.container {
-    display: flex;
-    flex-direction: row;
-    width: 60%;
-    height: 70%;
-    background-color: white;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
+        .container {
+            display: flex;
+            flex-direction: row;
+            width: 60%;
+            height: 70%;
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
 
 
         .form-section {
@@ -203,12 +195,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <img src="../assets/illustration.png?v=1" alt="Illustration">
         </div>
     </div>
-    
-    // hashed pass ??
-    // Verify password (assuming hashed password storage)
-        if ($moderator && password_verify($password, $moderator['mod_password'])) {
-            return $moderator;
-        }
    
 </body>
 </html> 
