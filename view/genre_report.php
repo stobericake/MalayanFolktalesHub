@@ -16,7 +16,7 @@ $page = min($page, $totalPages); // Adjust if page exceeds total pages
 $start = ($page - 1) * $limit; // Calculate the offset for the SQL query
 
 // Fetch paginated folktale data
-$sql = "SELECT genre, COUNT(folktaleID) AS total_folktales FROM folktales GROUP BY state ORDER BY total_folktales DESC LIMIT $start, $limit";
+$sql = "SELECT genre, COUNT(folktaleID) AS total_folktales FROM folktales GROUP BY genre ORDER BY total_folktales DESC LIMIT $start, $limit";
 $result = $conn->query($sql);
 ?>
 
@@ -69,10 +69,6 @@ $result = $conn->query($sql);
             background-color: #C3DFE6;
             color: black;
         }
-        .view-details-column {
-        width: 1%; /* Shrink-wrap to content */
-        white-space: nowrap; /* Prevent wrapping */
-    }
     </style>
 </head>
 <body>
@@ -80,7 +76,6 @@ $result = $conn->query($sql);
 <div id="content">
 <div class="container mt-5">
     <h2 class="mb-4">Genre List Report </h2>
-
 
     <!-- Search Filters -->
     <div class="search-bar">
@@ -94,10 +89,9 @@ $result = $conn->query($sql);
                     <th>Bil</th>
                     <th>Genres</th>
                     <th>Total</th>
-                    <th class="view-details-column"></th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="genre-table-body">
                 <?php
                 if ($result && mysqli_num_rows($result) > 0) {
                     $bil = 1;
@@ -106,14 +100,11 @@ $result = $conn->query($sql);
                         echo "<td>{$bil}</td>";
                         echo "<td>{$row['genre']}</td>";
                         echo "<td>{$row['total_folktales']}</td>";
-                        echo "<td>
-                                <a href='view_folktales_by_genre.php?origin=" . urlencode($row['genre']) . "' class='btn btn-primary btn-sm'>View Details</a>
-                              </td>";
                         echo "</tr>";
                         $bil++;
                     }
                 } else {
-                    echo "<tr><td colspan='4' class='text-center'>No data found</td></tr>";
+                    echo "<tr><td colspan='3' class='text-center'>No data found</td></tr>";
                 }
                 ?>
             </tbody>
@@ -143,11 +134,11 @@ $result = $conn->query($sql);
 <script>
     function filterTable() {
         const searchInput = document.getElementById('search-input').value.toLowerCase();
-        const tableRows = document.querySelectorAll('#bookmarks-table-body tr');
+        const tableRows = document.querySelectorAll('#genre-table-body tr');
 
         tableRows.forEach(row => {
-            const title = row.cells[1].textContent.toLowerCase(); // Search in title column
-            if (title.includes(searchInput)) {
+            const genre = row.cells[1].textContent.toLowerCase(); // Search in genre column
+            if (genre.includes(searchInput)) {
                 row.style.display = ''; // Show matching rows
             } else {
                 row.style.display = 'none'; // Hide non-matching rows

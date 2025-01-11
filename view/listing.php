@@ -31,7 +31,8 @@ $result = $conn->query($sql);
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Generate Report</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/style.css">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -57,6 +58,9 @@ $result = $conn->query($sql);
       font-size: 24px;
       color: #007b5e;
     }
+    .pagination {
+            justify-content: center;
+        }s
 
     .logout {
       background-color: #fff;
@@ -70,7 +74,10 @@ $result = $conn->query($sql);
       font-size: 18px;
       margin-bottom: 15px;
     }
-
+    .table-container {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
     .report-table {
       width: 100%;
       border-collapse: collapse;
@@ -145,39 +152,25 @@ $result = $conn->query($sql);
       background-color:rgb(102, 193, 66);
     }
 
-    .pagination {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .page-info {
-      margin-left: auto;
-      font-size: 14px;
-    }
-
-    .pagination-button {
-      background-color: #fff;
-      border: 1px solid #ddd;
-      padding: 5px 10px;
-      cursor: pointer;
-      border-radius: 4px;
-    }
+    
+    .thead th {
+            background-color: #C3DFE6;
+            color: black;
+        }
   </style>
 </head>
 <body>
-  <div class="container">
+<div id="content">
+<div class="container mt-5">
     <header class="header">
       <h1 class="title">MalayanFolktalesHub</h1>
       <button class="logout" onclick="window.location.href='logout.php'">Log Out</button>
     </header>
 
-    <main>
       <h2 class="subtitle">Generate Report</h2>
-
+      <div class="table-responsive table-container">  
       <table class="report-table">
-        <thead>
+      <thead class="thead">
           <tr>
             <th>Folktales Title</th>
             <th>Genre</th>
@@ -200,18 +193,26 @@ $result = $conn->query($sql);
                     ?>
                 </tbody>
       </table>
-
-      <div class="pagination">
-        <?php if ($page > 1): ?>
-          <a href="?page=<?php echo $page - 1; ?>" class="pagination-button">&lt;</a>
-        <?php endif; ?>
-
-        <?php if ($page < $totalPages): ?>
-          <a href="?page=<?php echo $page + 1; ?>" class="pagination-button">&gt;</a>
-        <?php endif; ?>
-
-        <span class="page-info">Displaying <?php echo $start + 1; ?>-<?php echo min($start + $limit, $totalRecords); ?> of <?php echo $totalRecords; ?></span>
       </div>
+      
+    <!-- Pagination -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            <li class="page-item <?php echo ($page <= 1) ? 'disabled' : ''; ?>">
+                <a class="page-link" href="?page=<?php echo $page - 1; ?>">Previous</a>
+            </li>
+            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
+                    <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                </li>
+            <?php endfor; ?>
+            <li class="page-item <?php echo ($page >= $totalPages) ? 'disabled' : ''; ?>">
+                <a class="page-link" href="?page=<?php echo $page + 1; ?>">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+</div>
 
       
     </main>

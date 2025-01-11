@@ -4,9 +4,6 @@ session_start();
 // Database connection
 include 'dbconn.php';
 
-
-
-
 // Fetch total records for bookmarks count
 $totalResult = $conn->query("SELECT COUNT(*) AS total FROM user");
 $totalRow = $totalResult->fetch_assoc();
@@ -28,23 +25,10 @@ $result = mysqli_query($conn, $query);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Folktales List</title>
+    <title>User Report</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="../css/style.css">
     <style>
-        .total-bookmarks-card {
-            background-color: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        .total-bookmarks-card span {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #5e72e4;
-        }
         .table-container {
             margin-top: 20px;
         }
@@ -72,10 +56,6 @@ $result = mysqli_query($conn, $query);
             background-color: #C3DFE6;
             color: black;
         }
-        .view-details-column {
-        width: 1%; /* Shrink-wrap to content */
-        white-space: nowrap; /* Prevent wrapping */
-    }
     </style>
 </head>
 <body>
@@ -84,10 +64,9 @@ $result = mysqli_query($conn, $query);
 <div class="container mt-5">
     <h2 class="mb-4">User Report</h2>
 
-
     <!-- Search Filters -->
     <div class="search-bar">
-        <input type="text" id="search-input" class="form-control" placeholder="Search user's details..." oninput="filterTable()">
+    <input type="text" id="search-input" class="form-control" placeholder="Search details.." oninput="filterTable()">
     </div>
 
     <div class="table-responsive table-container">
@@ -99,11 +78,10 @@ $result = mysqli_query($conn, $query);
                     <th>Email</th>
                     <th>Total Bookmarks</th>
                     <th>Total Comments</th>
-                    <th class="view-details-column"></th>
                 </tr>
             </thead>
-            <tbody>
-            <?php
+            <tbody id="user-table-body">
+                <?php
                 if ($result && mysqli_num_rows($result) > 0) {
                     $bil = 1;
                     while ($row = mysqli_fetch_assoc($result)) {
@@ -113,14 +91,11 @@ $result = mysqli_query($conn, $query);
                         echo "<td>{$row['email']}</td>";
                         echo "<td>{$row['total_bookmarks']}</td>";
                         echo "<td>{$row['total_comments']}</td>";
-                        echo "<td>
-                                <a href='view_user_details.php?userID={$row['userID']}' class='btn btn-primary btn-sm'>View Details</a>
-                              </td>";
                         echo "</tr>";
                         $bil++;
                     }
                 } else {
-                    echo "<tr><td colspan='6' class='text-center'>No users found</td></tr>";
+                    echo "<tr><td colspan='5' class='text-center'>No users found</td></tr>";
                 }
                 ?>
             </tbody>
@@ -150,11 +125,12 @@ $result = mysqli_query($conn, $query);
 <script>
     function filterTable() {
         const searchInput = document.getElementById('search-input').value.toLowerCase();
-        const tableRows = document.querySelectorAll('#bookmarks-table-body tr');
+        const tableRows = document.querySelectorAll('#user-table-body tr');
 
         tableRows.forEach(row => {
-            const title = row.cells[1].textContent.toLowerCase(); // Search in title column
-            if (title.includes(searchInput)) {
+            const name = row.cells[1].textContent.toLowerCase();
+            const email = row.cells[2].textContent.toLowerCase();
+            if (name.includes(searchInput) || email.includes(searchInput)) {
                 row.style.display = ''; // Show matching rows
             } else {
                 row.style.display = 'none'; // Hide non-matching rows

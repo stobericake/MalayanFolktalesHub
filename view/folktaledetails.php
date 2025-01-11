@@ -21,7 +21,7 @@ if ($result->num_rows > 0) {
     die("Folktale not found.");
 }
 
-$userID = 20; 
+$userID = 12; 
 
 // Fetch comments from the database for the specified folktaleID
 $commentsQuery = "
@@ -38,7 +38,7 @@ $commentsResult = $stmt->get_result();
 // Handle new comment submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_content'])) {
     $commentContent = trim($_POST['comment_content']);
-    $userID = $_SESSION['userID']; // Assuming user is logged in and userID is stored in session
+    $userID =  12; //$_SESSION['userID']; // Assuming user is logged in and userID is stored in session
 
     if (!empty($commentContent)) {
         $insertCommentQuery = "INSERT INTO comment (content, datePosted, userID, folktaleID) VALUES (?, NOW(), ?, ?)";

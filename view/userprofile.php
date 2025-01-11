@@ -3,212 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <title>Profile Card with Sidebar</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        /* General Styles */
+        * {
             margin: 0;
             padding: 0;
-            background-color: #f7f9fc;
+            box-sizing: border-box;
         }
 
-        .container {
-            width: 90%;
-            margin: 0 auto;
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #F8F9FD;
+            display: flex;
         }
 
-        .header {
+        /* Sidebar Styles */
+        #sidebar {
+            width: 300px;
+            height: 100vh;
+            background-color: #C3DFE6;
+            color: black;
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        #sidebar .img {
+            display: block;
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        #sidebar p {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        #sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #sidebar ul li {
+            margin: 15px 0;
+        }
+
+        #sidebar ul li a {
+            color: black;
+            text-decoration: none;
+            font-size: 16px;
+            display: block;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        #sidebar ul li a:hover {
+            background-color: #D4EBF8;
+            color: #000;
+        }
+
+        #sidebar .logout {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #sidebar .logout a {
+            color: white;
+            font-size: 16px;
+            text-decoration: none;
+        }
+
+        /* Content Area */
+        #content {
+            margin-left: 320px;
+            padding: 20px;
+            width: calc(100% - 320px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background:#F8F9FD;
+        }
+
+        /* Profile Card Styles */
+        .profile-card {
+            background: #F8F9FD;
+            border-radius: 30px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            width: 1000px;
+            padding: 100px;
+            position: relative;
+            
+        }
+
+        .profile-card .avatar {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 6px solid #fff;
+            margin-top: -80px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-card h2 {
+            font-size: 32px;
+            margin: 15px 0 8px;
+        }
+
+        /* Profile Card Styles */
+    .profile-card {
+    background: #C3DFE6;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    width: 1000px;
+    padding: 100px;
+    position: relative;
+}
+
+
+        .profile-card .info {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
+            margin: 30px 0;
+            font-size: 16px;
+            font-weight: bold;
+            color: #444;
         }
 
-        .header input[type="text"] {
-            width: 300px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .profile {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .profile-card, .stat-card {
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            flex: 1;
+        .profile-card .info div {
             text-align: center;
         }
 
-        .profile-info img {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            margin-bottom: 10px;
-        }
+        .profile-card .btn {
+    display: inline-block;
+    margin-top: 30px;
+    background: #FFF5E0; 
+    color: black; 
+    padding: 15px 30px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    transition: background 0.3s ease;
+}
 
-        .profile-info h3 {
-            margin: 5px 0;
-        }
+.profile-card .btn:hover {
+    background: #FFF5E0; 
+}
 
-        .stat-card .icon {
-            font-size: 36px;
-            color: #007bff;
-            margin-bottom: 10px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        table thead {
-            background: #f1f1f1;
-        }
-
-        table th, table td {
-            padding: 15px;
-            text-align: left;
-        }
-
-        table th {
-            font-size: 14px;
-            color: #555;
-        }
-
-        table tbody tr:nth-child(even) {
-            background: #f9f9f9;
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-            margin: 20px 0;
-        }
-
-        .pagination a {
-            text-decoration: none;
-            padding: 10px 15px;
-            margin: 0 5px;
-            background: #007bff;
-            color: #fff;
-            border-radius: 5px;
-            transition: background 0.3s ease;
-        }
-
-        .pagination a.active {
-            background: #0056b3;
-        }
-
-        .pagination a:hover {
-            background: #0056b3;
-        }
-
-        .page-item.disabled a {
-            background: #ccc;
-            cursor: not-allowed;
-        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>User's Profile</h1>
-            <input type="text" placeholder="Search">
+    <!-- Sidebar -->
+    <nav id="sidebar">
+        <img class="img" src="../assets/logo.png" alt="Logo">
+        <p>
+          <?php 
+          // Simulating user roles for demonstration purposes
+          $user_role = 'normal_user'; // Change to 'normal_user', 'manager', or 'clerk' to test
+          if ($user_role === 'normal_user') echo 'Reader';
+          elseif ($user_role === 'manager') echo 'Manager';
+          elseif ($user_role === 'clerk') echo 'Clerk'; 
+          ?>
+        </p>
+
+        <ul class="list-unstyled components mb-5">
+          <li class="active">
+            <a href="userhomedashboard.php"><i class="fa fa-home mr-3"></i> Home</a>
+          </li>
+          <?php if ($user_role === 'normal_user'): ?>
+            <li><a href="folktalelist.php"><i class="fa fa-book mr-3"></i> Folktales List</a></li>
+            <li><a href="bookmark.php"><i class="fa fa-bookmark mr-3"></i> Bookmarks</a></li>
+          <?php elseif ($user_role === 'manager'): ?>
+            <li><a href="generatereport.php"><i class="fa fa-chart-line mr-3"></i> Generate Report</a></li>
+          <?php elseif ($user_role === 'clerk'): ?>
+            <li><a href="clerkdashboard.php"><i class="fa fa-cog mr-3"></i> Folktales Management</a></li>
+          <?php endif; ?>
+        </ul>
+
+        <div class="logout">
+          <a href="#"><i class="fa fa-sign-out mr-3"></i> Sign Out</a>
         </div>
-        
-        <div class="profile">
-            <div class="profile-card">
-                <div class="profile-info">
-                    <img src="https://via.placeholder.com/80" alt="Profile Picture">
-                    <h3>Nur Ain</h3>
-                    <p>+019-9452728</p>
-                    <p>Email: abc123@gmail.com</p>
-                </div>
-            </div>
+    </nav>
 
-            <div class="stat-card">
-
-                <h4>Total Bookmarks</h4>
-                <i class="bi bi-bookmark-heart icon"></i>
-                <p>12</p>
-            </div>
-
-            <div class="stat-card">
-                <h4>Viewed Story</h4>
-                <i class="bi bi-eye icon"></i>
-                <p>25</p>
-            </div>
+   <!-- Content Area -->
+<div id="content">
+    <div class="profile-card">
+        <img src="https://via.placeholder.com/140" alt="Avatar" class="avatar">
+        <h2>Samantha Jones</h2>
+        <p>New York, United States</p>
+        <p>Web Producer - Web Specialist<br>Columbia University - New York</p>
+        <!-- Update and Delete Buttons -->
+        <div class="actions">
+            <button class="btn update-btn">Update Pofile</button>
+            <button class="btn delete-btn">Delete Profile </button>
         </div>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>State</th>
-                    <th>Genre</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Siapa Lebih Bijak</td>
-                    <td>Kedah</td>
-                    <td>Teladan</td>
-                </tr>
-                <tr>
-                    <td>Asal Usul Pekan Teluk Sengat</td>
-                    <td>Johor</td>
-                    <td>Teladan</td>
-                </tr>
-                <tr>
-                    <td>Secuncang Padi</td>
-                    <td>Pahang</td>
-                    <td>Legenda</td>
-                </tr>
-                <tr>
-                    <td>Tempura Besarang Rendah</td>
-                    <td>Nasional</td>
-                    <td>Fabel</td>
-                </tr>
-                <tr>
-                    <td>Buntat Teloh</td>
-                    <td>Sarawak</td>
-                    <td>Mitos</td>
-                </tr>
-                <tr>
-                    <td>Pohon Kemuni</td>
-                    <td>Pulau Pinang</td>
-                    <td>Alegori</td>
-                </tr>
-                <tr>
-                    <td>Peraduan Bercerita</td>
-                    <td>Kedah</td>
-                    <td>Jenaka</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <nav aria-label="Page navigation">
-            <ul class="pagination">
-                <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item"><a class="page-link" href="#">Next</a></li>
-            </ul>
-        </nav>
     </div>
+</div>
+
 </body>
 </html>

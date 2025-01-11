@@ -74,6 +74,7 @@ while ($row = mysqli_fetch_assoc($result)) {
             border-radius: 10px;
             padding: 20px;
             text-align: center;
+            text-decoration: none;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             cursor: pointer;
             transition: transform 0.3s, box-shadow 0.3s;
