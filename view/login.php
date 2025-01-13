@@ -3,42 +3,68 @@ session_start();
 
 include 'dbconn.php';
 
-// Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Validate input data
-    $userID = trim($_POST['userID']);
+    $email = trim($_POST['email']);
     $password = trim($_POST['password']);
 
-    if (!empty($userID) && !empty($password)) {
-        // Escape input data to prevent SQL injection
-        $userID = mysqli_real_escape_string($conn, $userID);
+    if (!empty($email) && !empty($password)) {
+        $email = mysqli_real_escape_string($conn, $email);
+        $password = mysqli_real_escape_string($conn, $password);
 
-        // Query the database for the user
-        $query = "SELECT `userID`, `name`, `password` FROM `user` WHERE `userID` = '$userID'";
-        $result = mysqli_query($conn, $query);
+        // Function to validate user from a table
+        function validateUser($table, $email, $password, $conn) {
+            $query = "SELECT `email`, `password` FROM `$table` WHERE `email` = '$email'";
+            $result = mysqli_query($conn, $query);
 
-        if (!$result) {
-            die("Error executing query: " . mysqli_error($conn));
+            if ($result && mysqli_num_rows($result) > 0) {
+                $row = mysqli_fetch_assoc($result);
+                // Direct password comparison
+                if ($password == $row['password']) {
+                    return $row; // Return the row data if valid
+                }
+            }
+            return null; // Return null if invalid
         }
 
-        if (mysqli_num_rows($result) > 0) {
-            // Fetch user data
-            $row = mysqli_fetch_assoc($result);
-
-            // Password is correct, set session variables
-            $_SESSION['userID'] = $row['userID'];
-            $_SESSION['name'] = $row['name'];
-
-            // Redirect to the user's dashboard
-            header("Location: userdashboard.php");
-            exit;
-            
+        // Check all tables
+        $role = '';
+        $userData = validateUser('user', $email, $password, $conn);
+        if ($userData) {
+            $role = 'user';
         } else {
-            // User not found
-            $error = "Invalid userID or password.";
+            $userData = validateUser('clerk', $email, $password, $conn);
+            if ($userData) {
+                $role = 'clerk';
+            } else {
+                $userData = validateUser('manager', $email, $password, $conn);
+                if ($userData) {
+                    $role = 'manager';
+                }
+            }
+        }
+
+        if ($role) {
+            $_SESSION['email'] = $userData['email'];
+            $_SESSION['role'] = $role;
+
+            // Redirect based on role
+            switch ($role) {
+                case 'user':
+                    header("Location: userdashboard.php");
+                    break;
+                case 'clerk':
+                    header("Location: clerkdashboard.php");
+                    break;
+                case 'manager':
+                    header("Location: managerdashboard.php");
+                    break;
+            }
+            exit;
+        } else {
+            $error = "Invalid Email or password.";
         }
     } else {
-        echo "<script>alert('Invalid email or password. Please try again.');</script>";
+        $error = "Please fill in all fields.";
     }
 }
 ?>
@@ -53,28 +79,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
     <style>
-        body {
-            body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Poppins', sans-serif;
-    background-color: #f5f5f5;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden; /* Prevent scrollbars */
-}
-
+        body {        
             margin: 0;
             padding: 0;
             font-family: 'Poppins', sans-serif;
-            background-color:rgb(250, 245, 245);
+            background-color: #f5f5f5;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            overflow: hidden; /* Prevent scrollbars */
         }
+
 
         .container {
             display: flex;
@@ -179,7 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <form action="" method="post">
                 <div class="input-group">
                     <i class="fa fa-user"></i>
-                    <input type="text" id="userID" name="userID" placeholder="userID" required>
+                    <input type="text" id="email" name="email" placeholder="Email" required>
                 </div>
                 <div class="input-group">
                     <i class="fa fa-lock"></i>

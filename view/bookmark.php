@@ -211,38 +211,46 @@ if ($result->num_rows > 0) {
     });
 
     // Confirm delete action
-    document.getElementById('confirm-delete-btn').addEventListener('click', function() {
-        if (folktalesIDToDelete !== null && userIDToDelete !== null) {
-            fetch('delete_bookmark.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    folktalesID: folktalesIDToDelete,
-                    userID: userIDToDelete
-                })
+document.getElementById('confirm-delete-btn').addEventListener('click', function() {
+    if (folktalesIDToDelete !== null && userIDToDelete !== null) {
+        fetch('delete_bookmark.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                folktalesID: folktalesIDToDelete,
+                userID: userIDToDelete
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Close the modal
-                    var myModal = bootstrap.Modal.getInstance(document.getElementById('bookmarkModal'));
-                    myModal.hide();
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Close the modal
+                var myModal = bootstrap.Modal.getInstance(document.getElementById('bookmarkModal'));
+                myModal.hide();
 
-                    // Optionally remove the row from the table
-                    let row = document.querySelector(`tr[data-folktalesid="${folktalesIDToDelete}"]`);
-                    if (row) row.remove();
-                } else {
-                    alert(data.message);
+                // Optionally remove the row from the table
+                let row = document.querySelector(`tr[data-folktalesid="${folktalesIDToDelete}"]`);
+                if (row) row.remove();
+
+                // Update total bookmarks count
+                const totalBookmarksElement = document.querySelector('.total-bookmarks-card span');
+                const currentCount = parseInt(totalBookmarksElement.textContent);
+                if (!isNaN(currentCount) && currentCount > 0) {
+                    totalBookmarksElement.textContent = currentCount - 1;
                 }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                alert("An error occurred while deleting the bookmark.");
-            });
-        }
-    });
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("An error occurred while deleting the bookmark.");
+        });
+    }
+});
+
 </script>
 </body>
 </html>

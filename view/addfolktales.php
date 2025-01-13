@@ -3,7 +3,12 @@ session_start();
 
 // Database connection
 include 'dbconn.php';
+if (!isset($_SESSION['role'])) {
+    header("Location: login.php"); // Redirect to login if not logged in
+    exit;
+}
 
+$role = $_SESSION['role'];
 // Check if the form was submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Retrieve form data
@@ -54,8 +59,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
 }
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -142,10 +145,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     </style>
 </head>
-<body>
-<?php include 'sidebar.php'; ?> 
-<div id="content">
-    <div class="container mt-3">
+<body> 
+<div class="d-flex">
+        <!-- Include Sidebar -->
+        <?php include 'sidebaar2.php'; ?>
+
+        <!-- Main Content -->
+        <div class="container-fluid p-4">
         <h1>Add Folktales</h1>
 
         <div class="form-section mt-4">

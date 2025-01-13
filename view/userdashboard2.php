@@ -1,3 +1,24 @@
+<?php
+session_start();
+
+// Database connection
+include 'dbconn.php';
+if (!isset($_SESSION['role'])) {
+    header("Location: login.php"); // Redirect to login if not logged in
+    exit;
+}
+
+$role = $_SESSION['role'];
+
+// Fetch unique genres
+$genres_query = "SELECT DISTINCT genre FROM folktales";
+$genres_result = mysqli_query($conn, $genres_query);
+
+// Fetch unique states
+$states_query = "SELECT DISTINCT state FROM folktales";
+$states_result = mysqli_query($conn, $states_query);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +32,9 @@
             background-color: #C3DFE6;
             padding: 10px;
             border-radius: 10px;
+            height: 100%;
         }
+
         .genre-state-panel button {
             width: 100%;
             margin-bottom: 10px;
@@ -19,71 +42,65 @@
             border: none;
             border-radius: 5px;
             padding: 10px;
+        }
 
-        }
-        
-        .profile-section {
-            background-color: #f5f5f5;
-            padding: 10px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        .profile-section img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        .profile-section h5 {
-            margin-top: 15px;
-        }
     </style>
 </head>
 <body>
-<?php include 'sidebar.php'; ?> 
-<div id="content">
-    <div class="container mt-1">
+<div class="d-flex">
+    <!-- Include Sidebar -->
+    <?php include 'sidebar.php'; ?>
+
+    <!-- Main Content -->
+    <div class="container-fluid p-5">
         <h3 class="mb-4">User Home Page</h3>
-                <div class="row">
-                    <div class="col-md-5 genre-state-panel">
-                        <h5> FOLKTALE GENRE</h5>
-                        <button>Legend</button>
-                        <button>Moral</button>
-                        <button>History</button>
-                        <button>Joke</button>
-                        <button>Fable</button>
-                        <button>Allegory</button>
-                        <button>Myth</button>
-                        <button>Folk</button>
-                        <button>Children</button>
-                        <button>Adventure</button>
-                        <button>Example</button>
-                    </div>
-                    <div class="col-md-1"></div>
-                    <div class="col-md-5 genre-state-panel">
-                        <h5> FOLKTALE STATE</h5>
-                        <button>Johor</button>
-                        <button>Kedah</button>
-                        <button>Kelantan</button>
-                        <button>Melaka</button>
-                        <button>Negeri Sembilan</button>
-                        <button>Pahang</button>
-                        <button>Pulau Pinang</button>
-                        <button>Perak</button>
-                        <button>Perlis</button>
-                        <button>Sabah</button>
-                        <button>Sarawak</button>
-                        <button>Selangor</button>
-                        <button>Terengganu</button>
-                        <button>Nasional</button>
-                    </div>
-                </div>
+        <div class="row">
+            <!-- Genre Panel -->
+            <div class="col-md-5 genre-state-panel">
+                <h5>FOLKTALE GENRE</h5>
+                <?php
+                if ($genres_result && mysqli_num_rows($genres_result) > 0) {
+                    while ($row = mysqli_fetch_assoc($genres_result)) {
+                        echo "<button onclick=\"filterFolktales('genre', '" . htmlspecialchars($row['genre']) . "')\">" 
+                            . htmlspecialchars($row['genre']) . 
+                            "</button>";
+                    }
+                } else {
+                    echo "<p>No genres available.</p>";
+                }
+                ?>
             </div>
 
-            
-        </div>
+            <div class="col-md-1"></div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+            <!-- State Panel -->
+            <div class="col-md-5 genre-state-panel">
+                <h5>FOLKTALE STATE</h5>
+                <?php
+                if ($states_result && mysqli_num_rows($states_result) > 0) {
+                    while ($row = mysqli_fetch_assoc($states_result)) {
+                        echo "<button onclick=\"filterFolktales('state', '" . htmlspecialchars($row['state']) . "')\">" 
+                            . htmlspecialchars($row['state']) . 
+                            "</button>";
+                    }
+                } else {
+                    echo "<p>No states available.</p>";
+                }
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Filtering -->
+<script>
+    function filterFolktales(filterType, value) {
+        // Redirect to a page or call an API to display filtered folktales
+        location.href = `filter_folktales.php?type=${filterType}&value=${value}`;
+    }
+</script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 // Database connection
 include 'dbconn.php';
 
@@ -127,8 +126,6 @@ while ($row = mysqli_fetch_assoc($result)) {
 </head>
 <body>
     <div class="container">
-        
-
         <!-- Card Section -->
         <div class="card-section">
             <!-- Card 1: User Report -->
