@@ -52,7 +52,6 @@ $result = $conn->query($sql);
     </style>
 </head>
 <body>
-<?php include 'sidebar.php'; ?> 
 <div id="content">
     <div class="container mt-3">
         <h1 class="mb-2">Folktales Management</h1>

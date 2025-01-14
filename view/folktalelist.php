@@ -3,6 +3,12 @@ session_start();
 
 // Database connection
 include 'dbconn.php';
+if (!isset($_SESSION['role'])) {
+    header("Location: login.php"); // Redirect to login if not logged in
+    exit;
+}
+
+$role = $_SESSION['role'];
 
 // Fetch total records for bookmarks count
 $totalResult = $conn->query("SELECT COUNT(*) AS total FROM folktales");

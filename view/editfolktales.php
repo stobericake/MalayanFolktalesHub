@@ -174,7 +174,6 @@ $conn->close();
     </style>
 </head>
 <body>
-<?php include 'sidebar.php'; ?> 
 <div id="content">
     <div class="container mt-3">
         <h1>Edit Folktales</h1>

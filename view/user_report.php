@@ -59,7 +59,6 @@ $result = mysqli_query($conn, $query);
     </style>
 </head>
 <body>
-<?php include 'sidebar.php'; ?> 
 <div id="content">
 <div class="container mt-5">
     <h2 class="mb-4">User Report</h2>

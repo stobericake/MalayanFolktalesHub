@@ -3,6 +3,12 @@ session_start();
 
 // Database connection
 include 'dbconn.php';
+if (!isset($_SESSION['role'])) {
+    header("Location: login.php"); // Redirect to login if not logged in
+    exit;
+}
+
+$role = $_SESSION['role'];
 
 // Fetch total bookmarks for the logged-in user
 $userID = 12;  // Set the logged-in user's ID dynamically based on session (e.g., $_SESSION['userID'])

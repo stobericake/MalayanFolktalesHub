@@ -140,7 +140,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_content'])) {
     </style>
 </head>
 <body>
-<?php include 'sidebar.php'; ?>
 <div id="content" class="d-flex">
     <div class="container flex-grow-1">
         <!-- Folktale Header -->

@@ -72,7 +72,6 @@ $result = $conn->query($sql);
     </style>
 </head>
 <body>
-<?php include 'sidebar.php'; ?> 
 <div id="content">
 <div class="container mt-5">
     <h2 class="mb-4">Genre List Report </h2>
