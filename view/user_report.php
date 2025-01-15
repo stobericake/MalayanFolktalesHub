@@ -27,47 +27,70 @@ $result = mysqli_query($conn, $query);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Report</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../css/style.css">
+
     <style>
-        .table-container {
-            margin-top: 20px;
-        }
-        .pagination {
-            justify-content: center;
-        }
-        .search-bar {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 20px;
-        }
-        .search-bar input {
-            width: 50%;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        .search-bar input::placeholder {
-            color: #6c757d; /* A visible color */
-            font-size: 16px; /* Adjust font size if necessary */
-            opacity: 1; /* Ensure full visibility */
-        }
-        .thead th {
-            background-color: #C3DFE6;
-            color: black;
-        }
+      body {
+        font-family: 'Poppins', sans-serif;
+        font-weight: bold;
+        color: white;
+        height: 100vh;
+    }
+
+    .content {
+        padding-top: 150px;
+        margin-left: 30px;
+    }
+
+    .pagination {
+        justify-content: center;
+    }
+
+    .search-bar {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 20px;
+    }
+
+    .search-bar input {
+        width: 50%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    .search-bar input::placeholder {
+        color: #6c757d; /* A visible color */
+        font-size: 16px; /* Adjust font size if necessary */
+        opacity: 1; /* Ensure full visibility */
+    }
+
+    .table-container {
+        margin-top: 20px;
+    }
+
+    /* Make sure the header background color is applied correctly */
+    table thead th {
+        background-color: #C3DFE6; /* Background color for the table header */
+        color: black; /* Text color for table headers */
+        text-align: center; /* Optional: Align the text in the center */
+        font-weight: bold;
+    }
     </style>
 </head>
 <body>
+<?php include 'header.php'; ?>
+ <!-- Content Section -->
 <div id="content">
 <div class="container mt-5">
-    <h2 class="mb-4">User Report</h2>
+    <div class="col">
+    <h2>User Report</h2>
 
     <!-- Search Filters -->
     <div class="search-bar">
     <input type="text" id="search-input" class="form-control" placeholder="Search details.." oninput="filterTable()">
     </div>
-
+    </div>
     <div class="table-responsive table-container">
         <table class="table table-bordered table-striped">
             <thead class="thead">

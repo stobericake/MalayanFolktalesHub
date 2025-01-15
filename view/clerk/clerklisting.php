@@ -2,8 +2,7 @@
 session_start();
 
 // Database connection
-include 'dbconn.php';
-
+include '../dbconn.php';
 
 // Get total records
 $totalRecordsQuery = "SELECT COUNT(*) as total FROM folktales";

@@ -1,7 +1,6 @@
 <?php
-session_start();
 // Database connection
-include 'dbconn.php';
+include '../dbconn.php';
 
 // Fetch total origin of folktales
 $totalOriginResult = $conn->query("SELECT COUNT(DISTINCT state) AS total_origin FROM folktales");
@@ -47,15 +46,14 @@ while ($row = mysqli_fetch_assoc($result)) {
             font-family: 'Poppins', sans-serif;
             background: url('../assets/background.png') no-repeat center center/cover;
             background-size: cover;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
         }
-
+        .content {
+            padding-top: 100px;
+            margin-left: 30px;
+        }
         .top-section {
             width: 100%;
-            height: 200px;
+            height: 150px;
             background-color: #f5f5f5;
             border-radius: 10px;
             margin-bottom: 20px;
@@ -86,7 +84,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 
         .card img {
             width: 60px;
-            height: 60px;
+            height: 50px;
             margin-bottom: 10px;
         }
 
@@ -114,7 +112,8 @@ while ($row = mysqli_fetch_assoc($result)) {
         }
 
         .chart-section {
-            margin-top: 30px;
+            margin-top: 20px;
+            margin-bottom: 20px;
         }
 
         canvas {
@@ -125,6 +124,9 @@ while ($row = mysqli_fetch_assoc($result)) {
     </style>
 </head>
 <body>
+<?php include '../header.php'; ?>
+ <!-- Content Section -->
+ <div class="content">
     <div class="container">
         <!-- Card Section -->
         <div class="card-section">
@@ -154,7 +156,7 @@ while ($row = mysqli_fetch_assoc($result)) {
         <div class="chart-section">
                 <canvas id="salesChart" width="1300" height="400"></canvas>
          </div>
-
+</div>
          <script>
         // Pass PHP data to JavaScript
         const folktaleTitles = <?php echo json_encode($folktaleTitles); ?>;

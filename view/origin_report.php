@@ -76,6 +76,8 @@ $result = $conn->query($sql);
     </style>
 </head>
 <body>
+<?php include 'header.php'; ?>
+ <!-- Content Section -->
 <div id="content">
 <div class="container mt-5">
     <h2 class="mb-4">Folktales's Origin List Report </h2>

@@ -1,9 +1,9 @@
 <?php
 // Start session
 session_start();
+// Database connection
+include '../dbconn.php';
 
-// Include database connection
-include 'dbconn.php';
 
 // Check if the ID is provided
 if (!isset($_GET['id']) || empty($_GET['id'])) {

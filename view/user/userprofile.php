@@ -1,14 +1,6 @@
 <?php
-session_start();
-include 'dbconn.php'; // Include database connection file
-
-// Check if user is logged in
-if (!isset($_SESSION['email'])) {
-    header("Location: login.php");
-    exit;
-}
-
-$role = $_SESSION['role'];
+// Database connection
+include '../dbconn.php';
 // Fetch user data from the database
 $email = $_SESSION['email'];
 $query = "SELECT * FROM user WHERE email = '$email'";
