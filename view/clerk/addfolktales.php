@@ -1,14 +1,8 @@
 <?php
-session_start();
-
 // Database connection
-include 'dbconn.php';
-if (!isset($_SESSION['role'])) {
-    header("Location: login.php"); // Redirect to login if not logged in
-    exit;
-}
+include '../dbconn.php';
 
-$role = $_SESSION['role'];
+
 // Check if the form was submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Retrieve form data
@@ -69,21 +63,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color:rgb(243, 247, 251) !important;
             margin: 0;
             padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background: url('../assets/background.png') no-repeat center center/cover;
+            background-size: cover;
         }
-
         .content {
-            margin-left: 270px;
-            padding: 40px;
-            
+            padding-top: 100px;
+            margin-left: 30px;
         }
-
-        h1 {
+        .content h1 {
             font-size: 1.8rem;
             font-weight: bold;
+            color: #C3DFE6;
         }
 
         /* Custom styling for inputs, selects, and textarea */
@@ -106,6 +99,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .custom-upload-btn:hover {
             background-color: #0056b3; /* Darker blue on hover */
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: row;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            
         }
 
         /* Form container styling */
@@ -146,14 +148,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 <body> 
-<div class="d-flex">
-        <!-- Include Sidebar -->
-        <?php include 'sidebaar2.php'; ?>
-
-        <!-- Main Content -->
-        <div class="container-fluid p-4">
+<?php include 'header.php'; ?>
+ <!-- Content Section -->
+<div class="content">
         <h1>Add Folktales</h1>
-
         <div class="form-section mt-4">
             <form action="addfolktales.php" method="POST" enctype="multipart/form-data">
                 <div class="row mb-3">
@@ -209,6 +207,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <button type="submit" class="btn btn-primary">Add</button>
                 </div>
             </form>
+        </div>
         </div>
     </div>
 </div>

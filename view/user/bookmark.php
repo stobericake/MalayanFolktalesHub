@@ -1,8 +1,7 @@
 <?php
-session_start();
 
 // Database connection
-include 'dbconn.php';
+include '../dbconn.php';
 
 // Fetch total bookmarks for the logged-in user
 $userID = 12;  // Set the logged-in user's ID dynamically based on session (e.g., $_SESSION['userID'])

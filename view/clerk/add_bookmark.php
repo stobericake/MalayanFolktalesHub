@@ -1,6 +1,8 @@
 <?php
 session_start();
-include 'dbconn.php';
+// Database connection
+include '../dbconn.php';
+
 
 header('Content-Type: application/json');
 

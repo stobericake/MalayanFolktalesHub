@@ -2,7 +2,8 @@
 session_start();
 
 // Database connection
-include 'dbconn.php';
+include '../dbconn.php';
+
 
 // Check if an ID is passed as a parameter
 if (!isset($_GET['id']) || empty($_GET['id'])) {
@@ -174,7 +175,6 @@ $conn->close();
     </style>
 </head>
 <body>
-<?php include 'sidebar.php'; ?> 
 <div id="content">
     <div class="container mt-3">
         <h1>Edit Folktales</h1>

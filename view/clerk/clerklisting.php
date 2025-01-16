@@ -2,8 +2,7 @@
 session_start();
 
 // Database connection
-include 'dbconn.php';
-
+include '../dbconn.php';
 
 // Get total records
 $totalRecordsQuery = "SELECT COUNT(*) as total FROM folktales";
@@ -52,7 +51,6 @@ $result = $conn->query($sql);
     </style>
 </head>
 <body>
-<?php include 'sidebar.php'; ?> 
 <div id="content">
     <div class="container mt-3">
         <h1 class="mb-2">Folktales Management</h1>
