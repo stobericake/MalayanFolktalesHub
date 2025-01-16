@@ -2,7 +2,7 @@
 // header.php
 session_start();
 // Database connection
-include '../dbconn.php';
+include 'dbconn.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -59,15 +59,15 @@ include '../dbconn.php';
             $role = $_SESSION['role'];
             if ($role === 'user') {
                 echo '<a class="btn btn-custom" href="landingpage.php">Home</a>';
-                echo '<a class="btn btn-custom" href="bookmark.php">Bookmarks</a>';
-                echo '<a class="btn btn-custom" href="userprofile.php">Profile</a>';
+                echo '<a class="btn btn-custom" href="user/bookmark.php">Bookmarks</a>';
+                echo '<a class="btn btn-custom" href="user/userprofile.php">Profile</a>';
                 echo '<a class="btn btn-custom" href="logout.php">Logout</a>';
             } elseif ($role === 'clerk') {
-                echo '<a class="btn btn-custom" href="managerclerkdashboard.php">Home</a>';
-                echo '<a class="btn btn-custom" href="clerklisting.php">Manage Folktales</a>';
+                echo '<a class="btn btn-custom" href="clerk/clerkdashboard.php">Home</a>';
+                echo '<a class="btn btn-custom" href="clerk/clerklisting.php">Manage Folktales</a>';
                 echo '<a class="btn btn-custom" href="logout.php">Logout</a>';
             } elseif ($role === 'manager') {
-                echo '<a class="btn btn-custom" href="managerclerkdashboard.php">Home</a>';
+                echo '<a class="btn btn-custom" href="manager/managerdashboard.php">Home</a>';
                 echo '<a class="btn btn-custom" href="report.php">Report</a>';
                 echo '<a class="btn btn-custom" href="logout.php">Logout</a>';
             }
