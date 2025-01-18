@@ -1,9 +1,10 @@
 <?php
+session_start();
 // Database connection
 include '../dbconn.php';
-// Fetch user data from the database
-$email = $_SESSION['email'];
-$query = "SELECT * FROM user WHERE email = '$email'";
+// Ensure $userID is set and valid
+$userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : null;
+$query = "SELECT * FROM user WHERE userID = '$userID'";
 $result = mysqli_query($conn, $query);
 
 if ($result && mysqli_num_rows($result) > 0) {
@@ -30,7 +31,7 @@ if ($result && mysqli_num_rows($result) > 0) {
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #F8F9FD;
-
+            padding-top:100px;
             height: 100vh;
         }
 
@@ -99,7 +100,7 @@ if ($result && mysqli_num_rows($result) > 0) {
 <body>
     <div class="d-flex">
         <!-- Sidebar -->
-        <?php include 'sidebar.php'; ?>
+        <?php include '../header.php'; ?>
 
         <!-- Main Content -->
         <div class="container-fluid pt-4">

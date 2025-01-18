@@ -1,10 +1,7 @@
 <?php
-session_start();
+ // Ensure session is started
+include '../dbconn.php';
 
-// Database connection
-include 'dbconn.php';
-
-// Get folktale ID from query string
 $folktalesID = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 // Fetch folktale details from the database
@@ -21,9 +18,8 @@ if ($result->num_rows > 0) {
     die("Folktale not found.");
 }
 
-$userID = 12; 
+$userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : null;
 
-// Fetch comments from the database for the specified folktaleID
 $commentsQuery = "
     SELECT c.commentID, c.content, c.datePosted, u.name 
     FROM comment c 
@@ -38,9 +34,7 @@ $commentsResult = $stmt->get_result();
 // Handle new comment submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_content'])) {
     $commentContent = trim($_POST['comment_content']);
-    $userID =  12; //$_SESSION['userID']; // Assuming user is logged in and userID is stored in session
-
-    if (!empty($commentContent)) {
+    if (!empty($commentContent) && $userID) {
         $insertCommentQuery = "INSERT INTO comment (content, datePosted, userID, folktaleID) VALUES (?, NOW(), ?, ?)";
         $insertStmt = $conn->prepare($insertCommentQuery);
         $insertStmt->bind_param("sii", $commentContent, $userID, $folktalesID);
@@ -53,6 +47,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_content'])) {
     }
 }
 
+// Check if the current user has bookmarked this folktale
+$isBookmarked = false;
+if ($userID) {
+    $bookmarkCheckQuery = "SELECT COUNT(*) AS isBookmarked FROM bookmark WHERE userID = ?";
+    $bookmarkStmt = $conn->prepare($bookmarkCheckQuery);
+    $bookmarkStmt->bind_param("i", $userID);
+    $bookmarkStmt->execute();
+    $bookmarkResult = $bookmarkStmt->get_result();
+    $bookmarkData = $bookmarkResult->fetch_assoc();
+    $isBookmarked = ($bookmarkData['isBookmarked'] > 0);
+    $bookmarkStmt->close();
+}
+
+// Get total number of bookmarks for this folktale
+$totalBookmarksQuery = "SELECT COUNT(*) AS totalBookmarks FROM bookmark_folktale WHERE folktalesID = ?";
+$totalBookmarksStmt = $conn->prepare($totalBookmarksQuery);
+$totalBookmarksStmt->bind_param("i", $folktalesID);
+$totalBookmarksStmt->execute();
+$totalBookmarksResult = $totalBookmarksStmt->get_result();
+$totalBookmarksData = $totalBookmarksResult->fetch_assoc();
+$totalBookmarks = $totalBookmarksData['totalBookmarks'];
+$totalBookmarksStmt->close();
 ?>
 
 <!DOCTYPE html>
@@ -60,12 +76,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_content'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Folktales List</title>
+    <title>Folktales Detail</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
     <style>
+        body{
+            padding-top: 100px;
+        }
         .comments-section {
             max-height: 400px;
             overflow-y: auto;
@@ -117,12 +136,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_content'])) {
             overflow: visible; 
         }
         .description {
-        max-height: none; 
-        overflow: visible;
-        padding: 10px; 
-        background-color: #f8f9fa; 
-        border-radius: 5px; 
-    }
+            max-height: none; 
+            overflow: visible;
+            padding: 10px; 
+            background-color: #f8f9fa; 
+            border-radius: 5px; 
+        }
         #pdf-render {
             width: 100%;
             margin: 10px auto;
@@ -141,6 +160,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_content'])) {
 </head>
 <body>
 <div id="content" class="d-flex">
+<?php include '../header.php'; ?>
     <div class="container flex-grow-1">
         <!-- Folktale Header -->
         <div class="folktale-header">
@@ -149,13 +169,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_content'])) {
         </div>
 
         <!-- Folktale Statistics -->
-        <div class="row">
-            <div class="col-md-4">
-                <p><i class="bi bi-eye-fill"></i><strong> 5.6M</strong> Views</p>
-            </div>
-            <div class="col-md-4">
-                <p><i class="bi bi-star-fill"></i><strong> 4.8</strong> Bookmarks</p>
-            </div>
+        <div class="col-md-4">
+            <p><i class="bi bi-star-fill"></i><strong> <span class="bookmark-count"><?php echo $totalBookmarks; ?></span></strong> Bookmarks</p>
         </div>
         <div class="row mb-3">
         <div class="col-md-2">
@@ -163,11 +178,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_content'])) {
                 <i class="bi bi-box-arrow-down"></i> Download
             </button>
         </div>
-            <div class="col-md-2">
-                <button class="btn-custom bookmark-btn" data-folktales-id="<?php echo $folktalesID; ?>" data-user-id="<?php echo $userID; ?>">
-                    <i class="bi bi-bookmark-star"></i> Bookmark
-                </button>
-            </div>
+        <div class="col-md-2">
+            <button class="btn-custom bookmark-btn" data-folktales-id="<?php echo $folktalesID; ?>" data-user-id="<?php echo isset($_SESSION['userID']) ? $_SESSION['userID'] : ''; ?>">
+                <i class="bi <?php echo $isBookmarked ? 'bi-bookmark-star-fill' : 'bi-bookmark-star'; ?>"></i> 
+                <span class="bookmark-count"><?php echo $totalBookmarks; ?></span> Bookmarks
+            </button>
+        </div>
         </div>
 
         <!-- Tabs -->
@@ -239,6 +255,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_content'])) {
         </div>
     </div>
 
+    <!-- Login Prompt Modal -->
+    <div class="modal fade" id="loginPromptModal" tabindex="-1" aria-labelledby="loginPromptModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginPromptModalLabel">Login Required</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>You need to be logged in to perform this action. Please log in or sign up.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <a href="../login.php" class="btn btn-primary">Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Comments Section -->
     <div class="comments-section mt-5 p-4 border rounded">
         <h5 class="mb-4">Comments <span class="badge bg-secondary"><?php echo $commentsResult->num_rows; ?></span></h5>
@@ -260,15 +295,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_content'])) {
         </div>
 
         <!-- Add Comment -->
-        <div class="comment-form" style="background-color:rgb(255, 240, 249); border-radius: 8px; padding: 15px;">
-            <form method="POST">
-                <div class="d-flex align-items-start mb-3">
-                    <img src="user-profile.jpg" alt="Your Profile" class="rounded-circle me-3" width="50">
-                    <textarea name="comment_content" class="form-control" placeholder="Leave a comment" style="background-color: #fafafa; border-color: #ccc;" required></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">Post</button>
-            </form>
-        </div>
+        <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin']): ?>
+            <div class="comment-form" style="background-color:rgb(255, 240, 249); border-radius: 8px; padding: 15px;">
+                <form method="POST">
+                    <div class="d-flex align-items-start mb-3">
+                        <img src="user-profile.jpg" alt="Your Profile" class="rounded-circle me-3" width="50">
+                        <textarea name="comment_content" class="form-control" placeholder="Leave a comment" style="background-color: #fafafa; border-color: #ccc;" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Post</button>
+                </form>
+            </div>
+        <?php else: ?>
+            <p><a href="login.php">Log in</a> to leave a comment.</p>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -280,36 +319,42 @@ document.addEventListener('DOMContentLoaded', function () {
 
     bookmarkButtons.forEach(button => {
         button.addEventListener('click', function () {
-            const folktalesID = this.dataset.folktalesId;
-            const userID = this.dataset.userId;
+            <?php if (!isset($_SESSION['loggedin']) || !$_SESSION['loggedin']): ?>
+                // Show login prompt modal
+                const loginModal = new bootstrap.Modal(document.getElementById('loginPromptModal'));
+                loginModal.show();
+            <?php else: ?>
+                const folktalesID = this.dataset.folktalesId;
+                const userID = this.dataset.userId;
 
-            // Send AJAX request to bookmark the folktale
-            fetch('add_bookmark.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ folktalesID, userID })
-            })
-            .then(response => response.json())
-            .then(data => {
-                const modalEl = document.getElementById('bookmarkModal');
-                const modalMessage = document.getElementById('bookmarkMessage');
-                const modal = new bootstrap.Modal(modalEl);
+                // Send AJAX request to bookmark the folktale
+                fetch('add_bookmark.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ folktalesID, userID })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const modalEl = document.getElementById('bookmarkModal');
+                    const modalMessage = document.getElementById('bookmarkMessage');
+                    const modal = new bootstrap.Modal(modalEl);
 
-                if (data.success) {
-                    modalMessage.textContent = 'Folktale added to bookmarks!';
-                } else {
-                    modalMessage.textContent = 'Failed to add folktale: ' + data.message;
-                }
-                modal.show();
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                const modalEl = document.getElementById('bookmarkModal');
-                const modalMessage = document.getElementById('bookmarkMessage');
-                const modal = new bootstrap.Modal(modalEl);
-                modalMessage.textContent = 'An error occurred while adding the folktale.';
-                modal.show();
-             });
+                    if (data.success) {
+                        modalMessage.textContent = 'Folktale added to bookmarks!';
+                    } else {
+                        modalMessage.textContent = 'Failed to add folktale: ' + data.message;
+                    }
+                    modal.show();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    const modalEl = document.getElementById('bookmarkModal');
+                    const modalMessage = document.getElementById('bookmarkMessage');
+                    const modal = new bootstrap.Modal(modalEl);
+                    modalMessage.textContent = 'An error occurred while adding the folktale.';
+                    modal.show();
+                });
+            <?php endif; ?>
         });
     });
 });
@@ -361,6 +406,66 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     });
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const bookmarkButtons = document.querySelectorAll('.bookmark-btn');
+
+    bookmarkButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const folktalesID = this.dataset.folktalesId;
+            const userID = this.dataset.userId;
+
+            if (!userID) {
+                // Show login prompt modal if user is not logged in
+                const loginModal = new bootstrap.Modal(document.getElementById('loginPromptModal'));
+                loginModal.show();
+                return;
+            }
+
+            const icon = this.querySelector('i');
+            const bookmarkCount = this.querySelector('.bookmark-count');
+            const isBookmarked = icon.classList.contains('bi-bookmark-star-fill');
+
+            // Send AJAX request to toggle bookmark
+            fetch('toggle_bookmark.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ folktalesID, userID, action: isBookmarked ? 'remove' : 'add' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Toggle the bookmark icon
+                    if (isBookmarked) {
+                        icon.classList.remove('bi-bookmark-star-fill');
+                        icon.classList.add('bi-bookmark-star');
+                    } else {
+                        icon.classList.remove('bi-bookmark-star');
+                        icon.classList.add('bi-bookmark-star-fill');
+                    }
+
+                    // Update the bookmark count
+                    bookmarkCount.textContent = data.totalBookmarks;
+
+                    // Show a notification
+                    const modalEl = document.getElementById('bookmarkModal');
+                    const modalMessage = document.getElementById('bookmarkMessage');
+                    const modal = new bootstrap.Modal(modalEl);
+                    modalMessage.textContent = isBookmarked ? 'Folktale removed from bookmarks!' : 'Folktale added to bookmarks!';
+                    modal.show();
+                } else {
+                    alert('Failed to update bookmark: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating the bookmark.');
+            });
+        });
+    });
+});
 </script>
     
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>

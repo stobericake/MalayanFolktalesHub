@@ -1,7 +1,5 @@
 <?php
-// header.php
 session_start();
-// Database connection
 include 'dbconn.php';
 ?>
 <!DOCTYPE html>
@@ -57,19 +55,20 @@ include 'dbconn.php';
         // Check if the user is logged in based on session
         if (isset($_SESSION['role'])) {
             $role = $_SESSION['role'];
+            $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : null;
             if ($role === 'user') {
-                echo '<a class="btn btn-custom" href="landingpage.php">Home</a>';
-                echo '<a class="btn btn-custom" href="user/bookmark.php">Bookmarks</a>';
-                echo '<a class="btn btn-custom" href="user/userprofile.php">Profile</a>';
-                echo '<a class="btn btn-custom" href="logout.php">Logout</a>';
+                echo '<a class="btn btn-custom" href="home.php">Home</a>';
+                echo '<a class="btn btn-custom" href="bookmark.php">Bookmarks</a>';
+                echo '<a class="btn btn-custom" href="userprofile.php">Profile</a>';
+                echo '<a class="btn btn-custom" href="../logout.php">Logout</a>';
             } elseif ($role === 'clerk') {
                 echo '<a class="btn btn-custom" href="clerk/clerkdashboard.php">Home</a>';
-                echo '<a class="btn btn-custom" href="clerk/clerklisting.php">Manage Folktales</a>';
-                echo '<a class="btn btn-custom" href="logout.php">Logout</a>';
+                echo '<a class="btn btn-custom" href="clerklisting.php">Manage Folktales</a>';
+                echo '<a class="btn btn-custom" href="../logout.php">Logout</a>';
             } elseif ($role === 'manager') {
                 echo '<a class="btn btn-custom" href="manager/managerdashboard.php">Home</a>';
                 echo '<a class="btn btn-custom" href="report.php">Report</a>';
-                echo '<a class="btn btn-custom" href="logout.php">Logout</a>';
+                echo '<a class="btn btn-custom" href="../logout.php">Logout</a>';
             }
         } else {
             // If the user is not logged in, show Register and Login

@@ -34,6 +34,9 @@ $result = $conn->query($sql);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
     <style>
+        body { 
+            padding-top:70px
+        }
         /* Custom styles */
         thead th {
             background-color: #e3f2fd;
@@ -51,6 +54,7 @@ $result = $conn->query($sql);
     </style>
 </head>
 <body>
+<?php include '../header.php'; ?>
 <div id="content">
     <div class="container mt-3">
         <h1 class="mb-2">Folktales Management</h1>
@@ -82,18 +86,18 @@ if ($result && $result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
         $editLink = "editfolktales.php?id=" . $row['folktaleID']; // Edit URL
         echo "<tr>
-                <td class='action-icons text-center align-middle' style='width: 80px;'>
-                    <a href='<?php echo $editLink; ?>' title='Edit'>
-                        <i class='bi bi-pen me-3'></i>
-                    </a>
-                    <a href='#' title='Delete' onclick='deleteFolktale(\"{$row['folktaleID']}\")'>
-                        <i class='bi bi-trash3'></i>
-                    </a>
-                </td>
-                <td>{$row['title']}</td>
-                <td>{$row['state']}</td>
-                <td>{$row['genre']}</td>
-              </tr>";
+        <td class='action-icons text-center align-middle' style='width: 80px;'>
+                <a href='$editLink' title='Edit'>
+                    <i class='bi bi-pen me-3'></i>
+                </a>
+                <a href='#' title='Delete' onclick='deleteFolktale(\"{$row['folktaleID']}\")'>
+                    <i class='bi bi-trash3'></i>
+                </a>
+            </td>
+            <td>{$row['title']}</td>
+            <td>{$row['state']}</td>
+            <td>{$row['genre']}</td>
+        </tr>";
         $bil++;
     }
 } else {

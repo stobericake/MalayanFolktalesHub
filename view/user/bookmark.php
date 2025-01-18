@@ -1,16 +1,21 @@
 <?php
-
+session_start(); // Start the session
 // Database connection
 include '../dbconn.php';
 
-// Fetch total bookmarks for the logged-in user
-$userID = 12;  // Set the logged-in user's ID dynamically based on session (e.g., $_SESSION['userID'])
-$totalResult = $conn->query("SELECT COUNT(*) AS total FROM bookmark_folktale bf
-                             JOIN bookmark b ON b.bookmarkID = bf.bookmarkID
-                             WHERE b.userID = $userID");
+// Ensure $userID is set and valid
+$userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : null;
+// Use a prepared statement to count the total bookmarks for the user
+$totalQuery = "SELECT COUNT(*) AS total 
+               FROM bookmark b
+               JOIN bookmark_folktale bf ON b.bookmarkID = bf.bookmarkID
+               WHERE b.userID = ?";
+$totalStmt = $conn->prepare($totalQuery);
+$totalStmt->bind_param("i", $userID);
+$totalStmt->execute();
+$totalResult = $totalStmt->get_result();
 $totalRow = $totalResult->fetch_assoc();
-$totalBookmarks = $totalRow['total']; // This is the total number of bookmarks the user has added
-
+$totalBookmarks = $totalRow['total']; // Total number of bookmarks the user has added
 // Pagination setup
 $limit = 10; // Number of records per page
 $page = isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] > 0 ? (int)$_GET['page'] : 1; // Ensure valid page number
@@ -29,6 +34,11 @@ $stmt = $conn->prepare($sql);
 $stmt->bind_param("iii", $userID, $start, $limit);
 $stmt->execute();
 $result = $stmt->get_result();
+
+// Close the database connection
+$stmt->close();
+$totalStmt->close();
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -40,6 +50,9 @@ $result = $stmt->get_result();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="../css/style.css">
     <style>
+        body { 
+            padding-top: 100px;
+        }
         .total-bookmarks-card {
             background-color: #f8f9fa;
             border: 1px solid #ddd;
@@ -84,7 +97,7 @@ $result = $stmt->get_result();
     </style>
 </head>
 <body>
-<?php include 'sidebar.php'; ?> 
+<?php include '../header.php'; ?> 
 <div id="content">
 <div class="container mt-5">
     <h2 class="mb-4">Bookmarks</h2>

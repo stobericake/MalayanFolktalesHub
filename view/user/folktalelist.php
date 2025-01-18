@@ -1,181 +1,229 @@
 <?php
-session_start();
-
 // Database connection
-include 'dbconn.php';
-if (!isset($_SESSION['role'])) {
-    header("Location: login.php"); // Redirect to login if not logged in
-    exit;
-}
+include '../dbconn.php';
 
-$role = $_SESSION['role'];
+// Fetch total number of folktales
+$totalRecordsQuery = "SELECT COUNT(*) AS total FROM folktales";
+$totalRecordsResult = mysqli_query($conn, $totalRecordsQuery);
+$totalRecords = mysqli_fetch_assoc($totalRecordsResult)['total'];
 
-// Fetch total records for bookmarks count
-$totalResult = $conn->query("SELECT COUNT(*) AS total FROM folktales");
-$totalRow = $totalResult->fetch_assoc();
-$totalRecords = $totalRow['total'];
+// Pagination logic
+$recordsPerPage = 10;
+$totalPages = ceil($totalRecords / $recordsPerPage);
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$start = ($page - 1) * $recordsPerPage;
 
-// Pagination setup
-$limit = 10; // Number of records per page
-$page = isset($_GET['page']) && $_GET['page'] > 0 ? (int)$_GET['page'] : 1; // Ensure valid page number
-$totalPages = ceil($totalRecords / $limit); // Calculate total pages
-$page = min($page, $totalPages); // Adjust if page exceeds total pages
-$start = ($page - 1) * $limit; // Calculate the offset for the SQL query
-
-// Fetch paginated folktale data
-$sql = "SELECT * FROM folktales LIMIT $start, $limit";
-$result = $conn->query($sql);
+// Fetch folktales with pagination
+$query = "SELECT * FROM folktales LIMIT $start, $recordsPerPage";
+$result = mysqli_query($conn, $query);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Folktales List</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Fredoka+One&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
     <style>
-        .total-bookmarks-card {
+        body {
+            font-family: 'Poppins', sans-serif;
             background-color: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            color: #333;
+            padding-top: 100px;
         }
-        .total-bookmarks-card span {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #5e72e4;
-        }
-        .table-container {
+
+        .container {
             margin-top: 20px;
         }
-        .pagination {
-            justify-content: center;
+
+        h2 {
+            font-family: 'Fredoka One', cursive;
+            color: #32607C;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
+
+        .total-bookmarks-card {
+            background-color: #32607C;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+            color:white;
+        }
+
+        .total-bookmarks-card span {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
         .search-bar {
-            display: flex;
-            justify-content: flex-end;
             margin-bottom: 20px;
         }
+
         .search-bar input {
-            width: 50%;
-            padding: 10px;
+            border-radius: 25px;
+            padding: 10px 20px;
+            border: 2px solid #32607C;
             font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
         }
-        .search-bar input::placeholder {
-            color: #6c757d; /* A visible color */
-            font-size: 16px; /* Adjust font size if necessary */
-            opacity: 1; /* Ensure full visibility */
+
+        .table-responsive {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
-        .thead th {
-            background-color: #C3DFE6;
-            color: black;
+
+        .table thead {
+            background-color: #32607C;
+            color: #fff;
         }
-        .view-details-column {
-        width: 1%; /* Shrink-wrap to content */
-        white-space: nowrap; /* Prevent wrapping */
-    }
+
+        .table th, .table td {
+            padding: 15px;
+            text-align: center;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f0f0f0;
+        }
+
+        .btn-primary {
+            background-color: #32607C;
+            border: none;
+            border-radius: 25px;
+            padding: 8px 20px;
+            font-size: 14px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #234956;
+            transform: scale(1.05);
+        }
+
+        .pagination {
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .page-item.active .page-link {
+            background-color: #32607C;
+            border-color: #32607C;
+        }
+
+        .page-link {
+            color: #32607C;
+            border-radius: 25px;
+            margin: 0 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .page-link:hover {
+            background-color: #32607C;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
-<div class="d-flex">
-<?php include 'sidebar.php'; ?> 
-
-<div class="container-fluid">
-    <h2 class="mb-4">Folktales List</h2>
-
-   <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="total-bookmarks-card">
-                📖 <br>
-                Total Folktales: <br>
-                <span><?php echo $totalRecords; ?></span>
+    <div class="d-flex">
+        <?php include '../header.php'; ?>
+        <div class="container">
+            <h2 class="mb-4">Folktales List</h2>
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="total-bookmarks-card">
+                        📖 <br>
+                        Total Folktales: <br>
+                        <span><?php echo $totalRecords; ?></span>
+                    </div>
+                </div>
             </div>
+
+            <!-- Search Filters -->
+            <div class="search-bar">
+                <input type="text" id="search-input" class="form-control" placeholder="Search folktales details.." oninput="filterTable()">
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive table-container">
+                <table class="table table-bordered table-striped">
+                    <thead class="thead">
+                        <tr>
+                            <th>Bil</th>
+                            <th>Title</th>
+                            <th>State</th>
+                            <th>Genre</th>
+                            <th class="view-details-column"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookmarks-table-body">
+                        <?php
+                        if ($result->num_rows > 0) {
+                            $bil = $start + 1; // Serial number starts from the offset + 1
+                            while ($row = $result->fetch_assoc()) {
+                                echo "<tr>
+                                        <td>{$bil}</td>
+                                        <td>{$row['title']}</td>
+                                        <td>{$row['state']}</td>
+                                        <td>{$row['genre']}</td>
+                                        <td class='view-details-column'>
+                                            <a href='folktaledetails.php?id={$row['folktaleID']}' class='btn btn-primary btn-sm'>View Details</a>
+                                        </td>
+                                      </tr>";
+                                $bil++; // Increment serial number
+                            }
+                        } else {
+                            echo "<tr><td colspan='5'>No folktales found</td></tr>";
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item <?php echo ($page <= 1) ? 'disabled' : ''; ?>">
+                        <a class="page-link" href="?page=<?php echo $page - 1; ?>"><<</a>
+                    </li>
+                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                        <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
+                            <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                        </li>
+                    <?php endfor; ?>
+                    <li class="page-item <?php echo ($page >= $totalPages) ? 'disabled' : ''; ?>">
+                        <a class="page-link" href="?page=<?php echo $page + 1; ?>">>></a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
 
-    <!-- Search Filters -->
-    <div class="search-bar">
-    <input type="text" id="search-input" class="form-control" placeholder="Search folktales details.." oninput="filterTable()">
-</div>
-    <div class="table-responsive table-container">
-        <table class="table table-bordered table-striped">
-            <thead class="thead">
-                <tr>
-                    <th>Bil</th>
-                    <th>Title</th>
-                    <th>State</th>
-                    <th>Genre</th>
-                    <th class="view-details-column"></th>
-                </tr>
-            </thead>
-            <tbody id="bookmarks-table-body">
-                <?php
-                if ($result->num_rows > 0) {
-                    $bil = $start + 1; // Serial number starts from the offset + 1
-                    while ($row = $result->fetch_assoc()) {
-                        echo "<tr>
-                                <td>{$bil}</td>
-                                <td>{$row['title']}</td>
-                                <td>{$row['state']}</td>
-                                <td>{$row['genre']}</td>
-                                <td class='view-details-column'>
-                                    <a href='folktaledetails.php?id={$row['folktaleID']}' class='btn btn-primary btn-sm'>View Details</a>
-                                </td>
-                              </tr>";
-                        $bil++; // Increment serial number
-                    }
+    <!-- Bootstrap JS CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function filterTable() {
+            const searchInput = document.getElementById('search-input').value.toLowerCase();
+            const tableRows = document.querySelectorAll('#bookmarks-table-body tr');
+
+            tableRows.forEach(row => {
+                const title = row.cells[1].textContent.toLowerCase(); // Title column
+                const state = row.cells[2].textContent.toLowerCase(); // State column
+                const genre = row.cells[3].textContent.toLowerCase(); // Genre column
+
+                // Show the row if any column matches the search input
+                if (title.includes(searchInput) || state.includes(searchInput) || genre.includes(searchInput)) {
+                    row.style.display = ''; // Show matching rows
                 } else {
-                    echo "<tr><td colspan='4'>No folktales found</td></tr>";
+                    row.style.display = 'none'; // Hide non-matching rows
                 }
-                ?>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Pagination -->
-    <nav aria-label="Page navigation">
-        <ul class="pagination">
-            <li class="page-item <?php echo ($page <= 1) ? 'disabled' : ''; ?>">
-                <a class="page-link" href="?page=<?php echo $page - 1; ?>">Previous</a>
-            </li>
-            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
-                    <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
-                </li>
-            <?php endfor; ?>
-            <li class="page-item <?php echo ($page >= $totalPages) ? 'disabled' : ''; ?>">
-                <a class="page-link" href="?page=<?php echo $page + 1; ?>">Next</a>
-            </li>
-        </ul>
-    </nav>
-</div>
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-<script>
-    function filterTable() {
-    const searchInput = document.getElementById('search-input').value.toLowerCase();
-    const tableRows = document.querySelectorAll('#bookmarks-table-body tr');
-
-    tableRows.forEach(row => {
-        const title = row.cells[1].textContent.toLowerCase(); // Title column
-        const state = row.cells[2].textContent.toLowerCase(); // State column
-        const genre = row.cells[3].textContent.toLowerCase(); // Genre column
-
-        // Show the row if any column matches the search input
-        if (title.includes(searchInput) || state.includes(searchInput) || genre.includes(searchInput)) {
-            row.style.display = ''; // Show matching rows
-        } else {
-            row.style.display = 'none'; // Hide non-matching rows
+            });
         }
-    });
-}
-
-</script>
+    </script>
 </body>
 </html>
