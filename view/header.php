@@ -62,11 +62,11 @@ include 'dbconn.php';
                 echo '<a class="btn btn-custom" href="userprofile.php">Profile</a>';
                 echo '<a class="btn btn-custom" href="../logout.php">Logout</a>';
             } elseif ($role === 'clerk') {
-                echo '<a class="btn btn-custom" href="clerk/clerkdashboard.php">Home</a>';
+                echo '<a class="btn btn-custom" href="clerkdashboard.php">Home</a>';
                 echo '<a class="btn btn-custom" href="clerklisting.php">Manage Folktales</a>';
                 echo '<a class="btn btn-custom" href="../logout.php">Logout</a>';
             } elseif ($role === 'manager') {
-                echo '<a class="btn btn-custom" href="manager/managerdashboard.php">Home</a>';
+                echo '<a class="btn btn-custom" href="managerdashboard.php">Home</a>';
                 echo '<a class="btn btn-custom" href="report.php">Report</a>';
                 echo '<a class="btn btn-custom" href="../logout.php">Logout</a>';
             }

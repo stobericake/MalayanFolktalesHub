@@ -53,22 +53,22 @@
         .welcome-section {
             text-align: center;
             background-color: rgba(255, 255, 255, 0.5);
-            padding: 60px 40px;
+            padding: 100px 40px;
             border-radius: 20px;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
             max-width: 100%;
         }
 
         .welcome-section h1 {
-            font-size: 26px;
-            font-weight: bold;
+            font-size: 200px; /* Larger size */
+            font-weight: bold; /* Bolded text */
             color: #444;
             margin-bottom: 10px;
         }
 
         .welcome-section h2 {
-            font-size: 18px;
-            font-weight: 600;
+            font-size: 100px; /* Larger size */
+            font-weight: bold; /* Bolded text */
             color: #666;
             margin-bottom: 20px;
         }
@@ -81,7 +81,7 @@
         }
 
         .btn {
-            padding: 15px 30px;
+            padding: 20px 30px;
             font-size: 16px;
             font-weight: 600;
             color: white;
@@ -99,6 +99,7 @@
             border: none;
             cursor: pointer;
             border-radius: 5px;
+            transition: background-color 0.3s, transform 0.2s;
         }
 
         .btn-guest:hover {
@@ -129,26 +130,26 @@
         /* Responsive Design */
         @media (min-width: 768px) {
             .welcome-section {
-                padding: 60px 40px;
+                padding: 100px 80px;
             }
 
             .welcome-section h1 {
-                font-size: 36px;
+                font-size: 60px;
             }
 
             .welcome-section h2 {
-                font-size: 20px;
+                font-size: 30px;
             }
 
             .btn {
-                padding: 15px 30px;
-                font-size: 16px;
+                padding: 20px 40px;
+                font-size: 15px;
             }
         }
 
         @media (min-width: 1024px) {
             .welcome-section {
-                padding: 100px 200px;
+                padding: 150px 300px;
             }
         }
     </style>
