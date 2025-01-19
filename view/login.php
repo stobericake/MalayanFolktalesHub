@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 include 'dbconn.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -8,12 +7,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = trim($_POST['password']);
 
     if (!empty($email) && !empty($password)) {
-        $email = mysqli_real_escape_string($conn, $email);
-        $password = mysqli_real_escape_string($conn, $password);
-
         // Function to validate user from a table
         function validateUser($table, $email, $password, $conn) {
-            $query = "SELECT `email`, `password` FROM `$table` WHERE `email` = '$email'";
+            // Determine the ID column name based on the table
+            $idColumn = $table . 'id'; // e.g., 'userid', 'clerkid', 'managerid'
+
+            // Use prepared statements to prevent SQL injection
+            $query = "SELECT `$idColumn` AS id, `email`, `password` FROM `$table` WHERE `email` = '$email'";
             $result = mysqli_query($conn, $query);
 
             if ($result && mysqli_num_rows($result) > 0) {
@@ -44,13 +44,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         if ($role) {
+            // Store user data in the session
+            $_SESSION['userID'] = $userData['id']; // Use the dynamically selected ID column
             $_SESSION['email'] = $userData['email'];
             $_SESSION['role'] = $role;
+            $_SESSION['loggedin'] = true;
 
             // Redirect based on role
             switch ($role) {
                 case 'user':
-                    header("Location: landingpage.php");
+                    header("Location: home.php");
                     break;
                 case 'clerk':
                     header("Location: clerk/clerkdashboard.php");

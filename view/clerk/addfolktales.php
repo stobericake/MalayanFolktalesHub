@@ -148,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 <body> 
-<?php include 'header.php'; ?>
+<?php include '../header.php'; ?>
  <!-- Content Section -->
 <div class="content">
         <h1>Add Folktales</h1>
