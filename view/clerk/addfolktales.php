@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         .content {
             padding-top: 100px;
-            margin-left: 30px;
+            margin-left: 260px;
         }
         .content h1 {
             font-size: 1.8rem;

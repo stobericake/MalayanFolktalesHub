@@ -50,9 +50,8 @@
             <a href="userdashboard2.php">User Dashboard 2</a>
             <a href="userhomedashboard.php">User Home Dashboard</a>
             <a href="userhome.php">User Home</a>
-            <a href="listing.php">Report Listing</a>
             <a href="userprofile.php">User Profile</a>
-            <a href="sidebaar2.php">Sidebar</a>
+           
        
         </div>
     </div>

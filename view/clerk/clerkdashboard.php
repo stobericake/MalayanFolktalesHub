@@ -2,17 +2,17 @@
 // Database connection
 include '../dbconn.php';
 
-// Fetch total origin of folktales
+// Fetch total origins of folktales
 $totalOriginResult = $conn->query("SELECT COUNT(DISTINCT state) AS total_origin FROM folktales");
 $totalOriginRow = $totalOriginResult->fetch_assoc();
 $totalOrigins = $totalOriginRow['total_origin'];
 
-// Fetch total user
+// Fetch total users
 $totalUserResult = $conn->query("SELECT COUNT(*) as total_user FROM user");
 $totalUserRow = $totalUserResult->fetch_assoc();
 $totalUser = $totalUserRow['total_user'];
 
-// Fetch total genre
+// Fetch total genres
 $totalGenreResult = $conn->query("SELECT COUNT(DISTINCT genre) AS genre_count FROM folktales");
 $totalGenreRow = $totalGenreResult->fetch_assoc();
 $totalGenre = $totalGenreRow['genre_count'];
@@ -58,13 +58,11 @@ while ($row = mysqli_fetch_assoc($result)) {
             border-radius: 10px;
             margin-bottom: 20px;
         }
-
         .card-section {
             display: flex;
             justify-content: space-between;
             gap: 10px;
         }
-
         .card {
             flex: 1;
             background-color: #ffffff;
@@ -76,18 +74,15 @@ while ($row = mysqli_fetch_assoc($result)) {
             cursor: pointer;
             transition: transform 0.3s, box-shadow 0.3s;
         }
-
         .card:hover {
             transform: translateY(-5px);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
-
         .card img {
             width: 60px;
             height: 50px;
             margin-bottom: 10px;
         }
-
         .card h3 {
             font-size: 18px;
             font-weight: 600;
@@ -96,26 +91,20 @@ while ($row = mysqli_fetch_assoc($result)) {
         .card:nth-child(1) {
             background-color: #f9ebea;
         }
-
         .card:nth-child(2) {
             background-color: #e8f8f5;
         }
-
         .card:nth-child(3) {
             background-color: #fef9e7;
         }
-
-
         .icon-pic {
             font-size: 80px;
             color: black;
         }
-
         .chart-section {
             margin-top: 20px;
             margin-bottom: 20px;
         }
-
         canvas {
             background: #fff;
             border-radius: 10px;
@@ -124,40 +113,42 @@ while ($row = mysqli_fetch_assoc($result)) {
     </style>
 </head>
 <body>
-<?php include '../header.php'; ?>
- <!-- Content Section -->
- <div class="content">
-    <div class="container">
-        <!-- Card Section -->
-        <div class="card-section">
-            <!-- Card 1: User Report -->
-            <a href="../user_report.php" class="card">
-                <i class="bi bi-person-heart icon-pic"></i>
-                <h3>USER REPORT</h3>
-                <p class="total">Total: <span id="genre-total"><?php echo $totalUser; ?></span></p>
-            </a>
+    <?php include '../header.php'; ?>
+    <!-- Content Section -->
+    <div class="content">
+        <div class="container">
+            <!-- Card Section -->
+            <div class="card-section">
+                <!-- Card 1: ADD FOLKTALES -->
+                <a href="addfolktales.php" class="card">
+                    <i class="bi bi-file-earmark-plus-fill icon-pic"></i>
+                    <h3>ADD FOLKTALES</h3>
+                    <p class="total">Total: <span id="user-total"><?php echo $totalUser; ?></span></p>
+                </a>
 
-            <!-- Card 2: Folktales Origin -->
-            <a href="../origin_report.php" class="card">
-                <i class="bi bi-geo-fill icon-pic"></i>
-                <h3>FOLKTALES ORIGIN</h3>
-                <p class="total">Total: <span id="genre-total"><?php echo $totalOrigins; ?></span></p>
-            </a>
+                <!-- Card 2: DELETE FOLKTALES -->
+                <a href="clerklisting.php" class="card">
+                    <i class="bi bi-file-earmark-minus-fill icon-pic"></i>
+                    <h3>DELETE FOLKTALES</h3>
+                    <p class="total">Total: <span id="origin-total"><?php echo $totalOrigins; ?></span></p>
+                </a>
 
-            <!-- Card 3: Folktales Genre -->
-            <a href="../genre_report.php" class="card">
-                <i class="bi bi-journal icon-pic"></i>
-                <h3>FOLKTALES GENRE</h3>
-                <p class="total">Total: <span id="genre-total"><?php echo $totalGenre; ?></span></p>
-            </a>
-        </div>
+                <!-- Card 3: EDIT FOLKTALES -->
+                <a href="editfolktales.php" class="card">
+                    <i class="bi bi-pen-fill icon-pic"></i>
+                    <h3>EDIT FOLKTALES</h3>
+                    <p class="total">Total: <span id="genre-total"><?php echo $totalGenre; ?></span></p>
+                </a>
+            </div>
 
-        <!-- Chart Section -->
-        <div class="chart-section">
+            <!-- Chart Section -->
+            <div class="chart-section">
                 <canvas id="salesChart" width="1300" height="400"></canvas>
-         </div>
-</div>
-         <script>
+            </div>
+        </div>
+    </div>
+
+    <script>
         // Pass PHP data to JavaScript
         const folktaleTitles = <?php echo json_encode($folktaleTitles); ?>;
         const bookmarkCounts = <?php echo json_encode($bookmarkCounts); ?>;
