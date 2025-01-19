@@ -84,7 +84,7 @@ $result = $stmt->get_result();
     </style>
 </head>
 <body>
-<?php include 'sidebar.php'; ?> 
+<!-- ?php include 'sidebar.php'; ?> -->
 <div id="content">
 <div class="container mt-5">
     <h2 class="mb-4">Bookmarks</h2>
