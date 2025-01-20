@@ -47,30 +47,42 @@ if (isset($_POST['submit'])) {
   <style>
     /* General reset and styling */
     body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-color: #f5f5f5;
-    }
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  position: relative; /* Required for the pseudo-element */
+  overflow: hidden; /* Prevent scrollbars */
+}
 
-    .container {
-      display: flex;
-      flex-direction: row;
-      width: 60%;
-      height: 70%;
-      background-color: white;
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #f5f5f5 url('../assets/background.png') no-repeat center center/cover;
+  opacity: 0.5; /* Adjust the transparency (0 to 1) */
+  z-index: -1; /* Place the background behind everything else */
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  width: 60%;
+  height: 70%;
+  background-color: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  position: relative; /* Ensure proper stacking with ::before */
+  z-index: 1; /* Keeps the container above the pseudo-element */
+}
+
 
     .image-section {
       flex: 1;
