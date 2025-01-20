@@ -71,7 +71,7 @@ $result = mysqli_query($conn, $query);
 
     /* Make sure the header background color is applied correctly */
     table thead th {
-        background-color: #C3DFE6; /* Background color for the table header */
+        background-color:rgb(19, 157, 192); /* Background color for the table header */
         color: black; /* Text color for table headers */
         text-align: center; /* Optional: Align the text in the center */
         font-weight: bold;
