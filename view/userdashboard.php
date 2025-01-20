@@ -25,16 +25,6 @@
             overflow: hidden;
         }
 
-        /* Header */
-        .header {
-            width: 100%;
-            position: absolute;
-            top: 0;
-            display: flex;
-            justify-content: flex-end;
-            background-color: rgba(255, 255, 255, 0.5);
-            padding: 10px 20px;
-        }
 
         .navbar .nav-link {
             margin-left: 15px;
@@ -60,14 +50,14 @@
         }
 
         .welcome-section h1 {
-            font-size: 200px; /* Larger size */
+            font-size: 700px; /* Larger size */
             font-weight: bold; /* Bolded text */
             color: #444;
             margin-bottom: 10px;
         }
 
         .welcome-section h2 {
-            font-size: 100px; /* Larger size */
+            font-size: 300px; /* Larger size */
             font-weight: bold; /* Bolded text */
             color: #666;
             margin-bottom: 20px;
@@ -92,8 +82,9 @@
         }
 
         .btn-guest {
-            padding: 15px;
+            padding: 20px 30px;
             margin: 10px;
+            font-size: 16px;
             font-weight: 600;
             color: black;
             border: none;
@@ -134,16 +125,16 @@
             }
 
             .welcome-section h1 {
-                font-size: 60px;
+                font-size: 80px;
             }
 
             .welcome-section h2 {
-                font-size: 30px;
+                font-size: 40px;
             }
 
             .btn {
                 padding: 20px 40px;
-                font-size: 15px;
+                font-size: 18px;
             }
         }
 
@@ -155,13 +146,7 @@
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="navbar">
-            <a href="#about" class="nav-link">About Us</a>
-            <a href="#contact" class="nav-link">Contact</a>
-            <a href="#faq" class="nav-link">FAQ</a>
-        </div>
-    </header>
+    
 
     <main class="main">
         <div class="welcome-section">
