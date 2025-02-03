@@ -44,14 +44,13 @@ $result = $conn->query($sql);
             background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(247, 247, 247, 0.7)), url('../../assets/bg_2w.png');
             background-size: cover;
             background-position: center;
-            height: 100vh;
             background-attachment: fixed;
-            padding-top: 70px;
+            padding-top: 100px;
         }
-
 
         .container {
             margin-top: 20px;
+            margin-bottom: 70px;
         }
 
         h2 {
@@ -116,11 +115,13 @@ $result = $conn->query($sql);
         }
 
         .btn-primary {
-            background-color: #32607C;
+            background-color:rgb(138, 194, 228);
             border: none;
+            color: black;
+            text-decoration: none;
             border-radius: 25px;
-            padding: 8px 20px;
-            font-size: 14px;
+            padding: 5px 10px;
+            font-size: 20px;
             transition: background-color 0.3s ease, transform 0.3s ease;
         }
 
@@ -132,6 +133,7 @@ $result = $conn->query($sql);
         .pagination {
             justify-content: center;
             margin-top: 20px;
+            margin-bottom: 100px;
         }
 
         .page-item.active .page-link {
@@ -170,11 +172,10 @@ $result = $conn->query($sql);
 <body>
 <?php include '../header.php'; ?>
  <!-- Content Section -->
-<div id="content">
-<div class="container mt-5">
+<div class="container">
     <h2 class="mb-4">Folktales's Genre List Report </h2>
     <form method="GET" action="" class="search-bar">
-        <input type="text" name="search" placeholder="Search folktales..." value="<?php echo htmlspecialchars($search); ?>">
+        <input type="text" name="search" placeholder="Search genre..." value="<?php echo htmlspecialchars($search); ?>">
         <input type="hidden" name="page" value="1"> 
         <button type="submit"><i class="bi bi-search"></i> Search</button>
         <?php if (!empty($search)) : ?>
@@ -189,7 +190,7 @@ $result = $conn->query($sql);
                     <th style="width:10%">Bil</th>
                     <th style="text-align:left">Genres</th>
                     <th>Total</th>
-                    <th style="width:20%">Generate Report</th>
+                    <th style="width:15%">Download Report</th>
                 </tr>
             </thead>
             <tbody class="tbody" id="genre-table-body">
@@ -201,7 +202,9 @@ $result = $conn->query($sql);
                         echo "<td style='width:10%'>{$bil}</td>";
                         echo "<td style='text-align:left'>{$row['genre']}</td>";
                         echo "<td>{$row['total_folktales']}</td>";
-                        echo "<td><a href='genre_report_pdf.php?genre={$row['genre']}' class='btn btn-primary btn-sm'>Download PDF</a></td>"; // Generate Report button
+                        echo "<td><a href='genre_report_pdf.php?genre={$row['genre']}' class='btn-primary btn-sm'>
+                        <i class='bi bi-file-earmark-arrow-down'></i></a>
+                        </td>";
                         echo "</tr>";
                         $bil++;
                     }
@@ -229,8 +232,7 @@ $result = $conn->query($sql);
                 </li>
             </ul>
         </nav>
-</div>
-</div>
+    </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script>

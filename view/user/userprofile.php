@@ -37,8 +37,9 @@ $totalBookmarks = $bookmarkData['total_bookmarks'];
             background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('../../assets/background.png');
             background-size: cover;
             background-position: center;
-            height: 100vh;
+            height: 110vh;
             padding-top: 120px;
+            padding-bottom: 120px;
         }
 
         .profile-card {
@@ -93,7 +94,7 @@ $totalBookmarks = $bookmarkData['total_bookmarks'];
     <?php include '../header.php'; ?>
 
     <!-- Main Content -->
-    <div class="container mt-3">
+    <div class="container mt-3 mb-7">
         <div class="profile-card">
             <!-- Default Avatar Icon -->
             <div class="avatar">

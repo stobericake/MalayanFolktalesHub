@@ -17,10 +17,6 @@ $getBookmarkFolktaleID->store_result();
 $getBookmarkFolktaleID->bind_result($bookmark_folktaleID);
 $getBookmarkFolktaleID->fetch();
 
-if (!$bookmark_folktaleID) {
-    die("Invalid folktaleID.");
-}
-
 // Check if the folktale is already bookmarked by the user
 $checkBookmark = $conn->prepare("SELECT bookmarkID FROM bookmark WHERE userID = ? AND bookmark_folktaleID = ?");
 $checkBookmark->bind_param("ii", $userID, $bookmark_folktaleID);
@@ -39,6 +35,23 @@ if ($checkBookmark->num_rows > 0) {
     $updateCount->execute();
 
     echo "removed";
+} else if (!$bookmark_folktaleID) {
+    // Folktale is not bookmarked, so add it
+    $addBookmark = $conn->prepare("INSERT INTO bookmark_folktale (folktaleID, count) VALUES (?, 1)");
+    $addBookmark->bind_param("i",  $folktaleID);
+    $addBookmark->execute();
+
+    // Get the bookmark_folktaleID corresponding to the folktaleID
+    $getBookmarkFolktaleID = $conn->prepare("SELECT bookmark_folktaleID FROM bookmark_folktale WHERE folktaleID = ?");
+    $getBookmarkFolktaleID->bind_param("i", $folktaleID);
+    $getBookmarkFolktaleID->execute();
+    $boookmark_folktaleID->store_result();
+
+    // Folktale is not bookmarked, so add it
+    $addBookmark = $conn->prepare("INSERT INTO bookmark (userID, bookmark_folktaleID) VALUES (?, ?)");
+    $addBookmark->bind_param("ii", $userID, $boookmark_folktaleID);
+    $addBookmark->execute();
+
 } else {
     // Folktale is not bookmarked, so add it
     $addBookmark = $conn->prepare("INSERT INTO bookmark (userID, bookmark_folktaleID) VALUES (?, ?)");
@@ -48,7 +61,7 @@ if ($checkBookmark->num_rows > 0) {
     // Increment the count in bookmark_folktale
     $updateCount = $conn->prepare("UPDATE bookmark_folktale SET count = count + 1 WHERE folktaleID = ?");
     $updateCount->bind_param("i", $folktaleID);
-    $updateCount->execute();
+    $updateCount->execute();    
 
     echo "added";
 }

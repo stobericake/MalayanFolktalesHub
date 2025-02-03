@@ -348,8 +348,8 @@ $states_result = mysqli_query($conn, $states_query);
                                 <div class="icon-container mb-3" style="font-size: 2.5rem;">
                                     ' . $medal_emoji . '
                                 </div>
-                                <h5 class="card-title fw-bold" style="color:rgb(137, 184, 255);">' . htmlspecialchars($row['title']) . '</h5>
-                                <p class="card-text" style="color: #6c757d;">
+                                <h5 class="card-title fw-bold" style="color:rgb(11, 107, 251);">' . htmlspecialchars($row['title']) . '</h5>
+                                <p class="card-text" style="color:rgb(81, 88, 94);">
                                     <strong><i class="bi bi-music-note-beamed"></i> Genre:</strong> ' . htmlspecialchars($row['genre']) . '<br>
                                     <strong><i class="bi bi-geo-alt"></i> State:</strong> ' . htmlspecialchars($row['state']) . '<br>
                                     <strong><i class="bi bi-bookmark-check"></i> Bookmarks:</strong> ' . $row['bookmark_count'] . '

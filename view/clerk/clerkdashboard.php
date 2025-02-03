@@ -50,6 +50,7 @@ while ($row = mysqli_fetch_assoc($result)) {
         .content {
             padding-top: 120px;
             margin-left: 30px;
+            margin-bottom: 80px;
         }
         .top-section {
             width: 100%;

@@ -34,13 +34,38 @@ include 'dbconn.php';
             width: 100%;
             background-color: #C3DFE6;
             color: #0B2428;
-            z-index: 1000; /* Ensure it stays above other content */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Adds a shadow for better visibility */
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+        }
+
+        .btn-custom {
+            border-radius: 20px;
         }
 
         .btn-custom:hover {
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* More prominent shadow */
+            background-color:rgb(151, 183, 190);
+            border-radius: 20px;
         }
+
+        footer {
+            background-color: #C3DFE6;
+            color: #0B2428;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            z-index: 1000; 
+            width: 100%;
+            box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1); 
+            display: flex;
+            justify-content: center; 
+            align-items: center; 
+            height: 50px;
+        }
+
+        .footer-title{
+            padding-top: 20px;
+        }
+
     </style>
 </head>
 <body>
@@ -90,6 +115,11 @@ include 'dbconn.php';
             </div>
         </nav>
     </header>
+
+    <!-- Footer -->
+    <footer>
+        <p class="footer-title">&copy; <?php echo date("Y"); ?> MalayanFolktalesHub. All rights reserved.</p>
+    </footer>
 
     <!-- Bootstrap JS and dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>

@@ -51,6 +51,7 @@ $result = mysqli_query($conn, $query);
             height: 100vh;
             color: #fff;
             padding-top: 100px;
+            margin-bottom: 100px;
         }
 
         .container {
@@ -134,10 +135,12 @@ $result = mysqli_query($conn, $query);
         }
 
         .btn-primary {
-            background-color: #32607C;
+            background-color:rgb(138, 194, 228);
             border: none;
+            color: black;
+            text-decoration: none;
             border-radius: 25px;
-            padding: 8px 20px;
+            padding: 5px 10px;
             font-size: 14px;
             transition: background-color 0.3s ease, transform 0.3s ease;
         }
@@ -150,6 +153,7 @@ $result = mysqli_query($conn, $query);
         .pagination {
             justify-content: center;
             margin-top: 20px;
+            margin-bottom: 80px;
         }
 
         .page-item.active .page-link {
@@ -206,7 +210,7 @@ $result = mysqli_query($conn, $query);
 
             <!-- Search Form with Filters -->
             <form method="GET" action="" class="search-bar">
-                <input type="text" name="search" placeholder="Search for folktales..." value="<?php echo htmlspecialchars($search); ?>">
+                <input type="text" name="search" placeholder="Enter title/genre/origin..." value="<?php echo htmlspecialchars($search); ?>">
                 <input type="hidden" name="page" value="1"> 
                 <button type="submit"><i class="bi bi-search"></i> Search</button>
                 <?php if (!empty($search)) : ?>
@@ -220,10 +224,10 @@ $result = mysqli_query($conn, $query);
                     <thead class="thead">
                         <tr>
                             <th>Bil</th>
-                            <th>Title</th>
-                            <th>State</th>
+                            <th style="text-align: left">Title</th>
+                            <th>Origin</th>
                             <th>Genre</th>
-                            <th class="view-details-column"></th>
+                            <th class="view-details-column" style="width: 10%">View detail</th>
                         </tr>
                     </thead>
                     <tbody class="tbody" id="bookmarks-table-body">
@@ -233,11 +237,12 @@ $result = mysqli_query($conn, $query);
                             while ($row = $result->fetch_assoc()) {
                                 echo "<tr>
                                         <td>{$bil}</td>
-                                        <td>{$row['title']}</td>
+                                        <td  style='text-align: left'>{$row['title']}</td>
                                         <td>{$row['state']}</td>
                                         <td>{$row['genre']}</td>
-                                        <td class='view-details-column'>
-                                            <a href='folktaledetails.php?id={$row['folktaleID']}' class='btn btn-primary btn-sm'>View Details</a>
+                                        <td class='view-details-column' style='width: 10%'>
+                                            <a href='folktaledetails.php?id={$row['folktaleID']}' class='btn-primary btn-sm'>
+                                            <i class='bi bi-eye'></i></a>
                                         </td>
                                       </tr>";
                                 $bil++; // Increment serial number

@@ -64,7 +64,7 @@ $conn->close();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Fredoka+One&display=swap" rel="stylesheet">
     <style>
-        body { 
+        body {
             font-family: 'Poppins', sans-serif;
             background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(247, 247, 247, 0.7)), url('../../assets/bg_2w.png');
             background-size: cover;
@@ -76,6 +76,7 @@ $conn->close();
 
         .container {
             margin-top: 20px;
+            margin-bottom: 50px;
         }
 
         h2 {
@@ -141,12 +142,18 @@ $conn->close();
 
         .table thead {
             background-color: #32607C;
-            color: #fff;
+            color: white !important;
         }
 
-        .table th, .table td {
+        .table th {
             padding: 15px;
             text-align: center;
+            color: white !important;
+        }
+        .table td {
+            padding: 15px;
+            text-align: center;
+            color: black !important;
         }
 
         .table tbody {
@@ -154,11 +161,13 @@ $conn->close();
         }
 
         .btn-primary {
-            background-color: #32607C;
+            background-color:rgb(138, 194, 228);
             border: none;
+            color: black;
+            text-decoration: none;
             border-radius: 25px;
-            padding: 8px 20px;
-            font-size: 14px;
+            padding: 5px 10px;
+            font-size: 20px;
             transition: background-color 0.3s ease, transform 0.3s ease;
         }
 
@@ -167,9 +176,26 @@ $conn->close();
             transform: scale(1.05);
         }
 
+        .btn-remove {
+            background-color:rgb(228, 138, 138);
+            border: none;
+            color: black;
+            text-decoration: none;
+            border-radius: 25px;
+            padding: 5px 10px;
+            font-size: 20px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .btn-remove:hover {
+            background-color:rgb(86, 35, 35);
+            transform: scale(1.05);
+        }
+        
         .pagination {
             justify-content: center;
             margin-top: 20px;
+            margin-bottom: 80px;
         }
 
         .page-item.active .page-link {
@@ -221,7 +247,7 @@ $conn->close();
     </div>
 
     <form method="GET" action="" class="search-bar">
-        <input type="text" name="search" placeholder="Search folktales..." value="<?php echo htmlspecialchars($search); ?>">
+        <input type="text" name="search" placeholder="Enter title / genre / origin" value="<?php echo htmlspecialchars($search); ?>">
         <input type="hidden" name="page" value="1"> 
         <button type="submit"><i class="bi bi-search"></i> Search</button>
         <?php if (!empty($search)) : ?>
@@ -236,9 +262,9 @@ $conn->close();
                 <tr>
                     <th>Bil</th>
                     <th style="text-align: start">Title</th>
-                    <th>State</th>
+                    <th>Origin</th>
                     <th>Genre</th>
-                    <th style="width: 15%"></th>
+                    <th style="width: 15%">View detail / Remove</th>
                 </tr>
             </thead>
             <tbody class="tbody" id="bookmarks-table-body">
@@ -252,11 +278,11 @@ $conn->close();
                     echo "<td>" . htmlspecialchars($row['state']) . "</td>";
                     echo "<td>" . htmlspecialchars($row['genre']) . "</td>";
                     echo "<td>
-                            <button class='btn btn-primary btn-sm mb-1' onclick=\"window.location.href='folktaledetails.php?id=" . $row['folktaleID'] . "'\">
-                                View Details
+                            <button class='btn-primary btn-sm mb-1' onclick=\"window.location.href='folktaledetails.php?id=" . $row['folktaleID'] . "'\">
+                                <i class='bi bi-eye'></i>
                             </button>
-                            <button class='btn btn-danger btn-sm delete-btn mb-1' data-folktales-id='" . $row['folktaleID'] . "'>
-                                Delete
+                            <button class='btn-remove btn-sm delete-btn mb-1' data-folktales-id='" . $row['folktaleID'] . "'>
+                                <i class='bi bi-trash3'></i>
                             </button>
                         </td>";
                     echo "</tr>";

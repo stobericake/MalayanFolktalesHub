@@ -178,7 +178,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         .btn {
-            margin-top: 20px;
             width: 100px;
             padding: 12px;
             justify-content: center;
@@ -246,6 +245,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <i class="fa fa-lock"></i>
                     <input type="password" id="password" name="password" placeholder="Password" required>
                 </div>
+                <p>Doesn't have an account? <a href="register.php">Register</a></p>
                 <button type="submit" name="submit" class="btn">Sign In</button>
             </form>
             <?php if (!empty($error)): ?>

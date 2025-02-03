@@ -3,6 +3,7 @@
 session_start();
 // Database connection
 include '../dbconn.php';
+$userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : null;
 
 
 // Check if the form was submitted
@@ -33,8 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         // Insert data into the database
-        $query = "INSERT INTO folktales (title, synopsis, state, genre, pdfPath) 
-                  VALUES (?, ?, ?, ?, ?)";
+        $query = "INSERT INTO folktales (title, synopsis, state, genre, pdfPath, clerkID) 
+                  VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($query);
         
         if (!$stmt) {
@@ -42,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     
         // Bind parameters
-        $stmt->bind_param("sssss",  $title, $synopsis, $state, $genre, $pdfPath);
+        $stmt->bind_param("ssssss",  $title, $synopsis, $state, $genre, $pdfPath, $userID);
     
         // Execute the statement
         if ($stmt->execute()) {
@@ -77,6 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             width: 100%;
             max-width: 1200px;
             padding: 20px;
+            margin-bottom: 50px;
         }
 
         .container h1 {
@@ -94,17 +96,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             height: 200px; 
         }
 
-        .custom-upload-btn {
-            background-color: #007bff; /* Primary blue color */
-            color: #fff; /* White text */
-            border: none; /* Remove default border */
-            transition: background-color 0.3s ease; /* Smooth hover effect */
-        }
-
-        .custom-upload-btn:hover {
-            background-color: #0056b3; /* Darker blue on hover */
-        }
-
 
         .form-section {
             padding: 20px;
@@ -115,20 +106,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             box-shadow: 0px 4px 8px rgba(0, 0.1, 0, 0.1);
         }
 
-        .btn-upload {
-            margin-top: 10px;
-            background-color: #4a90e2;
-            color: white;
-            border: 1px solid black;
-        }
-
-        .btn-upload:hover {
-            background-color: #3577c8;
-        }
-
         .btn-secondary, .btn-primary {
             padding: 10px 30px;
             font-size: 0.9rem;
+            border-radius: 20px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: #fff;
+            border: none; 
+            transition: background-color 0.3s ease; 
+            border-radius: 20px;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+        .btn-secondary {
+            background-color:rgb(147, 151, 154);
+            color: #fff;
+            border: none; 
+            transition: background-color 0.3s ease; 
+            border-radius: 20px;
+        }
+
+        .btn-secondary:hover {
+            background-color:rgb(89, 93, 97); /* Darker blue on hover */
         }
 
         /* Align upload input and button */
@@ -266,8 +269,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <div class="text-end">
-                <button type="button" class="btn btn-secondary">Cancel</button>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmationModal">Add</button>
+                <button type="button" class="btn-secondary" onclick="window.location.href = 'clerklisting.php'">Cancel</button>
+                <button type="button" class="btn-primary" data-bs-toggle="modal" data-bs-target="#confirmationModal">Add</button>
             </div>
         </form>
     </div>
@@ -285,8 +288,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 Are you sure you want to add this folktale?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="confirmAdd">Confirm</button>
+                <button type="button" class="btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn-primary" id="confirmAdd">Confirm</button>
             </div>
         </div>
     </div>

@@ -66,7 +66,7 @@ $totalBookmarksStmt->close()
         border-radius: 15px;
         padding: 20px;
         margin-top: 20px;
-        margin-bottom: 20px;
+        margin-bottom: 50px;
     }
     .folktale-card {
         background-color: rgba(68, 116, 156, 0.9);

@@ -8,9 +8,8 @@ $errors = [];
 if (isset($_POST['submit'])) {
     $userID = uniqid('USR'); // Generate a unique userID
     $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $phone_number = mysqli_real_escape_string($conn, $_POST['phone_number']);
+    $phone_number = isset($_POST['phone_number']) ? mysqli_real_escape_string($conn, $_POST['phone_number']) : '';
     $name = mysqli_real_escape_string($conn, $_POST['name']);
-    $phoneNum = mysqli_real_escape_string($conn, $_POST['phonenum']);
     $password = mysqli_real_escape_string($conn, $_POST['password']);
     $confirm_password = mysqli_real_escape_string($conn, $_POST['confirmpassword']);
 
@@ -192,8 +191,8 @@ body::before {
           <input type="email" id="email" name="email" placeholder="Email" required>
         </div>
         <div class="form-group">
-          <label for="phonenum"></label>
-          <input type="phonenum" id="phonenum" name="phonenum" placeholder="Phone Number" required>
+          <label for="phone_number"></label>
+          <input type="text" id="phone_number" name="phone_number" placeholder="Phone Number" required>
         </div>
         <div class="form-group">
           <label for="password"></label>

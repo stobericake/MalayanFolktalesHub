@@ -17,7 +17,7 @@ $totalRecordsResult = mysqli_query($conn, $totalRecordsQuery);
 $totalRecords = mysqli_fetch_assoc($totalRecordsResult)['total'];
 
 // Pagination logic
-$recordsPerPage = 7;
+$recordsPerPage = 10;
 $totalPages = ceil($totalRecords / $recordsPerPage);
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $start = ($page - 1) * $recordsPerPage;
@@ -47,10 +47,13 @@ $result = mysqli_query($conn, $query);
             background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(247, 247, 247, 0.7)), url('../../assets/bg_2w.png');
             background-size: cover;
             background-position: center;
-            height: 100vh;
             background-attachment: fixed;
             color: #fff;
             padding-top: 110px;
+        }
+        
+        .container {
+            margin-bottom: 80px;
         }
 
         .container h1 {
@@ -113,6 +116,7 @@ $result = mysqli_query($conn, $query);
             color: #007bff; /* Blue color on hover */
         }
         .search-bar {
+            display: inline-block;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -145,6 +149,55 @@ $result = mysqli_query($conn, $query);
         }
         .clear-search:hover {
             color: #234956;
+        }
+        .btn-primary {
+            background-color:rgb(138, 194, 228);
+            border: none;
+            color: black;
+            text-decoration: none;
+            border-radius: 25px;
+            padding: 5px 10px;
+            font-size: 14px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            margin-right: 5px;
+        }
+
+        .btn-primary:hover {
+            background-color: #234956;
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background-color:rgb(150, 156, 159);
+            border: none;
+            color: black;
+            text-decoration: none;
+            border-radius: 25px;
+            padding: 5px 10px;
+            font-size: 14px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            margin-right: 5px;
+        }
+
+        .btn-secondary:hover {
+            background-color:rgb(85, 93, 96);
+            transform: scale(1.05);
+        }
+
+        .btn-remove {
+            background-color:rgb(228, 138, 138);
+            border: none;
+            color: black;
+            text-decoration: none;
+            border-radius: 25px;
+            padding: 5px 10px;
+            font-size: 14px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .btn-remove:hover {
+            background-color:rgb(86, 35, 35);
+            transform: scale(1.05);
         }
 
         .popup {
@@ -262,7 +315,7 @@ $result = mysqli_query($conn, $query);
             <a class="new-bar" href="addfolktales.php">+ New</a>
             <div class="ms-auto">
             <form method="GET" action="" class="search-bar">
-                <input type="text" name="search" placeholder="Search folktales..." value="<?php echo htmlspecialchars($search); ?>">
+                <input type="text" name="search" placeholder="Enter title / genre / origin" value="<?php echo htmlspecialchars($search); ?>">
                 <input type="hidden" name="page" value="1"> 
                 <button type="submit"><i class="bi bi-search"></i> Search</button>
                 <?php if (!empty($search)) : ?>
@@ -277,10 +330,12 @@ $result = mysqli_query($conn, $query);
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
-                        <th style="width:15%"></th>
+                    <th>Bil</th>
                         <th style="text-align:left">Title</th>
-                        <th>State</th>
+                        <th>Origin</th>
                         <th>Genre</th>
+                        <th style="width:10%">View detail</th>
+                        <th style="width:15%">Action</th>
                     </tr>
                 </thead>
                 <tbody id="bookmarks-table-body">
@@ -290,17 +345,22 @@ $result = mysqli_query($conn, $query);
                         while ($row = $result->fetch_assoc()) {
                             $editLink = "editfolktales.php?id=" . $row['folktaleID']; // Edit URL
                             echo "<tr>
-                            <td class='action-icons text-center align-middle' style='width: 100px;' >
-                                    <a href='$editLink' title='Edit' class='btn btn-primary btn-sm'>
-                                        Edit
-                                    </a>
-                                    <a href='#' class='btn btn-danger btn-sm' title='Delete' data-bs-toggle='modal' data-bs-target='#deleteConfirmationModal' data-id='{$row['folktaleID']}'>
-                                        Delete</i>
-                                    </a>
-                                </td>
+                                <td>$bil</td>
                                 <td style='text-align:left'>{$row['title']}</td>
                                 <td>{$row['state']}</td>
                                 <td>{$row['genre']}</td>
+                                <td>
+                                    <a href='folktaledetails.php?id={$row['folktaleID']}' class='btn-primary btn-sm'><i class='bi bi-eye'></i>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href='$editLink' title='Edit' class='btn-primary btn-sm mb-1'>
+                                        <i class='bi bi-pencil-square'></i>
+                                    </a>
+                                    <a href='#' class='btn-remove btn-sm delete-btn mb-1' title='Delete' data-bs-toggle='modal' data-bs-target='#deleteConfirmationModal' data-id='{$row['folktaleID']}'>
+                                        <i class='bi bi-trash3'></i>
+                                    </a>
+                                </td>
                             </tr>";
                             $bil++;
                         }

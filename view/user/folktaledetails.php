@@ -166,6 +166,7 @@ $totalBookmarksStmt->close()
         padding: 15px;
         border-radius: 10px;
         margin-top: 20px;
+        margin-bottom: 50px;
     }
 
     .comment {
@@ -289,9 +290,11 @@ $totalBookmarksStmt->close()
           </div>
           <div class="folktale-buttons">
               <button class="btn-custom btn-folktale bookmarkBtn" id="bookmarkBtn" data-bs-toggle="modal" data-bs-target="#bookmarkModal" onclick="">
-                  <?php echo $isBookmarked ? '<i class="bi bi-bookmark-heart-fill"></i> Remove Bookmark' : '<i class="bi bi-bookmark-heart"></i> Add to Bookmark'; ?>
+                  <?php echo $isBookmarked 
+                  ? '<i class="bi bi-bookmark-heart-fill"></i> Remove Bookmark' 
+                  : '<i class="bi bi-bookmark-heart"></i> Add to Bookmark'; ?>
               </button>
-              <button class="btn-custom btn-folktale download-btn"  data-folktale-id="<?php echo $folktaleID; ?>">
+              <button class="btn-custom btn-folktale download-btn" data-folktale-id="<?php echo $folktaleID; ?>">
                 <i class="bi bi-box-arrow-down"></i> Download PDF
               </button>
           </div>
@@ -371,7 +374,7 @@ $totalBookmarksStmt->close()
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <?php if ($userID): ?>
-        <div class="modal-body">
+        <div class="modal-body bookmarkmodal" id="bookmarkmodal">
         <?php echo $isBookmarked ? 'Are you sure you want to remove this folktale to your bookmarks?' : 
         'Are you sure you want to add this folktale to your bookmarks?' ?>
         </div>
@@ -453,10 +456,13 @@ $totalBookmarksStmt->close()
         .then(data => {
             console.log('Response from server:', data);
             const bookmarkBtn = document.getElementById('bookmarkBtn');
+            const bookmarkmodal = document.getElementById('bookmarkmodal');
             if (data === 'added') {
                 bookmarkBtn.innerHTML = '<i class="bi bi-bookmark-heart-fill"></i> Remove Bookmark';
+                bookmarkmodal.innerHTML = 'Are you sure you want to remove this folktale to your bookmarks?';
             } else if (data === 'removed') {
                 bookmarkBtn.innerHTML = '<i class="bi bi-bookmark-heart"></i> Add to Bookmark';
+                bookmarkmodal.innerHTML ='Are you sure you want to add this folktale to your bookmarks?'
             }
         })
 

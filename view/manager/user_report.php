@@ -53,15 +53,15 @@ $result = mysqli_query($conn, $query);
             background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(247, 247, 247, 0.7)), url('../../assets/bg_2w.png');
             background-size: cover;
             background-position: center;
-            height: 100vh;
             background-attachment: fixed;
             padding-top: 100px;
         }
 
-
         .container {
             margin-top: 20px;
+            margin-bottom: 70px;
         }
+
 
         h2 {
             font-family: 'Fredoka One', cursive;
@@ -125,11 +125,13 @@ $result = mysqli_query($conn, $query);
         }
 
         .btn-primary {
-            background-color: #32607C;
+            background-color:rgb(138, 194, 228);
             border: none;
+            color: black;
+            text-decoration: none;
             border-radius: 25px;
-            padding: 8px 20px;
-            font-size: 14px;
+            padding: 5px 10px;
+            font-size: 20px;
             transition: background-color 0.3s ease, transform 0.3s ease;
         }
 
@@ -137,6 +139,7 @@ $result = mysqli_query($conn, $query);
             background-color: #234956;
             transform: scale(1.05);
         }
+
 
         .pagination {
             justify-content: center;
@@ -179,9 +182,9 @@ $result = mysqli_query($conn, $query);
 <body>
     <?php include '../header.php'; ?>
     <div class="container">
-        <h2 class="mb-3">User Report</h2>
+        <h2 class="mb-4">User Report</h2>
         <form method="GET" action="" class="search-bar">
-            <input type="text" name="search" placeholder="Search folktales..." value="<?php echo htmlspecialchars($search); ?>">
+            <input type="text" name="search" placeholder="Search user..." value="<?php echo htmlspecialchars($search); ?>">
             <input type="hidden" name="page" value="1"> 
             <button type="submit"><i class="bi bi-search"></i> Search</button>
             <?php if (!empty($search)) : ?>
@@ -193,12 +196,12 @@ $result = mysqli_query($conn, $query);
             <table class="table table-bordered table-striped">
                 <thead class="thead">
                     <tr>
-                        <th>Bil</th>
+                    <th style="width:10%">Bil</th>
                         <th style="text-align:left">Name</th>
                         <th>Email</th>
                         <th>Total Bookmarks</th>
                         <th>Total Comments</th>
-                        <th>Generate Report</th>
+                        <th style="width:15%">Download Report</th>
                     </tr>
                 </thead>
                 <tbody class="tbody" id="user-table-body">
@@ -212,7 +215,9 @@ $result = mysqli_query($conn, $query);
                             echo "<td>{$row['email']}</td>";
                             echo "<td>{$row['total_bookmarks']}</td>";
                             echo "<td>{$row['total_comments']}</td>";
-                            echo "<td style='width: 20%'><a href='user_report_pdf.php?userID={$row['userID']}' class='btn btn-primary btn-sm'>Download PDF</a></td>"; // Generate Report button
+                            echo "<td style='width: 20%'><a href='user_report_pdf.php?userID={$row['userID']}' class='btn-primary btn-sm'>
+                            <i class='bi bi-file-earmark-arrow-down'></i></a>
+                            </td>"; 
                             echo "</tr>";
                             $bil++;
                         }

@@ -100,7 +100,7 @@ $conn->close();
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            padding-top: 80px;
+            padding-top: 100px;
             position: relative; /* Required for pseudo-element positioning */
             background: url('../../assets/background.png') no-repeat center center/cover;
             background-size: cover;
@@ -110,6 +110,7 @@ $conn->close();
             width: 100%;
             max-width: 1200px;
             padding: 20px;
+            margin-bottom: 80px;
         }
 
         .container h1 {
@@ -129,10 +130,32 @@ $conn->close();
             width: 100%;
             box-shadow: 0px 4px 8px rgba(0, 0.1, 0, 0.1);
         }
-
         .btn-secondary, .btn-primary {
             padding: 10px 30px;
             font-size: 0.9rem;
+            border-radius: 20px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: #fff;
+            border: none; 
+            transition: background-color 0.3s ease; 
+            border-radius: 20px;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+        .btn-secondary {
+            background-color:rgb(147, 151, 154);
+            color: #fff;
+            border: none; 
+            transition: background-color 0.3s ease; 
+            border-radius: 20px;
+        }
+
+        .btn-secondary:hover {
+            background-color:rgb(89, 93, 97); /* Darker blue on hover */
         }
 
         .input-group .form-control {
@@ -270,8 +293,8 @@ $conn->close();
                 </div>
 
                 <div class="text-end">
-                    <button type="button" class="btn btn-secondary">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="button" class="btn-secondary" onclick="window.location.href = 'clerklisting.php'">Cancel</button>
+                    <button type="submit" class="btn-primary">Update</button>
                 </div>
             </form>
         </div>
