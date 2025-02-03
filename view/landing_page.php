@@ -156,7 +156,7 @@
                 <button class="btn btn-signin" onclick="navigateToPage('login.php')">Login</button>
                 <button class="btn btn-register" onclick="navigateToPage('register.php')">Register</button>
             </div>
-            <button class="btn-guest" onclick="navigateToPage('home.php')">Continue as Guest?</button>
+            <button class="btn-guest" onclick="navigateToPage('user/home.php')">Continue as Guest?</button>
         </div>
     </main>
 

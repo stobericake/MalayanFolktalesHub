@@ -1,13 +1,14 @@
+
 <?php
-session_start(); // Start the session
+session_start();
 
-// Destroy all session variables
-session_unset();
+if(isset($_SESSION['userID'])){
 
-// Destroy the session itself
-session_destroy();
+    session_destroy();
 
-// Redirect the user to the login page
-header("Location: login.php");
-exit;
-?>
+    echo "<script>location.href='landing_page.php'</script>";
+}
+else{
+
+    echo "<script>location.href='landing_page.php'</script>";
+}
