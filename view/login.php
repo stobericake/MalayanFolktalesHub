@@ -3,21 +3,30 @@ session_start();
 include 'dbconn.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $email = trim($_POST['email']);
+    $identifier = trim($_POST['identifier']); // This will hold either email or ID
     $password = trim($_POST['password']);
+    $role = trim($_POST['role']); // Get the selected role
 
-    if (!empty($email) && !empty($password)) {
+    if (!empty($identifier) && !empty($password) && !empty($role)) {
         // Function to validate user from a table
-        function validateUser($table, $email, $password, $conn) {
+        function validateUser ($table, $identifier, $password, $conn, $isId = false) {
             // Determine the ID column name based on the table
             $idColumn = $table . 'ID'; // e.g., 'userid', 'clerkid', 'managerid'
 
             // Use prepared statements to prevent SQL injection
-            $query = "SELECT `$idColumn` AS id, `email`, `password` FROM `$table` WHERE `email` = '$email'";
-            $result = mysqli_query($conn, $query);
+            if ($isId) {
+                $query = "SELECT `$idColumn` AS id, `email`, `password` FROM `$table` WHERE `$idColumn` = ?";
+            } else {
+                $query = "SELECT `$idColumn` AS id, `email`, `password` FROM `$table` WHERE `email` = ?";
+            }
 
-            if ($result && mysqli_num_rows($result) > 0) {
-                $row = mysqli_fetch_assoc($result);
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param($isId ? 'i' : 's', $identifier);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result && $result->num_rows > 0) {
+                $row = $result->fetch_assoc();
                 // Direct password comparison
                 if ($password == $row['password']) {
                     return $row; // Return the row data if valid
@@ -26,24 +35,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             return null; // Return null if invalid
         }
 
-        // Check all tables
-        $role = '';
-        $userData = validateUser('user', $email, $password, $conn);
-        if ($userData) {
-            $role = 'user';
-        } else {
-            $userData = validateUser('clerk', $email, $password, $conn);
-            if ($userData) {
-                $role = 'clerk';
-            } else {
-                $userData = validateUser('manager', $email, $password, $conn);
-                if ($userData) {
-                    $role = 'manager';
-                }
-            }
+        // Check the selected role
+        $userData = null;
+        switch ($role) {
+            case 'user':
+                $userData = validateUser ('user', $identifier, $password, $conn, false);
+                break;
+            case 'clerk':
+                $userData = validateUser ('clerk', $identifier, $password, $conn, true); // ID for clerk
+                break;
+            case 'manager':
+                $userData = validateUser ('manager', $identifier, $password, $conn, true); // ID for manager
+                break;
         }
 
-        if ($role) {
+        if ($userData) {
             // Store user data in the session
             $_SESSION['userID'] = $userData['id']; // Use the dynamically selected ID column
             $_SESSION['email'] = $userData['email'];
@@ -64,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
             exit;
         } else {
-            $error = "Invalid Email or password.";
+            $error = "Invalid ID/Email or password.";
         }
     } else {
         $error = "Please fill in all fields.";
@@ -114,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             background-color: white;
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0 .2);
             position: relative; /* To ensure proper stacking with ::before */
         }
 
@@ -170,6 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             font-size: 14px;
             color: #aaa;
         }
+
         .btn {
             margin-top: 20px;
             width: 100px;
@@ -199,7 +206,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             height: auto;
             border-radius: 15px;
         }
+
+        .role-selection {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .role-selection label {
+            font-size: 14px;
+            color: #333333;
+        }
     </style>
+    <script>
+        function toggleIdentifierField() {
+            const role = document.querySelector('input[name="role"]:checked').value;
+            const identifierInput = document.getElementById('identifier');
+            identifierInput.placeholder = role === 'user' ? 'Email' : 'ID';
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -207,9 +233,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <h1>HELLO AGAIN!</h1>
             <p>Welcome back! We missed you!</p>
             <form action="" method="post">
+                <div class="role-selection">
+                    <label><input type="radio" name="role" value="user" required onclick="toggleIdentifierField()"> User</label>
+                    <label><input type="radio" name="role" value="clerk" onclick="toggleIdentifierField()"> Clerk</label>
+                    <label><input type="radio" name="role" value="manager" onclick="toggleIdentifierField()"> Manager</label>
+                </div>
                 <div class="input-group">
                     <i class="fa fa-user"></i>
-                    <input type="text" id="email" name="email" placeholder="Email" required>
+                    <input type="text" id="identifier" name="identifier" placeholder="Email" required>
                 </div>
                 <div class="input-group">
                     <i class="fa fa-lock"></i>
@@ -222,9 +253,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <?php endif; ?>
         </div>
         <div class="image-section">
-        <img src="../assets/illustration.png?v=1" alt="Illustration">
+            <img src="../assets/illustration.png?v=1" alt="Illustration">
         </div>
     </div>
-   
 </body>
-</html> 
+</html>
