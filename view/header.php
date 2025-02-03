@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once 'session.php';
 include 'dbconn.php';
 ?>
 <!DOCTYPE html>
@@ -45,39 +45,50 @@ include 'dbconn.php';
 </head>
 <body>
     <!-- Navbar -->
-    <header style="background-color: #C3DFE6; color: #0B2428;" class="p-3 shadow d-flex justify-content-between align-items-center">
-        <!-- Logo and Text Container -->
-        <div class="d-flex align-items-center gap-3">
-            <h1 class="custom-title">MalayanFolktalesHub</h1>
-        </div>
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-        <?php
-        // Check if the user is logged in based on session
-        if (isset($_SESSION['role'])) {
-            $role = $_SESSION['role'];
-            $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : null;
-            if ($role === 'user') {
-                echo '<a class="btn btn-custom" href="home.php">Home</a>';
-                echo '<a class="btn btn-custom" href="bookmark.php">Bookmarks</a>';
-                echo '<a class="btn btn-custom" href="userprofile.php">Profile</a>';
-                echo '<a class="btn btn-custom" href="../logout.php">Logout</a>';
-            } elseif ($role === 'clerk') {
-                echo '<a class="btn btn-custom" href="clerkdashboard.php">Home</a>';
-                echo '<a class="btn btn-custom" href="clerklisting.php">Manage Folktales</a>';
-                echo '<a class="btn btn-custom" href="../logout.php">Logout</a>';
-            } elseif ($role === 'manager') {
-                echo '<a class="btn btn-custom" href="managerdashboard.php">Home</a>';
-                echo '<a class="btn btn-custom" href="report.php">Report</a>';
-                echo '<a class="btn btn-custom" href="../logout.php">Logout</a>';
-            }
-        } else {
-            // If the user is not logged in, show Register and Login
-            echo '<a class="btn btn-custom" href="landingpage.php">Home</a>';
-            echo '<a class="btn btn-custom" href="register.php">Register</a>';
-            echo '<a class="btn btn-custom" href="login.php">Login</a>';
-        }
-        ?>
-        </div>
+    <header style="background-color: #C3DFE6; color: #0B2428;" class="p-3 shadow">
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container-fluid">
+                <!-- Logo and Text Container -->
+                <a class="navbar-brand" href="#">
+                    <h1 class="custom-title">MalayanFolktalesHub</h1>
+                </a>
+                <!-- Toggle Button for smaller screens -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <!-- Navbar Links -->
+                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <?php
+                        // Check if the user is logged in based on session
+                        if (isset($_SESSION['role'])) {
+                            $role = getSession('role');
+                            $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : null;
+                            if ($role === 'user') {
+                                echo '<li class="nav-item"><a class="nav-link btn-custom" href="home.php">Home</a></li>';
+                                echo '<li class="nav-item"><a class="nav-link btn-custom" href="bookmark.php">Bookmarks</a></li>';
+                                echo '<li class="nav-item"><a class="nav-link btn-custom" href="userprofile.php">Profile</a></li>';
+                                echo '<li class="nav-item"><a class="nav-link btn-custom" href="../logout.php">Logout</a></li>';
+                            } elseif ($role === 'clerk') {
+                                echo '<li class="nav-item"><a class="nav-link btn-custom" href="clerkdashboard.php">Home</a></li>';
+                                echo '<li class="nav-item"><a class="nav-link btn-custom" href="clerklisting.php">Manage Folktales</a></li>';
+                                echo '<li class="nav-item"><a class="nav-link btn-custom" href="../logout.php">Logout</a></li>';
+                            } elseif ($role === 'manager') {
+                                echo '<li class="nav-item"><a class="nav-link btn-custom" href="managerdashboard.php">Home</a></li>';
+                                echo '<li class="nav-item"><a class="nav-link btn-custom" href="folktalelist.php">View Collections</a></li>';
+                                echo '<li class="nav-item"><a class="nav-link btn-custom" href="../logout.php">Logout</a></li>';
+                            }
+                        } else {
+                            // If the user is not logged in, show Register and Login
+                            echo '<li class="nav-item"><a class="nav-link btn-custom" href="home.php">Home</a></li>';
+                            echo '<li class="nav-item"><a class="nav-link btn-custom" href="register.php">Register</a></li>';
+                            echo '<li class="nav-item"><a class="nav-link btn-custom" href="login.php">Login</a></li>';
+                        }
+                        ?>
+                    </ul>
+                </div>
+            </div>
+        </nav>
     </header>
 
     <!-- Bootstrap JS and dependencies -->

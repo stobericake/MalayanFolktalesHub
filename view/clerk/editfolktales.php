@@ -1,9 +1,9 @@
+
 <?php
 session_start();
 
 // Database connection
 include '../dbconn.php';
-
 
 // Check if an ID is passed as a parameter
 if (!isset($_GET['id']) || empty($_GET['id'])) {
@@ -72,91 +72,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Execute the query
     if ($updateStmt->execute()) {
-        echo "Data updated successfully!";
-        // Redirect to a success page or back to the form
-        header("Location: success_page.php");
-        exit();
+        $_SESSION['message'] = "Data updated successfully!";
+        $_SESSION['message_type'] = "success";
     } else {
-        die("Error updating data: " . $updateStmt->error);
+        $_SESSION['message'] = "Error updating data: " . $updateStmt->error;
+        $_SESSION['message_type'] = "error";
     }
 
     // Close the statement
     $updateStmt->close();
+
+    // Redirect to the same page to avoid form resubmission
+    header("Location: editfolktales.php?id=" . $folktaleId);
+    exit();
 }
 
 // Close the database connection
 $conn->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Folktales</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color:rgb(243, 247, 251) !important;
-            margin: 0;
-            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            padding-top: 80px;
+            position: relative; /* Required for pseudo-element positioning */
+            background: url('../../assets/background.png') no-repeat center center/cover;
+            background-size: cover;
         }
 
-        .content {
-            margin-left: 270px;
-            padding: 40px;
-            
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
         }
 
-        h1 {
-            font-size: 1.8rem;
+        .container h1 {
+            font-size: 1.9rem;
             font-weight: bold;
         }
 
-        /* Custom styling for inputs, selects, and textarea */
-        .custom-border {
-            border: 1px solid rgba(103, 115, 127, 0.17) !important; /* Dark border with proper width */
-            border-radius: 5px; /* Rounded corners */
-        }
-
         textarea.custom-border {
-            height: 200px; /* Bigger input space for the synopsis */
+            height: 150px; 
         }
 
-        /* Styling for the upload button */
-        .custom-upload-btn {
-            background-color: #007bff; /* Primary blue color */
-            color: #fff; /* White text */
-            border: none; /* Remove default border */
-            transition: background-color 0.3s ease; /* Smooth hover effect */
-        }
-
-        .custom-upload-btn:hover {
-            background-color: #0056b3; /* Darker blue on hover */
-        }
-
-        /* Form container styling */
         .form-section {
-            padding: 20px; /* Add some padding around the form */
-            background-color:rgb(254, 254, 254); /* White background */
-            border: 1px rgba(123, 137, 152, 0.98); /* Visible border */
-            border-radius: 5px; /* Rounded corners for the form container */
+            padding: 20px;
+            background-color: rgba(195, 223, 230, 0.9);
+            border-radius: 8px;
             font-size: 0.9rem;
-            width: 1100px;
+            width: 100%;
             box-shadow: 0px 4px 8px rgba(0, 0.1, 0, 0.1);
-        }
-
-        .btn-upload {
-            margin-top: 10px;
-            background-color: #4a90e2;
-            color: white;
-            border: 1px solid black;
-        }
-
-        .btn-upload:hover {
-            background-color: #3577c8;
         }
 
         .btn-secondary, .btn-primary {
@@ -164,7 +135,6 @@ $conn->close();
             font-size: 0.9rem;
         }
 
-        /* Align upload input and button */
         .input-group .form-control {
             flex: 1;
         }
@@ -172,15 +142,82 @@ $conn->close();
         .input-group .custom-upload-btn {
             flex: 0 0 auto;
         }
+
+        .form-control.custom-border {
+            background-color:rgb(236, 238, 240);
+            color: rgb(60, 62, 63);
+        }
+        .form-select.custom-border {
+            background-color:rgb(236, 238, 240);
+            color: rgb(60, 62, 63);
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            text-align: center;
+        }
+
+        .popup.success {
+            border: 1px solid rgb(175, 227, 177);
+        }
+
+        .popup.error {
+            border: 1px solid rgb(249, 103, 93);
+        }
+
+        .popup-icon {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+
+        .popup.success .popup-icon {
+            color: rgb(175, 227, 177);
+        }
+
+        .popup.error .popup-icon {
+            color: rgb(249, 103, 93);
+        }
+
+        .popup-close {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: rgb(175, 227, 177);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .popup-close:hover {
+            background-color: #45a049;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
     </style>
 </head>
 <body>
-<div id="content">
-    <div class="container mt-3">
+<?php include '../header.php'; ?>
+    <div class="container">
+        <div class="form-section">
         <h1>Edit Folktales</h1>
-
-        <div class="form-section mt-4">
-            <form action="editfolktales.php?id=<?= htmlspecialchars($folktaleId) ?>" method="POST" enctype="multipart/form-data">
+        <form action="editfolktales.php?id=<?= htmlspecialchars($folktaleId) ?>" method="POST" enctype="multipart/form-data">
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="folktaleId" class="form-label">Folktale ID</label>
@@ -190,7 +227,6 @@ $conn->close();
                         <label for="fileUpload" class="form-label">Upload File (.pdf)</label>
                         <div class="input-group">
                             <input type="file" class="form-control custom-border" id="fileUpload" name="file" accept=".pdf">
-                            <button class="btn custom-upload-btn" type="button">Upload</button>
                         </div>
                     </div>
                 </div>
@@ -229,12 +265,7 @@ $conn->close();
                     </div>
                     <div class="col-md-6">
                         <label for="genre" class="form-label">Genre</label>
-                        <select class="form-select custom-border" id="genre" name="genre" required>
-                            <option value="Teladan" <?= $folktale['genre'] == 'Teladan' ? 'selected' : '' ?>>Teladan</option>
-                            <option value="Adventure" <?= $folktale['genre'] == 'Adventure' ? 'selected' : '' ?>>Adventure</option>
-                            <option value="Fantasy" <?= $folktale['genre'] == 'Fantasy' ? 'selected' : '' ?>>Fantasy</option>
-                            <!-- Add more genres as needed -->
-                        </select>
+                        <input type="text" class="form-control custom-border" id="genre" name="genre" value="<?= htmlspecialchars($folktale['genre']) ?>" required>
                     </div>
                 </div>
 
@@ -247,7 +278,50 @@ $conn->close();
     </div>
 </div>
 
+<!-- Popup HTML -->
+<div class="overlay" id="overlay"></div>
+<div class="popup" id="popup">
+    <div class="popup-icon">🎉</div>
+    <p id="popup-message"></p>
+    <button class="popup-close" onclick="closePopup()">Close</button>
+</div>
+
 <!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Function to show the popup
+    function showPopup(message, type) {
+        const popup = document.getElementById('popup');
+        const overlay = document.getElementById('overlay');
+        const popupMessage = document.getElementById('popup-message');
+
+        popupMessage.textContent = message;
+        popup.className = `popup ${type}`;
+        popup.style.display = 'block';
+        overlay.style.display = 'block';
+    }
+
+    // Function to close the popup
+    function closePopup() {
+        const popup = document.getElementById('popup');
+        const overlay = document.getElementById('overlay');
+        popup.style.display = 'none';
+        overlay.style.display = 'none';
+
+        // Redirect to clerklisting.php
+        window.location.href = 'clerklisting.php';    
+    }
+
+    // Check for session message and show popup
+    <?php if (isset($_SESSION['message'])): ?>
+        showPopup("<?= $_SESSION['message'] ?>", "<?= $_SESSION['message_type'] ?>");
+        <?php
+        // Clear the session message
+        unset($_SESSION['message']);
+        unset($_SESSION['message_type']);
+        ?>
+    <?php endif; ?>
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

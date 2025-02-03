@@ -18,7 +18,7 @@ $totalGenreRow = $totalGenreResult->fetch_assoc();
 $totalGenre = $totalGenreRow['genre_count'];
 
 // Fetch top 5 folktales with the highest bookmark counts
-$query = "SELECT f.title, bf.count FROM bookmark_folktale bf JOIN folktales f ON bf.folktalesID = f.folktaleID ORDER BY bf.count DESC LIMIT 5";
+$query = "SELECT f.title, bf.count FROM bookmark_folktale bf JOIN folktales f ON bf.folktaleID = f.folktaleID ORDER BY bf.count DESC LIMIT 5";
 $result = mysqli_query($conn, $query);
 
 // Prepare data for the chart
@@ -44,11 +44,11 @@ while ($row = mysqli_fetch_assoc($result)) {
             margin: 0;
             padding: 0;
             font-family: 'Poppins', sans-serif;
-            background: url('../assets/background.png') no-repeat center center/cover;
+            background: linear-gradient(rgba(78, 78, 78, 0.7), rgba(78, 78, 78, 0.7)), url('../../assets/background.png') no-repeat center center/cover;
             background-size: cover;
         }
         .content {
-            padding-top: 100px;
+            padding-top: 120px;
             margin-left: 30px;
         }
         .top-section {
@@ -123,21 +123,12 @@ while ($row = mysqli_fetch_assoc($result)) {
                 <a href="addfolktales.php" class="card">
                     <i class="bi bi-file-earmark-plus-fill icon-pic"></i>
                     <h3>ADD FOLKTALES</h3>
-                    <p class="total">Total: <span id="user-total"><?php echo $totalUser; ?></span></p>
-                </a>
-
-                <!-- Card 2: DELETE FOLKTALES -->
-                <a href="clerklisting.php" class="card">
-                    <i class="bi bi-file-earmark-minus-fill icon-pic"></i>
-                    <h3>DELETE FOLKTALES</h3>
-                    <p class="total">Total: <span id="origin-total"><?php echo $totalOrigins; ?></span></p>
                 </a>
 
                 <!-- Card 3: EDIT FOLKTALES -->
-                <a href="editfolktales.php" class="card">
+                <a href="clerklisting.php" class="card">
                     <i class="bi bi-pen-fill icon-pic"></i>
-                    <h3>EDIT FOLKTALES</h3>
-                    <p class="total">Total: <span id="genre-total"><?php echo $totalGenre; ?></span></p>
+                    <h3>UPDATE FOLKTALES</h3>
                 </a>
             </div>
 

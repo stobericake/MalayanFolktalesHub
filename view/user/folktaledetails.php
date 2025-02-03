@@ -1,13 +1,13 @@
 <?php
- // Ensure session is started
+session_start();
 include '../dbconn.php';
 
-$folktalesID = isset($_GET['id']) ? intval($_GET['id']) : 0;
+$folktaleID = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 // Fetch folktale details from the database
 $sql = "SELECT * FROM folktales WHERE folktaleID = ?";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $folktalesID);
+$stmt->bind_param("i", $folktaleID);
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -18,192 +18,383 @@ if ($result->num_rows > 0) {
     die("Folktale not found.");
 }
 
-$userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : null;
 
-$commentsQuery = "
-    SELECT c.commentID, c.content, c.datePosted, u.name 
+$userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : null;
+// Fetch comments from the database
+$commentsQuery = "SELECT c.commentID, c.content, c.datePosted, u.name, c.userID 
     FROM comment c 
     JOIN user u ON c.userID = u.userID 
     WHERE c.folktaleID = ?
     ORDER BY c.datePosted DESC";
 $stmt = $conn->prepare($commentsQuery);
-$stmt->bind_param("i", $folktalesID);
+$stmt->bind_param("i", $folktaleID);
 $stmt->execute();
 $commentsResult = $stmt->get_result();
 
 // Handle new comment submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_content'])) {
-    $commentContent = trim($_POST['comment_content']);
-    if (!empty($commentContent) && $userID) {
-        $insertCommentQuery = "INSERT INTO comment (content, datePosted, userID, folktaleID) VALUES (?, NOW(), ?, ?)";
-        $insertStmt = $conn->prepare($insertCommentQuery);
-        $insertStmt->bind_param("sii", $commentContent, $userID, $folktalesID);
-        $insertStmt->execute();
-        $insertStmt->close();
-
-        // Refresh the page to display the new comment
-        header("Location: ?id=$folktalesID");
-        exit;
-    }
+  $commentContent = trim($_POST['comment_content']);
+  if (!empty($commentContent) && $userID) {
+      $insertCommentQuery = "INSERT INTO comment (content, datePosted, userID, folktaleID) VALUES (?, NOW(), ?, ?)";
+      $insertStmt = $conn->prepare($insertCommentQuery);
+      $insertStmt->bind_param("sii", $commentContent, $userID, $folktaleID);
+      if ($insertStmt->execute()) {
+          header("Location: ?id=$folktaleID");
+          exit;
+      } else {
+          echo "Error: " . $insertStmt->error;
+      }
+      $insertStmt->close();
+  } else {
+      echo "Comment content is empty or user is not logged in.";
+  }
 }
 
 // Check if the current user has bookmarked this folktale
 $isBookmarked = false;
 if ($userID) {
-    $bookmarkCheckQuery = "SELECT COUNT(*) AS isBookmarked FROM bookmark WHERE userID = ?";
-    $bookmarkStmt = $conn->prepare($bookmarkCheckQuery);
-    $bookmarkStmt->bind_param("i", $userID);
-    $bookmarkStmt->execute();
-    $bookmarkResult = $bookmarkStmt->get_result();
-    $bookmarkData = $bookmarkResult->fetch_assoc();
-    $isBookmarked = ($bookmarkData['isBookmarked'] > 0);
-    $bookmarkStmt->close();
+    // Check if the folktale is already bookmarked by the user
+    $checkBookmark = $conn->prepare("SELECT bookmarkID FROM bookmark WHERE userID = ?
+                                      AND bookmark_folktaleID = ( 
+                                      SELECT bookmark_folktaleID FROM bookmark_folktale 
+                                      WHERE folktaleID = ?)");
+    $checkBookmark->bind_param("ii", $userID, $folktaleID);
+    $checkBookmark->execute();
+    $checkBookmark->store_result();
+    $isBookmarked = $checkBookmark->num_rows > 0;
+    $checkBookmark->close();
 }
 
 // Get total number of bookmarks for this folktale
-$totalBookmarksQuery = "SELECT COUNT(*) AS totalBookmarks FROM bookmark_folktale WHERE folktalesID = ?";
-$totalBookmarksStmt = $conn->prepare($totalBookmarksQuery);
-$totalBookmarksStmt->bind_param("i", $folktalesID);
+$totalBookmarksStmt = $conn->prepare("SELECT count FROM bookmark_folktale WHERE folktaleID = ?");
+$totalBookmarksStmt->bind_param("i", $folktaleID);
 $totalBookmarksStmt->execute();
-$totalBookmarksResult = $totalBookmarksStmt->get_result();
-$totalBookmarksData = $totalBookmarksResult->fetch_assoc();
-$totalBookmarks = $totalBookmarksData['totalBookmarks'];
-$totalBookmarksStmt->close();
+$totalBookmarksStmt->store_result();
+$totalBookmarksStmt->bind_result($totalBookmarks); // Bind the result to a variable
+$totalBookmarksStmt->fetch(); // Fetch the result
+$totalBookmarksStmt->close()
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Folktales Detail</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/style.css">
-    <style>
-        body{
-            padding-top: 100px;
-        }
-        .comments-section {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        .comment-box {
-            resize: none;
-        }
-        .folktale-header {
-            border-bottom: 1px solid #ddd;
-            margin-bottom: 20px;
-        }
-        .tabs {
-            margin-top: 5px;
-        }
-        .nav-tabs .nav-link {
-            color: black;
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #BF2C24;
-            margin-right: 2px;
-            border-radius: 5px;
-        }
-        .nav-tabs .nav-link.active {
-            color: #BF2C24;
-            background-color: #fff;
-            border-color: #BF2C24;
-            border-bottom: 2px solid #BF2C24;
-        }
-        .nav-tabs .nav-link:hover {
-            color: #BF2C24;
-            background-color: #e2e6ea;
-        }
-        .btn-custom {
-            background-color: #EFEFF4;
-            border-color: transparent;
-            border-radius: 0;
-            padding: 10px;
-            max-height: 50px;
-            width: 150px;
-        }
-        .profile-pic {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-        .tab-pane p {
-            white-space: pre-wrap; 
-            word-wrap: break-word; 
-            overflow: visible; 
-        }
-        .description {
-            max-height: none; 
-            overflow: visible;
-            padding: 10px; 
-            background-color: #f8f9fa; 
-            border-radius: 5px; 
-        }
-        #pdf-render {
-            width: 100%;
-            margin: 10px auto;
-            border: 0px;
-        }
-        .controls {
-            text-align: center;
-            margin: 10px;
-        }
-        button {
-            padding: 10px;
-            margin: 0 5px;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Folktales Details</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Fredoka+One&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <style>
+    body {
+        background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('../../assets/background.png');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed; /* This makes the background static */
+        min-height: 100vh;
+        font-family: 'Poppins', sans-serif;
+        padding-top: 90px;
+    }
+
+    .container {
+        background-color: rgba(255, 255, 255, 0); /* Slight transparency for better readability */
+        border-radius: 15px;
+        padding: 20px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    .folktale-card {
+        background-color: rgba(68, 116, 156, 0.9);
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        color: rgb(228, 232, 235);
+        margin-bottom: 20px;
+    }
+
+    .folktale-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .folktale-details {
+        flex: 1; /* Takes up remaining space */
+    }
+
+    .folktale-buttons {
+        display: flex;
+        flex-direction: column; /* Stack buttons vertically */
+        gap: 10px; /* Space between buttons */
+        margin-left: 20px; /* Space between details and buttons */
+    }
+
+    .btn-folktale {
+      background-color:rgb(184, 199, 243);
+      color: black;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 20px;
+      transition: background-color 0.3s ease;
+      min-width: 230px;
+    }
+
+    .btn-comment {
+      min-width: 100px;
+      background-color:rgba(68, 116, 156, 0.9);
+      color: white;
+      border: none;
+      padding: 8px 20px;
+      transition: background-color 0.3s ease;
+      border-radius: 10px;
+    }
+
+    .btn-signin {
+      min-width: 100px;
+      background-color:rgba(68, 116, 156, 0.9);
+      color: white;
+      border: none;
+      padding: 8px 20px;
+      transition: background-color 0.3s ease;
+      border-radius: 10px;
+    }
+
+    .btn-custom:hover {
+      background-color:rgb(129, 158, 248);
+    }
+    .comment-section {
+        background-color: rgba(195, 223, 230, 0.9);
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 20px;
+    }
+
+    .comment {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        max-height: 200px; 
+        overflow-y: auto; 
+        margin-bottom: 15px;
+        animation: fadeInRight 1s ease-in-out;
+    }
+
+    .comment .user-icon {
+        font-size: 40px;
+        color: #44749c; /* Match your theme color */
+    }
+
+    .comment .comment-content {
+        flex: 1; /* Take up remaining space */
+    }
+
+    .comment .comment-content .comment-meta {
+        font-size: 0.9em;
+        color: #666;
+        margin-bottom: 5px;
+    }
+
+    .comment .comment-content .comment-meta strong {
+        color: #333;
+    }
+
+    .comment .comment-content p {
+        margin: 0;
+    }
+
+    textarea {
+        width: 100%;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        margin-bottom: 10px;
+    }
+    #pdf-render {
+        width: 100%;
+        margin: 10px auto;
+        border: 0px;
+    }
+    .controls {
+         text-align: center;
+         margin: 10px;
+    } 
+    .delete-comment {
+        margin-left: auto;
+        cursor: pointer;
+    }
+
+    .delete-comment i {
+        color: #ff4444;
+        font-size: 1.2em;
+    }
+
+    .delete-comment i:hover {
+        color: #cc0000;
+    }
+    /* Animations */
+    @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-    </style>
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+  </style>
 </head>
 <body>
-<div id="content" class="d-flex">
+<?php if ($userID): ?>
 <?php include '../header.php'; ?>
-    <div class="container flex-grow-1">
-        <!-- Folktale Header -->
-        <div class="folktale-header">
-            <h2><?php echo htmlspecialchars($folktale['title']); ?></h2>
-            <p><i class="bi bi-bookmark"></i> <?php echo htmlspecialchars($folktale['genre']); ?> | <i class="bi bi-geo-alt"></i> <?php echo htmlspecialchars($folktale['state']); ?></p>
-        </div>
+<?php else: ?>
+<?php include '../header_guest.php'; ?>
+<?php endif; ?>
+  <div class="container">
+    <!-- Folktale Details -->
+    <div class="folktale-card">
+      <div class="folktale-header">
+          <div class="folktale-details">
+              <h1 class="text-left mb-4" style="color: white; font-family: 'Fredoka One', cursive;">📖 <?php echo htmlspecialchars($folktale['title']); ?></h1>
+              <p>
+                  <i class="bi bi-blockquote-left"> </i><?php echo htmlspecialchars($folktale['genre']); ?> |  
+                  <i class="bi bi-globe-central-south-asia"></i> <?php echo htmlspecialchars($folktale['state']); ?> |  
+                  <i class="bi bi-bookmarks"></i> <?php echo $totalBookmarks; ?> Bookmarks
+              </p>
+          </div>
+          <div class="folktale-buttons">
+              <button class="btn-custom btn-folktale bookmarkBtn" id="bookmarkBtn" data-bs-toggle="modal" data-bs-target="#bookmarkModal" onclick="">
+                  <?php echo $isBookmarked ? '<i class="bi bi-bookmark-heart-fill"></i> Remove Bookmark' : '<i class="bi bi-bookmark-heart"></i> Add to Bookmark'; ?>
+              </button>
+              <button class="btn-custom btn-folktale download-btn"  data-folktale-id="<?php echo $folktaleID; ?>">
+                <i class="bi bi-box-arrow-down"></i> Download PDF
+              </button>
+          </div>
+      </div>
+      <div>
+          <p><i class="bi bi-card-text"></i> Synopsis:</p>   
+          <div style="word-wrap: break-word; padding-left: 10px; padding-right: 15px">
+              <?php echo nl2br(htmlspecialchars($folktale['synopsis'], ENT_QUOTES, 'UTF-8')); ?>
+          </div>
+      </div>
+  </div>
 
-        <!-- Folktale Statistics -->
-        <div class="col-md-4">
-            <p><i class="bi bi-star-fill"></i><strong> <span class="bookmark-count"><?php echo $totalBookmarks; ?></span></strong> Bookmarks</p>
-        </div>
-        <div class="row mb-3">
-        <div class="col-md-2">
-            <button class="btn-custom download-btn" data-folktales-id="<?php echo $folktalesID; ?>">
-                <i class="bi bi-box-arrow-down"></i> Download
-            </button>
-        </div>
-        <div class="col-md-2">
-            <button class="btn-custom bookmark-btn" data-folktales-id="<?php echo $folktalesID; ?>" data-user-id="<?php echo isset($_SESSION['userID']) ? $_SESSION['userID'] : ''; ?>">
-                <i class="bi <?php echo $isBookmarked ? 'bi-bookmark-star-fill' : 'bi-bookmark-star'; ?>"></i> 
-                <span class="bookmark-count"><?php echo $totalBookmarks; ?></span> Bookmarks
-            </button>
-        </div>
-        </div>
-
-        <!-- Tabs -->
-        <ul class="nav nav-tabs tabs mb-3">
-            <li class="nav-item">
-                <a class="nav-link active" data-bs-toggle="tab" href="#introduction">Synopsis</a>
-            </li>
-        </ul>
-
-        <div class="tab-pane fade show active" id="introduction">
-    <h4>Description</h4>
-    <div style="white-space: pre-wrap; word-wrap: break-word;">
-        <?php echo nl2br(htmlspecialchars($folktale['synopsis'], ENT_QUOTES, 'UTF-8'));
-; ?>
+  <div class="comment-section">
+    <h3>💬 Comments</h3>
+    <div id="comments" style="max-height: 320px; overflow-y: auto;">
+        <?php while ($comment = $commentsResult->fetch_assoc()): ?>
+            <div class="comment">
+                <!-- Default user icon -->
+                <div class="user-icon">
+                    <i class="bi bi-person-circle"></i> <!-- Bootstrap Icons user icon -->
+                </div>
+                <!-- Comment content -->
+                <div class="comment-content">
+                    <div class="comment-meta">
+                        <strong><?php echo htmlspecialchars($comment['name']); ?></strong> <!-- User name -->
+                        <span>• <?php echo date('F j, Y', strtotime($comment['datePosted'])); ?></span> <!-- Formatted date -->
+                    </div>
+                    <p><?php echo htmlspecialchars($comment['content']); ?></p> <!-- Comment text -->
+                </div>
+                <!-- Delete button (only show if the comment belongs to the logged-in user) -->
+                <?php if ($userID && $comment['userID'] == $userID): ?>
+                    <div class="delete-comment">
+                        <i class="bi bi-trash" data-bs-toggle="modal" data-bs-target="#deleteModal" data-comment-id="<?php echo $comment['commentID']; ?>"></i>
+                    </div>
+                <?php endif; ?>
+            </div>
+        <?php endwhile; ?>
     </div>
+    <?php if ($userID): ?>
+        <div class="comment-form-container">
+            <form method="POST" action="" onsubmit="return confirmPost()">
+                <textarea name="comment_content" id="comment-input" class="form-control mb-2" placeholder="Write your comment..." required></textarea>
+                <button type="submit" class="btn-custom btn-comment"><i class="bi bi-send-plus"></i> Post</button>
+            </form>
+        </div>
+    <?php else: ?>
+        <button class="btn-signin" onclick="window.location.href = '../login.php'">Please login to post a comment.</button>
+    <?php endif; ?>
 </div>
 
-        <!-- Download Modal -->
-        <div class="modal fade" id="downloadModal" tabindex="-1" aria-labelledby="downloadModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
+  <!-- Delete Confirmation -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deletekModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deletekModalLabel">Delete Comment ?</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            Are you sure you want to delete this comment ?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="confirmDeleteButton" data-bs-dismiss="modal" onclick="deleteComment(<?php echo $comment['commentID']; ?>)">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Bookmark Confirmation -->
+  <div class="modal fade" id="bookmarkModal" tabindex="-1" aria-labelledby="bookmarkModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="bookmarkModalLabel">Bookmark Confirmation 💖</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <?php if ($userID): ?>
+        <div class="modal-body">
+        <?php echo $isBookmarked ? 'Are you sure you want to remove this folktale to your bookmarks?' : 
+        'Are you sure you want to add this folktale to your bookmarks?' ?>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="confirmBookmarkBtn" data-bs-dismiss="modal" onclick="toggleBookmark(<?php echo $folktaleID; ?>)">Confirm</button>
+        </div>
+        <?php else: ?>
+            <div class="modal-body">
+                You need to login to add folktales to bookmark!
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button class="btn-signin" onclick="window.location.href = '../login.php'">Login</button>
+            </div>
+        <?php endif; ?>
+      </div>
+    </div>
+  </div>
+
+  <!-- Download Modal -->
+  <div class="modal fade" id="downloadModal" tabindex="-1" aria-labelledby="downloadModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="downloadModalLabel">Folktale Preview</h5>
@@ -229,138 +420,86 @@ $totalBookmarksStmt->close();
                         echo "<p>No file available for download.</p>";
                     }
                     ?>   
-
-  
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    <!-- Bookmark Modal -->
-    <div class="modal fade" id="bookmarkModal" tabindex="-1" aria-labelledby="bookmarkModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="bookmarkModalLabel">Notification</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p id="bookmarkMessage">Folktale added to bookmarks!</p>
-                </div>
-                <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
+                  </div>
+              </div>
+          </div>
     </div>
 
-    <!-- Login Prompt Modal -->
-    <div class="modal fade" id="loginPromptModal" tabindex="-1" aria-labelledby="loginPromptModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="loginPromptModalLabel">Login Required</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>You need to be logged in to perform this action. Please log in or sign up.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <a href="../login.php" class="btn btn-primary">Login</a>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Comments Section -->
-    <div class="comments-section mt-5 p-4 border rounded">
-        <h5 class="mb-4">Comments <span class="badge bg-secondary"><?php echo $commentsResult->num_rows; ?></span></h5>
-        <div class="comment-list mb-4">
-            <?php if ($commentsResult->num_rows > 0): ?>
-                <?php while ($comment = $commentsResult->fetch_assoc()): ?>
-                    <div class="comment-item d-flex align-items-start mb-4">
-                        <img src="default-profile.png" alt="User Profile" class="rounded-circle me-3" width="50">
-                        <div>
-                            <strong><?php echo htmlspecialchars($comment['name']); ?></strong>
-                            <p><?php echo htmlspecialchars($comment['content']); ?></p>
-                            <small class="text-muted"><?php echo date("F j, Y, g:i a", strtotime($comment['datePosted'])); ?></small>
-                        </div>
-                    </div>
-                <?php endwhile; ?>
-            <?php else: ?>
-                <p>No comments yet. Be the first to comment!</p>
-            <?php endif; ?>
-        </div>
+  <!-- Bootstrap JS and dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+  <!-- Custom JS -->
+   
+  <script>
+        function toggleBookmark(folktaleID) {
+        console.log('Toggling bookmark for folktaleID:', folktaleID);
 
-        <!-- Add Comment -->
-        <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin']): ?>
-            <div class="comment-form" style="background-color:rgb(255, 240, 249); border-radius: 8px; padding: 15px;">
-                <form method="POST">
-                    <div class="d-flex align-items-start mb-3">
-                        <img src="user-profile.jpg" alt="Your Profile" class="rounded-circle me-3" width="50">
-                        <textarea name="comment_content" class="form-control" placeholder="Leave a comment" style="background-color: #fafafa; border-color: #ccc;" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Post</button>
-                </form>
-            </div>
-        <?php else: ?>
-            <p><a href="lview/login.php">Log in</a> to leave a comment.</p>
-        <?php endif; ?>
-    </div>
-</div>
+        fetch('toggle_bookmark.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'folktaleID=' + folktaleID
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.statusText);
+            }
+            return response.text();
+        })
+        .then(data => {
+            console.log('Response from server:', data);
+            const bookmarkBtn = document.getElementById('bookmarkBtn');
+            if (data === 'added') {
+                bookmarkBtn.innerHTML = '<i class="bi bi-bookmark-heart-fill"></i> Remove Bookmark';
+            } else if (data === 'removed') {
+                bookmarkBtn.innerHTML = '<i class="bi bi-bookmark-heart"></i> Add to Bookmark';
+            }
+        })
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const bookmarkButtons = document.querySelectorAll('.bookmark-btn');
+        .catch(error => {
+            console.error('Error during fetch:', error);
+        });
+    }
 
-    bookmarkButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            <?php if (!isset($_SESSION['loggedin']) || !$_SESSION['loggedin']): ?>
-                // Show login prompt modal
-                const loginModal = new bootstrap.Modal(document.getElementById('loginPromptModal'));
-                loginModal.show();
-            <?php else: ?>
-                const folktalesID = this.dataset.folktalesId;
-                const userID = this.dataset.userId;
-
-                // Send AJAX request to bookmark the folktale
-                fetch('add_bookmark.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ folktalesID, userID })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    const modalEl = document.getElementById('bookmarkModal');
-                    const modalMessage = document.getElementById('bookmarkMessage');
-                    const modal = new bootstrap.Modal(modalEl);
-
-                    if (data.success) {
-                        modalMessage.textContent = 'Folktale added to bookmarks!';
-                    } else {
-                        modalMessage.textContent = 'Failed to add folktale: ' + data.message;
-                    }
-                    modal.show();
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    const modalEl = document.getElementById('bookmarkModal');
-                    const modalMessage = document.getElementById('bookmarkMessage');
-                    const modal = new bootstrap.Modal(modalEl);
-                    modalMessage.textContent = 'An error occurred while adding the folktale.';
-                    modal.show();
-                });
-            <?php endif; ?>
+    function confirmPost() {
+        return confirm("Are you sure you want to post this comment?");
+    }
+    // Function to set the commentID in the modal
+    document.addEventListener('DOMContentLoaded', function () {
+        var deleteModal = document.getElementById('deleteModal');
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget; // Button that triggered the modal
+            var commentID = button.getAttribute('data-comment-id'); // Extract commentID from data attribute
+            var confirmDeleteButton = deleteModal.querySelector('#confirmDeleteButton');
+            confirmDeleteButton.setAttribute('onclick', `deleteComment(${commentID})`);
         });
     });
-});
-</script>
 
-<script>
+    // Function to delete the comment
+    function deleteComment(commentID) {
+        fetch(`delete_comment.php?commentID=${commentID}`, {
+            method: 'GET',
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Reload the comments section
+                location.reload();
+            } else {
+                alert("Failed to delete the comment. Error: " + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("Failed to delete the comment. Please try again.");
+        });
+    }
+  </script>
+  <script>
     document.addEventListener('DOMContentLoaded', function () {
         const downloadButtons = document.querySelectorAll('.download-btn');
 
@@ -407,71 +546,5 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 </script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const bookmarkButtons = document.querySelectorAll('.bookmark-btn');
-
-    bookmarkButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            const folktalesID = this.dataset.folktalesId;
-            const userID = this.dataset.userId;
-
-            if (!userID) {
-                // Show login prompt modal if user is not logged in
-                const loginModal = new bootstrap.Modal(document.getElementById('loginPromptModal'));
-                loginModal.show();
-                return;
-            }
-
-            const icon = this.querySelector('i');
-            const bookmarkCount = this.querySelector('.bookmark-count');
-            const isBookmarked = icon.classList.contains('bi-bookmark-star-fill');
-
-            // Send AJAX request to toggle bookmark
-            fetch('toggle_bookmark.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ folktalesID, userID, action: isBookmarked ? 'remove' : 'add' })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Toggle the bookmark icon
-                    if (isBookmarked) {
-                        icon.classList.remove('bi-bookmark-star-fill');
-                        icon.classList.add('bi-bookmark-star');
-                    } else {
-                        icon.classList.remove('bi-bookmark-star');
-                        icon.classList.add('bi-bookmark-star-fill');
-                    }
-
-                    // Update the bookmark count
-                    bookmarkCount.textContent = data.totalBookmarks;
-
-                    // Show a notification
-                    const modalEl = document.getElementById('bookmarkModal');
-                    const modalMessage = document.getElementById('bookmarkMessage');
-                    const modal = new bootstrap.Modal(modalEl);
-                    modalMessage.textContent = isBookmarked ? 'Folktale removed from bookmarks!' : 'Folktale added to bookmarks!';
-                    modal.show();
-                } else {
-                    alert('Failed to update bookmark: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while updating the bookmark.');
-            });
-        });
-    });
-});
-</script>
-    
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-
 </body>
 </html>
-<?php
-$conn->close();
-?>

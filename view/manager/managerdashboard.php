@@ -18,7 +18,7 @@ $totalGenreRow = $totalGenreResult->fetch_assoc();
 $totalGenre = $totalGenreRow['genre_count'];
 
 // Fetch top 5 folktales with the highest bookmark counts
-$query = "SELECT f.title, bf.count FROM bookmark_folktale bf JOIN folktales f ON bf.folktalesID = f.folktaleID ORDER BY bf.count DESC LIMIT 5";
+$query = "SELECT f.title, bf.count FROM bookmark_folktale bf JOIN folktales f ON bf.folktaleID = f.folktaleID ORDER BY bf.count DESC LIMIT 5";
 $result = mysqli_query($conn, $query);
 
 // Prepare data for the chart
@@ -44,11 +44,11 @@ while ($row = mysqli_fetch_assoc($result)) {
             margin: 0;
             padding: 0;
             font-family: 'Poppins', sans-serif;
-            background: url('../assets/background.png') no-repeat center center/cover;
+            background: url('../../assets/background.png') no-repeat center center/cover;
             background-size: cover;
         }
         .content {
-            padding-top: 100px;
+            padding-top: 120px;
             margin-left: 30px;
         }
         .top-section {
@@ -131,21 +131,21 @@ while ($row = mysqli_fetch_assoc($result)) {
         <!-- Card Section -->
         <div class="card-section">
             <!-- Card 1: User Report -->
-            <a href="../user_report.php" class="card">
+            <a href="user_report.php" class="card">
                 <i class="bi bi-person-heart icon-pic"></i>
                 <h3>USER REPORT</h3>
                 <p class="total">Total: <span id="genre-total"><?php echo $totalUser; ?></span></p>
             </a>
 
             <!-- Card 2: Folktales Origin -->
-            <a href="../origin_report.php" class="card">
+            <a href="origin_report.php" class="card">
                 <i class="bi bi-geo-fill icon-pic"></i>
                 <h3>FOLKTALES ORIGIN</h3>
                 <p class="total">Total: <span id="genre-total"><?php echo $totalOrigins; ?></span></p>
             </a>
 
             <!-- Card 3: Folktales Genre -->
-            <a href="../genre_report.php" class="card">
+            <a href="genre_report.php" class="card">
                 <i class="bi bi-journal icon-pic"></i>
                 <h3>FOLKTALES GENRE</h3>
                 <p class="total">Total: <span id="genre-total"><?php echo $totalGenre; ?></span></p>

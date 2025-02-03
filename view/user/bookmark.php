@@ -1,35 +1,48 @@
 <?php
-session_start(); // Start the session
-// Database connection
+session_start();
 include '../dbconn.php';
 
-// Ensure $userID is set and valid
 $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : null;
-// Use a prepared statement to count the total bookmarks for the user
+
+$search = isset($_GET['search']) ? $_GET['search'] : '';
+
 $totalQuery = "SELECT COUNT(*) AS total 
-               FROM bookmark b
-               JOIN bookmark_folktale bf ON b.bookmarkID = bf.bookmarkID
-               WHERE b.userID = ?";
+            FROM bookmark b
+            JOIN bookmark_folktale bf ON b.bookmark_folktaleID = bf.bookmark_folktaleID
+            JOIN folktales f ON bf.folktaleID = f.folktaleID
+            WHERE b.userID = ?";
+if (!empty($search)) {
+    $totalQuery .= " AND (f.title LIKE '%" . $conn->real_escape_string($search) . "%' 
+                 OR f.genre LIKE '%" . $conn->real_escape_string($search) . "%' 
+                 OR f.state LIKE '%" . $conn->real_escape_string($search) . "%')";
+    }
 $totalStmt = $conn->prepare($totalQuery);
 $totalStmt->bind_param("i", $userID);
 $totalStmt->execute();
 $totalResult = $totalStmt->get_result();
 $totalRow = $totalResult->fetch_assoc();
-$totalBookmarks = $totalRow['total']; // Total number of bookmarks the user has added
-// Pagination setup
-$limit = 10; // Number of records per page
-$page = isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] > 0 ? (int)$_GET['page'] : 1; // Ensure valid page number
-$totalPages = ceil($totalBookmarks / $limit); // Calculate total pages
-$page = min($page, $totalPages); // Adjust if page exceeds total pages
-$start = ($page - 1) * $limit; // Calculate the offset for the SQL query
+$totalBookmarks = $totalRow['total']; 
+
+
+$limit = 10;
+$page = isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] > 0 ? (int)$_GET['page'] : 1;
+$totalPages = ceil($totalBookmarks / $limit); 
+$page = min($page, $totalPages); 
+$start = ($page - 1) * $limit;
+
 
 // Fetch bookmarked folktales for the user
-$sql = "SELECT f.title, f.genre, f.state, bf.count, bf.folktalesID
+$sql = "SELECT f.title, f.genre, f.state, bf.count, bf.folktaleID
         FROM bookmark b
-        JOIN bookmark_folktale bf ON b.bookmarkID = bf.bookmarkID
-        JOIN folktales f ON bf.folktalesID = f.folktaleID
-        WHERE b.userID = ?
-        LIMIT ?, ?";
+        JOIN bookmark_folktale bf ON b.bookmark_folktaleID = bf.bookmark_folktaleID
+        JOIN folktales f ON bf.folktaleID = f.folktaleID
+        WHERE b.userID = ?";
+if (!empty($search)) {
+    $sql .= " AND (f.title LIKE '%" . $conn->real_escape_string($search) . "%' 
+                 OR f.genre LIKE '%" . $conn->real_escape_string($search) . "%' 
+                 OR f.state LIKE '%" . $conn->real_escape_string($search) . "%')";
+    }
+$sql .= " LIMIT ?, ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("iii", $userID, $start, $limit);
 $stmt->execute();
@@ -48,61 +61,155 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bookmarks</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Fredoka+One&display=swap" rel="stylesheet">
     <style>
         body { 
+            font-family: 'Poppins', sans-serif;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(247, 247, 247, 0.7)), url('../../assets/bg_2w.png');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            background-attachment: fixed;
             padding-top: 100px;
         }
-        .total-bookmarks-card {
-            background-color: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        .total-bookmarks-card span {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #5e72e4;
-        }
-        .table-container {
+
+        .container {
             margin-top: 20px;
         }
-        .pagination {
-            justify-content: center;
+
+        h2 {
+            font-family: 'Fredoka One', cursive;
+            color: #32607C;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
+
+        .total-bookmarks-card {
+            background-color: #32607C;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+            color:white;
+        }
+        .total-bookmarks-card span {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
         .search-bar {
             display: flex;
-            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
             margin-bottom: 20px;
         }
         .search-bar input {
-            width: 50%;
-            padding: 10px;
+            flex: 1;
+            border-radius: 25px;
+            padding: 10px 20px;
+            border: 2px solid #32607C;
             font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
         }
-        .search-bar input::placeholder {
-            color: #6c757d;
-            font-size: 16px;
-            opacity: 1;
+        .search-bar button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #32607C;
+            color: white;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: background-color 0.3s ease;
+        }
+        .search-bar button:hover {
+            background-color: #234956;
+        }
+        .clear-search {
+            color: #32607C;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+        .clear-search:hover {
+            color: #234956;
         }
 
-        .thead th {
-            background-color: #C3DFE6;
-            color: black;
+        .table-responsive {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .table thead {
+            background-color: #32607C;
+            color: #fff;
+        }
+
+        .table th, .table td {
+            padding: 15px;
+            text-align: center;
+        }
+
+        .table tbody {
+            background-color:rgb(255, 255, 255);
+        }
+
+        .btn-primary {
+            background-color: #32607C;
+            border: none;
+            border-radius: 25px;
+            padding: 8px 20px;
+            font-size: 14px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #234956;
+            transform: scale(1.05);
+        }
+
+        .pagination {
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .page-item.active .page-link {
+            background-color: #32607C;
+            border-color: #32607C;
+        }
+
+        .page-link {
+            color: #32607C;
+            border-radius: 25px;
+            margin: 0 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .page-link:hover {
+            background-color: #32607C;
+            color: #fff;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .table tbody tr {
+            animation: slideIn 0.5s ease-out;
         }
     </style>
 </head>
 <body>
+<div class="d-flex">
 <?php include '../header.php'; ?> 
-<div id="content">
-<div class="container mt-5">
+<div class="container">
     <h2 class="mb-4">Bookmarks</h2>
-
-    <!-- Total Bookmarks Card -->
     <div class="row mb-4">
         <div class="col-md-4">
             <div class="total-bookmarks-card">
@@ -113,10 +220,14 @@ $conn->close();
         </div>
     </div>
 
-    <!-- Search Filters -->
-    <div class="search-bar">
-        <input type="text" id="search-input" class="form-control" placeholder="Search by title..." oninput="filterTable()">
-    </div>
+    <form method="GET" action="" class="search-bar">
+        <input type="text" name="search" placeholder="Search folktales..." value="<?php echo htmlspecialchars($search); ?>">
+        <input type="hidden" name="page" value="1"> 
+        <button type="submit"><i class="bi bi-search"></i> Search</button>
+        <?php if (!empty($search)) : ?>
+            <a href="bookmark.php" class="clear-search">Clear Search</a>
+        <?php endif; ?>
+    </form>
 
     <!-- Bookmarks Table -->
     <div class="table-responsive table-container">
@@ -124,33 +235,37 @@ $conn->close();
             <thead class="thead">
                 <tr>
                     <th>Bil</th>
-                    <th>Title</th>
+                    <th style="text-align: start">Title</th>
                     <th>State</th>
                     <th>Genre</th>
-                    <th>Action</th>
+                    <th style="width: 15%"></th>
                 </tr>
             </thead>
-            <tbody id="bookmarks-table-body">
-<?php
-if ($result->num_rows > 0) {
-    $bil = $start + 1;
-    while ($row = $result->fetch_assoc()) {
-        echo "<tr data-folktalesid='" . $row['folktalesID'] . "'>";
-        echo "<td>" . $bil++ . "</td>";
-        echo "<td>" . htmlspecialchars($row['title']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['state']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['genre']) . "</td>";
-        echo "<td>
-            <button class='btn btn-danger btn-sm delete-btn' data-folktales-id='" . $row['folktalesID'] . "'>
-            Delete</button>
-            </td>";
-        echo "</tr>";
-    }
-} else {
-    echo "<tr><td colspan='5'>No records found</td></tr>";
-}
-?>
-</tbody>
+            <tbody class="tbody" id="bookmarks-table-body">
+            <?php
+            if ($result->num_rows > 0) {
+                $bil = $start + 1;
+                while ($row = $result->fetch_assoc()) {
+                    echo "<tr data-folktaleID='" . $row['folktaleID'] . "'>";
+                    echo "<td>" . $bil++ . "</td>";
+                    echo "<td style='text-align: start'>" . htmlspecialchars($row['title']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['state']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['genre']) . "</td>";
+                    echo "<td>
+                            <button class='btn btn-primary btn-sm mb-1' onclick=\"window.location.href='folktaledetails.php?id=" . $row['folktaleID'] . "'\">
+                                View Details
+                            </button>
+                            <button class='btn btn-danger btn-sm delete-btn mb-1' data-folktales-id='" . $row['folktaleID'] . "'>
+                                Delete
+                            </button>
+                        </td>";
+                    echo "</tr>";
+                }
+            } else {
+                echo "<tr><td colspan='5'>No records found</td></tr>";
+            }
+            ?>
+            </tbody>
         </table>
     </div>
     
@@ -173,96 +288,82 @@ if ($result->num_rows > 0) {
         </div>
     </div>
 
-    <!-- Pagination -->
     <nav aria-label="Page navigation">
-        <ul class="pagination">
-            <li class="page-item <?php echo ($page <= 1) ? 'disabled' : ''; ?>">
-                <a class="page-link" href="?page=<?php echo $page - 1; ?>">Previous</a>
-            </li>
-            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
-                    <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+            <ul class="pagination">
+                <li class="page-item <?php echo ($page <= 1) ? 'disabled' : ''; ?>">
+                    <a class="page-link" href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>"><<</a>
                 </li>
-            <?php endfor; ?>
-            <li class="page-item <?php echo ($page >= $totalPages) ? 'disabled' : ''; ?>">
-                <a class="page-link" href="?page=<?php echo $page + 1; ?>">Next</a>
-            </li>
-        </ul>
-    </nav>
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                    <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
+                        <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>"><?php echo $i; ?></a>
+                    </li>
+                <?php endfor; ?>
+                <li class="page-item <?php echo ($page >= $totalPages) ? 'disabled' : ''; ?>">
+                    <a class="page-link" href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>">>></a>
+                </li>
+            </ul>
+        </nav>
 </div>
 </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Filter table by title
-    function filterTable() {
-        const searchInput = document.getElementById('search-input').value.toLowerCase();
-        const tableRows = document.querySelectorAll('#bookmarks-table-body tr');
-
-        tableRows.forEach(row => {
-            const title = row.cells[1].textContent.toLowerCase();
-            if (title.includes(searchInput)) {
-                row.style.display = ''; // Show matching rows
-            } else {
-                row.style.display = 'none'; // Hide non-matching rows
-            }
-        });
-    }
-
     // Handle bookmark deletion
-    let folktalesIDToDelete = null;
-    let userIDToDelete = 12; // Assume the logged-in user ID is 12 (adjust dynamically)
+    let folktaleIDToDelete = null;
+    let userIDToDelete = <?php echo isset($_SESSION['userID']) ? $_SESSION['userID'] : 'null'; ?>; // Dynamically get userID from session
 
     document.querySelectorAll('.delete-btn').forEach(button => {
         button.addEventListener('click', function() {
-            folktalesIDToDelete = this.getAttribute('data-folktales-id');
+            folktaleIDToDelete = this.getAttribute('data-folktales-id');
             const modal = new bootstrap.Modal(document.getElementById('bookmarkModal'));
             modal.show();
         });
     });
 
     // Confirm delete action
-document.getElementById('confirm-delete-btn').addEventListener('click', function() {
-    if (folktalesIDToDelete !== null && userIDToDelete !== null) {
-        fetch('delete_bookmark.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                folktalesID: folktalesIDToDelete,
-                userID: userIDToDelete
+    document.getElementById('confirm-delete-btn').addEventListener('click', function() {
+        if (folktaleIDToDelete !== null && userIDToDelete !== null) {
+            fetch('delete_bookmark.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    folktaleID: folktaleIDToDelete,
+                    userID: userIDToDelete
+                })
             })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Close the modal
-                var myModal = bootstrap.Modal.getInstance(document.getElementById('bookmarkModal'));
-                myModal.hide();
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Close the modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('bookmarkModal'));
+                    modal.hide();
 
-                // Optionally remove the row from the table
-                let row = document.querySelector(`tr[data-folktalesid="${folktalesIDToDelete}"]`);
-                if (row) row.remove();
+                    // Remove the row from the table
+                    const row = document.querySelector(`tr[data-folktaleID="${folktaleIDToDelete}"]`);
+                    if (row) row.remove();
 
-                // Update total bookmarks count
-                const totalBookmarksElement = document.querySelector('.total-bookmarks-card span');
-                const currentCount = parseInt(totalBookmarksElement.textContent);
-                if (!isNaN(currentCount) && currentCount > 0) {
-                    totalBookmarksElement.textContent = currentCount - 1;
+                    // Update total bookmarks count
+                    const totalBookmarksElement = document.querySelector('.total-bookmarks-card span');
+                    const currentCount = parseInt(totalBookmarksElement.textContent);
+                    if (!isNaN(currentCount) && currentCount > 0) {
+                        totalBookmarksElement.textContent = currentCount - 1;
+                    }
+
+                    // Show success message
+                    alert('Bookmark deleted successfully.');
+                } else {
+                    alert(data.message || 'Failed to delete bookmark.');
                 }
-            } else {
-                alert(data.message);
-            }
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            alert("An error occurred while deleting the bookmark.");
-        });
-    }
-});
-
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("An error occurred while deleting the bookmark.");
+            });
+        }
+    });
 </script>
 </body>
 </html>

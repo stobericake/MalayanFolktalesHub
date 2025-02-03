@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Function to validate user from a table
         function validateUser($table, $email, $password, $conn) {
             // Determine the ID column name based on the table
-            $idColumn = $table . 'id'; // e.g., 'userid', 'clerkid', 'managerid'
+            $idColumn = $table . 'ID'; // e.g., 'userid', 'clerkid', 'managerid'
 
             // Use prepared statements to prevent SQL injection
             $query = "SELECT `$idColumn` AS id, `email`, `password` FROM `$table` WHERE `email` = '$email'";
@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Redirect based on role
             switch ($role) {
                 case 'user':
-                    header("Location: home.php");
+                    header("Location: user/home.php");
                     break;
                 case 'clerk':
                     header("Location: clerk/clerkdashboard.php");
@@ -83,42 +83,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <style>
         body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Poppins', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden; /* Prevent scrollbars */
-    position: relative; /* Required for the pseudo-element */
-}
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden; /* Prevent scrollbars */
+            position: relative; /* Required for the pseudo-element */
+        }
 
-body::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url('../assets/background.png') no-repeat center center/cover;
-    opacity: 0.5; /* Adjust the value (0 to 1) for transparency */
-    z-index: -1; /* Place it behind everything else */
-}
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('../assets/background.png') no-repeat center center/cover;
+            opacity: 0.5; /* Adjust the value (0 to 1) for transparency */
+            z-index: -1; /* Place it behind everything else */
+        }
 
-.container {
-    display: flex;
-    flex-direction: row;
-    width: 60%;
-    height: 70%;
-    background-color: white;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    position: relative; /* To ensure proper stacking with ::before */
-}
-
-
+        .container {
+            display: flex;
+            flex-direction: row;
+            width: 60%;
+            height: 70%;
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative; /* To ensure proper stacking with ::before */
+        }
 
         .form-section {
             flex: 1;

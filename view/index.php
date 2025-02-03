@@ -36,9 +36,9 @@
         <h2 class="mb-4">Index of Pages</h2>
         <div class="link-list">
             <h5>View Pages</h5>
-            <a href="userdashboard.php">landing</a>
+            <a href="landing_page.php">landing</a>
             <a href="bookmark.php">Bookmark</a>
-            <a href="clerklisting.php">Clerk Listing</a>]
+            <a href="clerklisting.php">Clerk Listing</a>
             <a href="addfolktales.php">Add Folktales</a>
             <a href="editfolktales.php">Edit Folktales</a>
             <a href="folktaledetails.php">Folktale Details</a>
@@ -51,8 +51,6 @@
             <a href="userhomedashboard.php">User Home Dashboard</a>
             <a href="userhome.php">User Home</a>
             <a href="userprofile.php">User Profile</a>
-           
-       
         </div>
     </div>
 

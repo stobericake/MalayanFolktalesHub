@@ -1,9 +1,16 @@
 <?php
-// Database connection
+session_start();
 include '../dbconn.php';
 
-// Fetch total number of folktales
+$userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : null;
+$search = isset($_GET['search']) ? $_GET['search'] : '';
+
 $totalRecordsQuery = "SELECT COUNT(*) AS total FROM folktales";
+if (!empty($search)) {
+    $totalRecordsQuery .= " WHERE (title LIKE '%" . $conn->real_escape_string($search) . "%' 
+                 OR genre LIKE '%" . $conn->real_escape_string($search) . "%' 
+                 OR state LIKE '%" . $conn->real_escape_string($search) . "%')";
+}
 $totalRecordsResult = mysqli_query($conn, $totalRecordsQuery);
 $totalRecords = mysqli_fetch_assoc($totalRecordsResult)['total'];
 
@@ -13,8 +20,15 @@ $totalPages = ceil($totalRecords / $recordsPerPage);
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $start = ($page - 1) * $recordsPerPage;
 
-// Fetch folktales with pagination
-$query = "SELECT * FROM folktales LIMIT $start, $recordsPerPage";
+$search = isset($_GET['search']) ? $_GET['search'] : '';
+
+$query = "SELECT * FROM folktales";
+if (!empty($search)) {
+    $query .= " WHERE (title LIKE '%" . $conn->real_escape_string($search) . "%' 
+                 OR genre LIKE '%" . $conn->real_escape_string($search) . "%' 
+                 OR state LIKE '%" . $conn->real_escape_string($search) . "%')";
+}
+$query .= " LIMIT $start, $recordsPerPage";
 $result = mysqli_query($conn, $query);
 ?>
 <!DOCTYPE html>
@@ -23,16 +37,19 @@ $result = mysqli_query($conn, $query);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Folktales List</title>
-    <!-- Bootstrap CSS CDN -->
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Fredoka+One&display=swap" rel="stylesheet">
-    <!-- Custom CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(247, 247, 247, 0.7)), url('../../assets/bg_2w.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            color: #fff;
             padding-top: 100px;
         }
 
@@ -62,14 +79,38 @@ $result = mysqli_query($conn, $query);
         }
 
         .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             margin-bottom: 20px;
         }
-
         .search-bar input {
+            flex: 1;
             border-radius: 25px;
             padding: 10px 20px;
             border: 2px solid #32607C;
             font-size: 16px;
+        }
+        .search-bar button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #32607C;
+            color: white;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: background-color 0.3s ease;
+        }
+        .search-bar button:hover {
+            background-color: #234956;
+        }
+        .clear-search {
+            color: #32607C;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+        .clear-search:hover {
+            color: #234956;
         }
 
         .table-responsive {
@@ -88,8 +129,8 @@ $result = mysqli_query($conn, $query);
             text-align: center;
         }
 
-        .table tbody tr:hover {
-            background-color: #f0f0f0;
+        .table tbody {
+            background-color:rgb(255, 251, 251);
         }
 
         .btn-primary {
@@ -127,11 +168,30 @@ $result = mysqli_query($conn, $query);
             background-color: #32607C;
             color: #fff;
         }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .table tbody tr {
+            animation: slideIn 0.5s ease-out;
+        }
+
     </style>
 </head>
 <body>
     <div class="d-flex">
-        <?php include '../header.php'; ?>
+        <?php if ($userID): ?>
+            <?php include '../header.php'; ?>
+        <?php else: ?>
+            <?php include '../header_guest.php'; ?>
+        <?php endif; ?>
         <div class="container">
             <h2 class="mb-4">Folktales List</h2>
             <div class="row mb-4">
@@ -144,10 +204,15 @@ $result = mysqli_query($conn, $query);
                 </div>
             </div>
 
-            <!-- Search Filters -->
-            <div class="search-bar">
-                <input type="text" id="search-input" class="form-control" placeholder="Search folktales details.." oninput="filterTable()">
-            </div>
+            <!-- Search Form with Filters -->
+            <form method="GET" action="" class="search-bar">
+                <input type="text" name="search" placeholder="Search for folktales..." value="<?php echo htmlspecialchars($search); ?>">
+                <input type="hidden" name="page" value="1"> 
+                <button type="submit"><i class="bi bi-search"></i> Search</button>
+                <?php if (!empty($search)) : ?>
+                    <a href="folktalelist.php" class="clear-search">Clear Search</a>
+                <?php endif; ?>
+            </form>
 
             <!-- Table -->
             <div class="table-responsive table-container">
@@ -161,7 +226,7 @@ $result = mysqli_query($conn, $query);
                             <th class="view-details-column"></th>
                         </tr>
                     </thead>
-                    <tbody id="bookmarks-table-body">
+                    <tbody class="tbody" id="bookmarks-table-body">
                         <?php
                         if ($result->num_rows > 0) {
                             $bil = $start + 1; // Serial number starts from the offset + 1
@@ -187,43 +252,24 @@ $result = mysqli_query($conn, $query);
 
             <!-- Pagination -->
             <nav aria-label="Page navigation">
-                <ul class="pagination">
-                    <li class="page-item <?php echo ($page <= 1) ? 'disabled' : ''; ?>">
-                        <a class="page-link" href="?page=<?php echo $page - 1; ?>"><<</a>
+            <ul class="pagination">
+                <li class="page-item <?php echo ($page <= 1) ? 'disabled' : ''; ?>">
+                    <a class="page-link" href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>"><<</a>
+                </li>
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                    <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
+                        <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>"><?php echo $i; ?></a>
                     </li>
-                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                        <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
-                            <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
-                        </li>
-                    <?php endfor; ?>
-                    <li class="page-item <?php echo ($page >= $totalPages) ? 'disabled' : ''; ?>">
-                        <a class="page-link" href="?page=<?php echo $page + 1; ?>">>></a>
-                    </li>
-                </ul>
-            </nav>
+                <?php endfor; ?>
+                <li class="page-item <?php echo ($page >= $totalPages) ? 'disabled' : ''; ?>">
+                    <a class="page-link" href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>">>></a>
+                </li>
+            </ul>
+        </nav>
         </div>
     </div>
 
     <!-- Bootstrap JS CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function filterTable() {
-            const searchInput = document.getElementById('search-input').value.toLowerCase();
-            const tableRows = document.querySelectorAll('#bookmarks-table-body tr');
-
-            tableRows.forEach(row => {
-                const title = row.cells[1].textContent.toLowerCase(); // Title column
-                const state = row.cells[2].textContent.toLowerCase(); // State column
-                const genre = row.cells[3].textContent.toLowerCase(); // Genre column
-
-                // Show the row if any column matches the search input
-                if (title.includes(searchInput) || state.includes(searchInput) || genre.includes(searchInput)) {
-                    row.style.display = ''; // Show matching rows
-                } else {
-                    row.style.display = 'none'; // Hide non-matching rows
-                }
-            });
-        }
-    </script>
 </body>
 </html>
