@@ -179,6 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         .btn {
             width: 100px;
+            margin-top: 10px;
             padding: 12px;
             justify-content: center;
             align-items: center;
@@ -218,13 +219,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             color: #333333;
         }
     </style>
-    <script>
-        function toggleIdentifierField() {
-            const role = document.querySelector('input[name="role"]:checked').value;
-            const identifierInput = document.getElementById('identifier');
-            identifierInput.placeholder = role === 'user' ? 'Email' : 'ID';
+<script>
+    function toggleIdentifierField() {
+        const role = document.querySelector('input[name="role"]:checked').value;
+        const identifierInput = document.getElementById('identifier');
+        const registerLink = document.getElementById('register-link');
+
+        // Update the placeholder based on the selected role
+        identifierInput.placeholder = role === 'user' ? 'Email' : 'ID';
+
+        // Show or hide the register link based on the selected role
+        if (role === 'user') {
+            registerLink.style.display = 'inline'; // Show the link
+        } else {
+            registerLink.style.display = 'none'; // Hide the link
         }
-    </script>
+    }
+</script>
 </head>
 <body>
     <div class="container">
@@ -245,7 +256,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <i class="fa fa-lock"></i>
                     <input type="password" id="password" name="password" placeholder="Password" required>
                 </div>
-                <p>Doesn't have an account? <a href="register.php">Register</a></p>
+                <p id="register-link">Doesn't have an account? <a href="register.php">Register</a></p>
                 <button type="submit" name="submit" class="btn">Sign In</button>
             </form>
             <?php if (!empty($error)): ?>
