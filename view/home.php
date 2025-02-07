@@ -318,12 +318,11 @@ $states_result = mysqli_query($conn, $states_query);
         <div class="row row-cols-1 row-cols-md-3 g-4">
             <?php
             // Fetch top 3 folktales with highest bookmarks
-            $top_folktales_query = "
-                SELECT f.folktaleID, f.title, f.genre, f.state, COUNT(bf.bookmark_folktaleID) AS bookmark_count
+            $top_folktales_query = "SELECT f.folktaleID, f.title, f.genre, f.state, bf.count
                 FROM folktales f
                 LEFT JOIN bookmark_folktale bf ON f.folktaleID = bf.folktaleID
                 GROUP BY f.folktaleID
-                ORDER BY bookmark_count DESC
+                ORDER BY bf.count DESC
                 LIMIT 3;
             ";
             $top_folktales_result = mysqli_query($conn, $top_folktales_query);
@@ -352,7 +351,7 @@ $states_result = mysqli_query($conn, $states_query);
                                 <p class="card-text" style="color: #6c757d;">
                                     <strong><i class="bi bi-music-note-beamed"></i> Genre:</strong> ' . htmlspecialchars($row['genre']) . '<br>
                                     <strong><i class="bi bi-geo-alt"></i> State:</strong> ' . htmlspecialchars($row['state']) . '<br>
-                                    <strong><i class="bi bi-bookmark-check"></i> Bookmarks:</strong> ' . $row['bookmark_count'] . '
+                                    <strong><i class="bi bi-bookmark-check"></i> Bookmarks:</strong> ' . $row['count'] . '
                                 </p>
                                 <a href="user/folktaledetails.php?id=' . $row['folktaleID'] . '" class="btn view-details-btn" style="background-color:rgb(85, 139, 255); color: white; border-radius: 20px; padding: 8px 20px;">
                                     <i class="bi bi-eye"></i> View Details

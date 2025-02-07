@@ -229,7 +229,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <label for="fileUpload" class="form-label">Upload File (.pdf)</label>
                     <div class="input-group">
                         <input type="file" class="form-control custom-border" id="fileUpload" name="file" accept=".pdf">
-                        <button class="btn custom-upload-btn" type="button">Upload</button>
                     </div>
                 </div>
             </div>
@@ -263,10 +262,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </select>
                 </div>
                 <div class="col-md-6">
-                    <label for="genre" class="form-label">Genre</label>
-                    <input type="text" class="form-control custom-border" id="genre" name="genre" placeholder="Insert genre here.." required>
+                <label for="genre" class="form-label">Genre</label>
+                        <select class="form-select custom-border" id="genre" name="genre" required>
+                            <option value="Alegori">Alegori</option>
+                            <option value="Cerita rakyat">Cerita rakyat</option>
+                            <option value="Dongeng">Dongeng</option>
+                            <option value="Epik">Epik</option>
+                            <option value="Fabel">Fabel</option>
+                            <option value="Jenaka">Jenaka</option>
+                            <option value="Kanak-Kanak">Kanak-Kanak</option>
+                            <option value="Lagenda">Lagenda</option>
+                            <option value="Mitos">Mitos</option>
+                            <option value="Moral">Moral</option>
+                            <option value="Pengembaraan">Pengembaraan</option>
+                            <option value="Sejarah">Sejarah</option>
+                            <option value="Seram">Seram</option>
+                            <option value="Teladan">Teladan</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
+           
 
             <div class="text-end">
                 <button type="button" class="btn-secondary" onclick="window.location.href = 'clerklisting.php'">Cancel</button>

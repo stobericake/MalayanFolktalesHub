@@ -58,6 +58,20 @@ $result = $conn->query($sql);
             color: #32607C;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
+        .download-button {
+            align-items: end;
+            padding: 10px 20px;
+            border: none;
+            background-color: #32607C;
+            color: white;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+        .download-button :hover {
+            background-color: #234956;
+        }
 
         .search-bar {
             display: flex;
@@ -179,6 +193,9 @@ $result = $conn->query($sql);
             <a href="origin_report.php" class="clear-search">Clear Search</a>
         <?php endif; ?>
     </form>
+    <a type="submit" class="download-button mb-3" style="font-size: 16px" href="all_origin_pdf.php">
+        <i class='bi bi-file-earmark-arrow-down'></i> Download all origin report
+    </a>
     <div class="table-responsive table-container">
         <table class="table table-bordered table-striped">
             <thead class="thead">

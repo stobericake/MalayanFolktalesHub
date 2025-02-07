@@ -288,7 +288,22 @@ $conn->close();
                     </div>
                     <div class="col-md-6">
                         <label for="genre" class="form-label">Genre</label>
-                        <input type="text" class="form-control custom-border" id="genre" name="genre" value="<?= htmlspecialchars($folktale['genre']) ?>" required>
+                        <select class="form-select custom-border" id="genre" name="genre" required>
+                            <option value="Alegori" <?= $folktale['genre'] == 'Alegori' ? 'selected' : '' ?>>Alegori</option>
+                            <option value="Cerita rakyat" <?= $folktale['genre'] == 'Cerita rakyat' ? 'selected' : '' ?>>Cerita rakyat</option>
+                            <option value="Dongeng" <?= $folktale['genre'] == 'Dongeng' ? 'selected' : '' ?>>Dongeng</option>
+                            <option value="Epik" <?= $folktale['genre'] == 'Epik' ? 'selected' : '' ?>>Epik</option>
+                            <option value="Fabel" <?= $folktale['genre'] == 'Fabel' ? 'selected' : '' ?>>Fabel</option>
+                            <option value="Jenaka" <?= $folktale['genre'] == 'Jenaka' ? 'selected' : '' ?>>Jenaka</option>
+                            <option value="Kanak-Kanak" <?= $folktale['genre'] == 'Kanak-Kanak' ? 'selected' : '' ?>>Kanak-Kanak</option>
+                            <option value="Lagenda" <?= $folktale['genre'] == 'Lagenda' ? 'selected' : '' ?>>Lagenda</option>
+                            <option value="Mitos" <?= $folktale['genre'] == 'Mitos' ? 'selected' : '' ?>>Mitos</option>
+                            <option value="Moral" <?= $folktale['genre'] == 'Moral' ? 'selected' : '' ?>>Moral</option>
+                            <option value="Pengembaraan" <?= $folktale['genre'] == 'Pengembaraan' ? 'selected' : '' ?>>Pengembaraan</option>
+                            <option value="Sejarah" <?= $folktale['genre'] == 'Sejarah' ? 'selected' : '' ?>>Sejarah</option>
+                            <option value="Seram" <?= $folktale['genre'] == 'Seram' ? 'selected' : '' ?>>Seram</option>
+                            <option value="Teladan" <?= $folktale['genre'] == 'Teladan' ? 'selected' : '' ?>>Teladan</option>
+                        </select>
                     </div>
                 </div>
 

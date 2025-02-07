@@ -93,6 +93,20 @@ $result = $conn->query($sql);
         .clear-search:hover {
             color: #234956;
         }
+        .download-button {
+            align-items: end;
+            padding: 10px 20px;
+            border: none;
+            background-color: #32607C;
+            color: white;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+        .download-button :hover {
+            background-color: #234956;
+        }
 
         .table-responsive {
             border-radius: 15px;
@@ -183,6 +197,9 @@ $result = $conn->query($sql);
         <?php endif; ?>
     </form>
 
+    <a type="submit" class="download-button mb-3" style="font-size: 16px" href="all_genre_pdf.php">
+            <i class='bi bi-file-earmark-arrow-down'></i> Download all genre report
+        </a>
     <div class="table-responsive table-container">
         <table class="table table-bordered table-striped">
             <thead class="thead">
