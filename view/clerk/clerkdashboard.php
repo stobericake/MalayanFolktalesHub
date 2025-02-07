@@ -2,32 +2,29 @@
 // Database connection
 include '../dbconn.php';
 
-// Fetch total origins of folktales
-$totalOriginResult = $conn->query("SELECT COUNT(DISTINCT state) AS total_origin FROM folktales");
-$totalOriginRow = $totalOriginResult->fetch_assoc();
-$totalOrigins = $totalOriginRow['total_origin'];
+// Fetch top 5 genres
+$queryG = "SELECT genre, count(folktaleID) AS count FROM folktales GROUP BY genre ORDER BY count DESC LIMIT 5";
+$resultG = mysqli_query($conn, $queryG);
+// Prepare data for the genre chart
+$genre = [];
+$genrecount = [];
 
-// Fetch total users
-$totalUserResult = $conn->query("SELECT COUNT(*) as total_user FROM user");
-$totalUserRow = $totalUserResult->fetch_assoc();
-$totalUser = $totalUserRow['total_user'];
+while ($row = mysqli_fetch_assoc($resultG)) {
+    $genre[] = $row['genre'];
+    $genrecount[] = $row['count'];
+}
 
-// Fetch total genres
-$totalGenreResult = $conn->query("SELECT COUNT(DISTINCT genre) AS genre_count FROM folktales");
-$totalGenreRow = $totalGenreResult->fetch_assoc();
-$totalGenre = $totalGenreRow['genre_count'];
+// Fetch top 5 states
+$queryS = "SELECT state, count(folktaleID) AS count FROM folktales GROUP BY state ORDER BY count DESC LIMIT 5";
+$resultS = mysqli_query($conn, $queryS);
 
-// Fetch top 5 folktales with the highest bookmark counts
-$query = "SELECT f.title, bf.count FROM bookmark_folktale bf JOIN folktales f ON bf.folktaleID = f.folktaleID ORDER BY bf.count DESC LIMIT 5";
-$result = mysqli_query($conn, $query);
+// Prepare data for the state chart
+$state = [];
+$stateCount = [];
 
-// Prepare data for the chart
-$folktaleTitles = [];
-$bookmarkCounts = [];
-
-while ($row = mysqli_fetch_assoc($result)) {
-    $folktaleTitles[] = $row['title'];
-    $bookmarkCounts[] = $row['count'];
+while ($row = mysqli_fetch_assoc($resultS)) {
+    $state[] = $row['state'];
+    $stateCount[] = $row['count'];
 }
 ?>
 <!DOCTYPE html>
@@ -106,9 +103,49 @@ while ($row = mysqli_fetch_assoc($result)) {
             margin-top: 20px;
             margin-bottom: 20px;
         }
+            
+        .chart-toggle {
+            display: flex;
+            border-radius: 10px 10px 0 0;
+            /* overflow: hidden; */
+            background-color: #f0f0f0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Style for the tab buttons */
+        .tab-button {
+            flex: 1;
+            padding: 10px 20px;
+            border: none;
+            background-color: transparent;
+            color: #333;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        /* Hover effect for the tab buttons */
+        .tab-button:hover {
+            background-color: #ddd;
+        }
+
+        /* Active tab button style */
+        .tab-button.active {
+            background-color:rgb(147, 196, 229); /* Green background for the active tab */
+            color: white;
+        }
+
+        /* Add a cute rounded corner effect */
+        .tab-button:first-child {
+            border-radius: 10px 0 0 0;
+        }
+
+        .tab-button:last-child {
+            border-radius: 0 10px 0 0;
+        }
         canvas {
             background: #fff;
-            border-radius: 10px;
+            border-radius:0 0 10px 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
     </style>
@@ -135,6 +172,10 @@ while ($row = mysqli_fetch_assoc($result)) {
 
             <!-- Chart Section -->
             <div class="chart-section">
+                <div class="chart-toggle">
+                    <button id="genreButton" class="tab-button active">View Genre Chart</button>
+                    <button id="stateButton" class="tab-button">View State Chart</button>
+                </div>
                 <canvas id="salesChart" width="1300" height="400"></canvas>
             </div>
         </div>
@@ -142,18 +183,20 @@ while ($row = mysqli_fetch_assoc($result)) {
 
     <script>
         // Pass PHP data to JavaScript
-        const folktaleTitles = <?php echo json_encode($folktaleTitles); ?>;
-        const bookmarkCounts = <?php echo json_encode($bookmarkCounts); ?>;
+        const genreLabels = <?php echo json_encode($genre); ?>;
+        const genreCounts = <?php echo json_encode($genrecount); ?>;
+        const stateLabels = <?php echo json_encode($state); ?>;
+        const stateCounts = <?php echo json_encode($stateCount); ?>;
 
         // Render Chart
         const ctx = document.getElementById('salesChart').getContext('2d');
         const salesChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: folktaleTitles,
+                labels: genreLabels,
                 datasets: [{
-                    label: 'Bookmarks',
-                    data: bookmarkCounts,
+                    label: 'Count',
+                    data: genreCounts,
                     backgroundColor: [
                         'rgba(75, 192, 192, 0.2)',
                         'rgba(255, 159, 64, 0.2)',
@@ -178,17 +221,38 @@ while ($row = mysqli_fetch_assoc($result)) {
                         beginAtZero: true,
                         title: {
                             display: true,
-                            text: 'Bookmark Count'
+                            text: 'Count'
                         }
                     },
                     x: {
                         title: {
                             display: true,
-                            text: 'Folktales'
+                            text: 'Genre'
                         }
                     }
                 }
             }
+        });
+
+        // Add event listeners to the buttons
+        document.getElementById('genreButton').addEventListener('click', function() {
+            salesChart.data.labels = genreLabels;
+            salesChart.data.datasets[0].data = genreCounts;
+            salesChart.data.datasets[0].label = 'Genre Count';
+            salesChart.options.scales.x.title.text = 'Genre';
+            salesChart.update();
+            this.classList.add('active');
+            document.getElementById('stateButton').classList.remove('active');
+        });
+
+        document.getElementById('stateButton').addEventListener('click', function() {
+            salesChart.data.labels = stateLabels;
+            salesChart.data.datasets[0].data = stateCounts;
+            salesChart.data.datasets[0].label = 'State Count';
+            salesChart.options.scales.x.title.text = 'State';
+            salesChart.update();
+            this.classList.add('active');
+            document.getElementById('genreButton').classList.remove('active');
         });
     </script>
 </body>

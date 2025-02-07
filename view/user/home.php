@@ -319,7 +319,7 @@ $states_result = mysqli_query($conn, $states_query);
             <?php
             // Fetch top 3 folktales with highest bookmarks
             $top_folktales_query = "
-                SELECT f.folktaleID, f.title, f.genre, f.state, COUNT(bf.bookmark_folktaleID) AS bookmark_count
+                SELECT f.folktaleID, f.title, f.genre, f.state, bf.count AS bookmark_count
                 FROM folktales f
                 LEFT JOIN bookmark_folktale bf ON f.folktaleID = bf.folktaleID
                 GROUP BY f.folktaleID
