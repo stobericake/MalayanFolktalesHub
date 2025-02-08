@@ -1,39 +1,31 @@
 <?php
 
 session_start();
-// Database connection
 include '../dbconn.php';
 $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : null;
 
 
-// Check if the form was submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Retrieve form data
     $title = $_POST['title'];
     $synopsis = $_POST['synopsis'];
     $state = $_POST['state'];
     $genre = $_POST['genre'];
+    $uploadDir = '../uploads/';
 
-    // Handle file upload
-    $uploadDir = '../uploads/'; // Directory to store uploaded files
-
-    // Create the uploads directory if it doesn't exist
     if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true); // Create directory with full permissions
+        mkdir($uploadDir, 0777, true); 
     }
     $pdfPath = null;
     if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
         $fileName = basename($_FILES['file']['name']);
         $pdfPath = $uploadDir . $fileName;
 
-        // Move the uploaded file to the upload directory
         if (!move_uploaded_file($_FILES['file']['tmp_name'], $pdfPath)) {
             die("File upload failed!");
         }
     }
 
     try {
-        // Insert data into the database
         $query = "INSERT INTO folktales (title, synopsis, state, genre, pdfPath, clerkID) 
                   VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($query);
@@ -42,10 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             throw new Exception("Failed to prepare the statement: " . $conn->error);
         }
     
-        // Bind parameters
         $stmt->bind_param("ssssss",  $title, $synopsis, $state, $genre, $pdfPath, $userID);
     
-        // Execute the statement
         if ($stmt->execute()) {
             $_SESSION['message'] = "Data updated successfully!";
             $_SESSION['message_type'] = "success";
@@ -65,7 +55,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Folktales</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -86,10 +75,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-weight: bold;
         }
 
-        /* Custom styling for inputs, selects, and textarea */
         .custom-border {
-            border: 1px solid rgba(103, 115, 127, 0.17) !important; /* Dark border with proper width */
-            border-radius: 5px; /* Rounded corners */
+            border: 1px solid rgba(103, 115, 127, 0.17) !important; 
+            border-radius: 5px;
         }
 
         textarea.custom-border {
@@ -120,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .btn-primary:hover {
-            background-color: #0056b3; /* Darker blue on hover */
+            background-color: #0056b3;
         }
         .btn-secondary {
             background-color:rgb(147, 151, 154);
@@ -131,10 +119,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .btn-secondary:hover {
-            background-color:rgb(89, 93, 97); /* Darker blue on hover */
+            background-color:rgb(89, 93, 97); 
         }
 
-        /* Align upload input and button */
         .input-group .form-control {
             flex: 1;
         }
@@ -215,7 +202,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 <?php include '../header.php'; ?>
-<!-- Content Section -->
 <div class="container">
     <div class="form-section">
         <h1>Add Folktales</h1>
@@ -310,7 +296,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </div>
 
-<!-- Popup HTML -->
 <div class="overlay" id="overlay"></div>
 <div class="popup" id="popup">
     <div class="popup-icon">🎉</div>
@@ -318,16 +303,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <button class="popup-close" onclick="closePopup()">Close</button>
 </div>
 
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Handle the confirmation button click
     document.getElementById('confirmAdd').addEventListener('click', function () {
-        // Submit the form
         document.getElementById('folktaleForm').submit();
     });
 
-        // Function to show the popup
         function showPopup(message, type) {
         const popup = document.getElementById('popup');
         const overlay = document.getElementById('overlay');
@@ -339,22 +320,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         overlay.style.display = 'block';
     }
 
-    // Function to close the popup
     function closePopup() {
         const popup = document.getElementById('popup');
         const overlay = document.getElementById('overlay');
         popup.style.display = 'none';
         overlay.style.display = 'none';
 
-        // Redirect to clerklisting.php
         window.location.href = 'clerklisting.php';    
     }
 
-    // Check for session message and show popup
     <?php if (isset($_SESSION['message'])): ?>
         showPopup("<?= $_SESSION['message'] ?>", "<?= $_SESSION['message_type'] ?>");
         <?php
-        // Clear the session message
         unset($_SESSION['message']);
         unset($_SESSION['message_type']);
         ?>

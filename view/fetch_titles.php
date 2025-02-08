@@ -1,8 +1,8 @@
 <?php
 include 'dbconn.php';
 
-$type = $_GET['type']; // 'genre' or 'state'
-$value = $_GET['value']; // Selected genre or state
+$type = $_GET['type'];
+$value = $_GET['value']; 
 
 $query = "SELECT folktaleID, title FROM folktales WHERE $type = ?";
 $stmt = mysqli_prepare($conn, $query);

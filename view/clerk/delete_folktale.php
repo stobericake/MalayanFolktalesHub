@@ -1,11 +1,7 @@
 <?php
-// Start session
 session_start();
-// Database connection
 include '../dbconn.php';
 
-
-// Check if the ID is provided
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     echo "Invalid folktale ID!";
     exit;
@@ -14,7 +10,6 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 $folktaleId = $_GET['id'];
 
 try {
-    // Prepare the DELETE query
     $query = "DELETE FROM folktales WHERE folktaleID = ?";
     $stmt = $conn->prepare($query);
 
@@ -22,10 +17,9 @@ try {
         throw new Exception("Error preparing statement: " . $conn->error);
     }
 
-    // Bind parameter and execute
     $stmt->bind_param("s", $folktaleId);
     if ($stmt->execute()) {
-        echo "success"; // Output "success" for AJAX to handle
+        echo "success";
     } else {
         throw new Exception("Error executing query: " . $stmt->error);
     }
@@ -33,7 +27,6 @@ try {
     echo $e->getMessage();
 }
 
-// Close resources
 $stmt->close();
 $conn->close();
 ?>

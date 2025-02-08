@@ -9,11 +9,9 @@ if (!isset($_SESSION['userID'])) {
 $userID = $_SESSION['userID'];
 $folktaleID = $_POST['folktaleID'];
 
-// Begin transaction
 $conn->begin_transaction();
 
 try {
-    // Get or create the bookmark_folktaleID for the given folktaleID
     $getBookmarkFolktaleID = $conn->prepare("SELECT bookmark_folktaleID FROM bookmark_folktale WHERE folktaleID = ?");
     $getBookmarkFolktaleID->bind_param("i", $folktaleID);
     $getBookmarkFolktaleID->execute();
@@ -22,14 +20,12 @@ try {
     $getBookmarkFolktaleID->fetch();
 
     if ($getBookmarkFolktaleID->num_rows == 0) {
-        // If no entry exists, create one
         $addBookmarkFolktale = $conn->prepare("INSERT INTO bookmark_folktale (folktaleID, count) VALUES (?, 1)");
         $addBookmarkFolktale->bind_param("i", $folktaleID);
         $addBookmarkFolktale->execute();
         $bookmark_folktaleID = $conn->insert_id;
     }
 
-    // Check if the folktale is already bookmarked by the user
     $checkBookmark = $conn->prepare("SELECT bookmarkID FROM bookmark WHERE userID = ? AND bookmark_folktaleID = ?");
     $checkBookmark->bind_param("ii", $userID, $bookmark_folktaleID);
     $checkBookmark->execute();
@@ -60,11 +56,8 @@ try {
 
         echo "added";
     }
-
-    // Commit transaction
     $conn->commit();
 } catch (Exception $e) {
-    // Rollback transaction on error
     $conn->rollback();
     die("Error: " . $e->getMessage());
 }

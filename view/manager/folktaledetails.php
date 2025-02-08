@@ -13,7 +13,7 @@ $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $folktale = $result->fetch_assoc();
-    $pdfData = base64_encode($folktale['pdfPath']); // Convert the blob to base64
+    $pdfData = base64_encode($folktale['pdfPath']); 
 } else {
     die("Folktale not found.");
 }
@@ -31,13 +31,12 @@ $stmt->bind_param("i", $folktaleID);
 $stmt->execute();
 $commentsResult = $stmt->get_result();
 
-// Get total number of bookmarks for this folktale
 $totalBookmarksStmt = $conn->prepare("SELECT count FROM bookmark_folktale WHERE folktaleID = ?");
 $totalBookmarksStmt->bind_param("i", $folktaleID);
 $totalBookmarksStmt->execute();
 $totalBookmarksStmt->store_result();
-$totalBookmarksStmt->bind_result($totalBookmarks); // Bind the result to a variable
-$totalBookmarksStmt->fetch(); // Fetch the result
+$totalBookmarksStmt->bind_result($totalBookmarks); 
+$totalBookmarksStmt->fetch(); 
 $totalBookmarksStmt->close()
 ?>
 <!DOCTYPE html>
@@ -55,14 +54,14 @@ $totalBookmarksStmt->close()
         background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('../../assets/background.png');
         background-size: cover;
         background-position: center;
-        background-attachment: fixed; /* This makes the background static */
+        background-attachment: fixed;
         min-height: 100vh;
         font-family: 'Poppins', sans-serif;
         padding-top: 70px;
     }
 
     .container {
-        background-color: rgba(255, 255, 255, 0); /* Slight transparency for better readability */
+        background-color: rgba(255, 255, 255, 0); 
         border-radius: 15px;
         padding: 20px;
         margin-top: 20px;
@@ -84,14 +83,14 @@ $totalBookmarksStmt->close()
     }
 
     .folktale-details {
-        flex: 1; /* Takes up remaining space */
+        flex: 1; 
     }
 
     .folktale-buttons {
         display: flex;
-        flex-direction: column; /* Stack buttons vertically */
-        gap: 10px; /* Space between buttons */
-        margin-left: 20px; /* Space between details and buttons */
+        flex-direction: column; 
+        gap: 10px; 
+        margin-left: 20px;
     }
 
     .btn-folktale {
@@ -130,11 +129,11 @@ $totalBookmarksStmt->close()
 
     .comment .user-icon {
         font-size: 40px;
-        color: #44749c; /* Match your theme color */
+        color: #44749c; 
     }
 
     .comment .comment-content {
-        flex: 1; /* Take up remaining space */
+        flex: 1; 
     }
 
     .comment .comment-content .comment-meta {
@@ -161,7 +160,6 @@ $totalBookmarksStmt->close()
          margin: 10px;
     } 
 
-    /* Animations */
     @keyframes fadeInDown {
             from {
                 opacity: 0;
@@ -214,11 +212,6 @@ $totalBookmarksStmt->close()
                   <i class="bi bi-bookmarks"></i> <?php echo $totalBookmarks; ?> Bookmarks
               </p>
           </div>
-          <div class="folktale-buttons">
-              <button class="btn-custom btn-folktale download-btn"  data-folktale-id="<?php echo $folktaleID; ?>">
-                <i class="bi bi-box-arrow-down"></i> Download PDF
-              </button>
-          </div>
       </div>
       <div>
           <p><i class="bi bi-card-text"></i> Synopsis:</p>   
@@ -233,19 +226,17 @@ $totalBookmarksStmt->close()
     <div id="comments" style="max-height: 320px; overflow-y: auto;">
         <?php while ($comment = $commentsResult->fetch_assoc()): ?>
             <div class="comment">
-                <!-- Default user icon -->
                 <div class="user-icon">
-                    <i class="bi bi-person-circle"></i> <!-- Bootstrap Icons user icon -->
+                    <i class="bi bi-person-circle"></i> 
                 </div>
                 <!-- Comment content -->
                 <div class="comment-content">
                     <div class="comment-meta">
-                        <strong><?php echo htmlspecialchars($comment['name']); ?></strong> <!-- User name -->
+                        <strong><?php echo htmlspecialchars($comment['name']); ?></strong> 
                         <span>• <?php echo date('F j, Y', strtotime($comment['datePosted'])); ?></span> <!-- Formatted date -->
                     </div>
-                    <p><?php echo htmlspecialchars($comment['content']); ?></p> <!-- Comment text -->
+                    <p><?php echo htmlspecialchars($comment['content']); ?></p> 
                 </div>
-                <!-- Delete button (only show if the comment belongs to the logged-in user) -->
                 <?php if ($userID && $comment['userID'] == $userID): ?>
                     <div class="delete-comment">
                         <i class="bi bi-trash" data-bs-toggle="modal" data-bs-target="#deleteModal" data-comment-id="<?php echo $comment['commentID']; ?>"></i>
@@ -290,12 +281,9 @@ $totalBookmarksStmt->close()
           </div>
     </div>
 
-
-  <!-- Bootstrap JS and dependencies -->
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-  <!-- Custom JS -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
         const downloadButtons = document.querySelectorAll('.download-btn');

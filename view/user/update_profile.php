@@ -10,21 +10,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $phone = $data['phone_number'];
     $password = $data['password'];
 
-    // Validate input
     if (empty($phone) && empty($password)) {
         echo json_encode(['success' => false, 'message' => 'No changes detected.']);
         exit;
     }
 
-    // Update phone number and/or password
     $query = "UPDATE user SET ";
     $updates = [];
     if (!empty($phone)) {
         $updates[] = "phone_number = '$phone'";
     }
     if (!empty($password)) {
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $updates[] = "password = '$hashedPassword'";
+        $updates[] = "password = '$password'";
     }
     $query .= implode(", ", $updates) . " WHERE userID = '$userID'";
 

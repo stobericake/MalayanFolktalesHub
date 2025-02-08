@@ -1,12 +1,9 @@
 <?php
 session_start();
-// Database connection
 include '../dbconn.php';
 
-// Ensure $userID is set and valid
 $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : null;
 
-// Fetch user data
 $query = "SELECT * FROM user WHERE userID = '$userID'";
 $result = mysqli_query($conn, $query);
 
@@ -17,7 +14,6 @@ if ($result && mysqli_num_rows($result) > 0) {
     exit;
 }
 
-// Fetch total bookmarks
 $bookmarkQuery = "SELECT COUNT(*) AS total_bookmarks FROM bookmark WHERE userID = '$userID'";
 $bookmarkResult = mysqli_query($conn, $bookmarkQuery);
 $bookmarkData = mysqli_fetch_assoc($bookmarkResult);
@@ -29,7 +25,6 @@ $totalBookmarks = $bookmarkData['total_bookmarks'];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -93,15 +88,12 @@ $totalBookmarks = $bookmarkData['total_bookmarks'];
 <body>
     <?php include '../header.php'; ?>
 
-    <!-- Main Content -->
     <div class="container mt-3 mb-7">
         <div class="profile-card">
-            <!-- Default Avatar Icon -->
             <div class="avatar">
-                <span>&#128100;</span> <!-- Person Icon -->
+                <span>&#128100;</span> 
             </div>
             <h2><?php echo htmlspecialchars($user_data['name']); ?></h2>
-            <!-- Edit Profile Form -->
             <form id="profileForm">
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
@@ -124,7 +116,6 @@ $totalBookmarks = $bookmarkData['total_bookmarks'];
         </div>
     </div>
 
-    <!-- Confirmation Modal -->
     <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -143,11 +134,9 @@ $totalBookmarks = $bookmarkData['total_bookmarks'];
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function confirmUpdate() {
-            // Validate password match
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
 
@@ -156,7 +145,6 @@ $totalBookmarks = $bookmarkData['total_bookmarks'];
                 return;
             }
 
-            // Show confirmation modal
             const modal = new bootstrap.Modal(document.getElementById('confirmationModal'));
             modal.show();
         }
@@ -165,7 +153,6 @@ $totalBookmarks = $bookmarkData['total_bookmarks'];
             const phone_number = document.getElementById('phone_number').value;
             const password = document.getElementById('password').value;
 
-            // Send data to server using fetch
             fetch('update_profile.php', {
                 method: 'POST',
                 headers: {
@@ -180,7 +167,7 @@ $totalBookmarks = $bookmarkData['total_bookmarks'];
             .then(data => {
                 if (data.success) {
                     alert("Profile updated successfully.");
-                    location.reload(); // Reload the page to reflect changes
+                    location.reload(); 
                 } else {
                     alert("Failed to update profile: " + data.message);
                 }

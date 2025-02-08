@@ -14,7 +14,6 @@ if (!empty($search)) {
 $totalRecordsResult = mysqli_query($conn, $totalRecordsQuery);
 $totalRecords = mysqli_fetch_assoc($totalRecordsResult)['total'];
 
-// Pagination logic
 $recordsPerPage = 10;
 $totalPages = ceil($totalRecords / $recordsPerPage);
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -208,7 +207,6 @@ $result = mysqli_query($conn, $query);
                 </div>
             </div>
 
-            <!-- Search Form with Filters -->
             <form method="GET" action="" class="search-bar">
                 <input type="text" name="search" placeholder="Enter title/genre/origin..." value="<?php echo htmlspecialchars($search); ?>">
                 <input type="hidden" name="page" value="1"> 
@@ -218,7 +216,6 @@ $result = mysqli_query($conn, $query);
                 <?php endif; ?>
             </form>
 
-            <!-- Table -->
             <div class="table-responsive table-container">
                 <table class="table table-bordered table-striped">
                     <thead class="thead">
@@ -233,7 +230,7 @@ $result = mysqli_query($conn, $query);
                     <tbody class="tbody" id="bookmarks-table-body">
                         <?php
                         if ($result->num_rows > 0) {
-                            $bil = $start + 1; // Serial number starts from the offset + 1
+                            $bil = $start + 1; 
                             while ($row = $result->fetch_assoc()) {
                                 echo "<tr>
                                         <td>{$bil}</td>
@@ -245,7 +242,7 @@ $result = mysqli_query($conn, $query);
                                             <i class='bi bi-eye'></i></a>
                                         </td>
                                       </tr>";
-                                $bil++; // Increment serial number
+                                $bil++;
                             }
                         } else {
                             echo "<tr><td colspan='5'>No folktales found</td></tr>";
@@ -273,8 +270,6 @@ $result = mysqli_query($conn, $query);
         </nav>
         </div>
     </div>
-
-    <!-- Bootstrap JS CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,7 +1,5 @@
 <?php
 session_start();
-
-// Database connection
 include '../dbconn.php';
 
 $search = isset($_GET['search']) ? $_GET['search'] : '';
@@ -19,7 +17,6 @@ $totalPages = ceil($totalRecords / $limit);
 $page = min($page, $totalPages); 
 $start = ($page - 1) * $limit; 
 
-// Fetch paginated folktale data
 $sql = "SELECT genre, COUNT(folktaleID) AS total_folktales FROM folktales";
 if (!empty($search)) {
     $sql .= " WHERE genre LIKE '%" . $conn->real_escape_string($search) . "%'";
@@ -185,7 +182,6 @@ $result = $conn->query($sql);
 </head>
 <body>
 <?php include '../header.php'; ?>
- <!-- Content Section -->
 <div class="container">
     <h2 class="mb-4">Folktales's Genre List Report </h2>
     <form method="GET" action="" class="search-bar">
@@ -233,23 +229,23 @@ $result = $conn->query($sql);
         </table>
     </div>
 
-        <!-- Pagination -->
-        <nav aria-label="Page navigation">
-            <ul class="pagination">
+    <!-- Pagination -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
                 <li class="page-item <?php echo ($page <= 1) ? 'disabled' : ''; ?>">
                     <a class="page-link" href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>"><<</a>
                 </li>
-                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                    <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
-                        <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>"><?php echo $i; ?></a>
-                    </li>
-                <?php endfor; ?>
-                <li class="page-item <?php echo ($page >= $totalPages) ? 'disabled' : ''; ?>">
-                    <a class="page-link" href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>">>></a>
+            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
+                    <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>"><?php echo $i; ?></a>
                 </li>
-            </ul>
-        </nav>
-    </div>
+            <?php endfor; ?>
+            <li class="page-item <?php echo ($page >= $totalPages) ? 'disabled' : ''; ?>">
+                <a class="page-link" href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>">>></a>
+            </li>
+        </ul>
+    </nav>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -258,11 +254,11 @@ $result = $conn->query($sql);
         const tableRows = document.querySelectorAll('#genre-table-body tr');
 
         tableRows.forEach(row => {
-            const genre = row.cells[1].textContent.toLowerCase(); // Search in genre column
+            const genre = row.cells[1].textContent.toLowerCase();
             if (genre.includes(searchInput)) {
-                row.style.display = ''; // Show matching rows
+                row.style.display = '';
             } else {
-                row.style.display = 'none'; // Hide non-matching rows
+                row.style.display = 'none';
             }
         });
     }

@@ -13,7 +13,7 @@ $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $folktale = $result->fetch_assoc();
-    $pdfData = base64_encode($folktale['pdfPath']); // Convert the blob to base64
+    $pdfData = base64_encode($folktale['pdfPath']); 
 } else {
     die("Folktale not found.");
 }
@@ -53,7 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_content'])) {
 // Check if the current user has bookmarked this folktale
 $isBookmarked = false;
 if ($userID) {
-    // Check if the folktale is already bookmarked by the user
     $checkBookmark = $conn->prepare("SELECT bookmarkID FROM bookmark WHERE userID = ?
                                       AND bookmark_folktaleID = ( 
                                       SELECT bookmark_folktaleID FROM bookmark_folktale 
@@ -70,8 +69,8 @@ $totalBookmarksStmt = $conn->prepare("SELECT count FROM bookmark_folktale WHERE 
 $totalBookmarksStmt->bind_param("i", $folktaleID);
 $totalBookmarksStmt->execute();
 $totalBookmarksStmt->store_result();
-$totalBookmarksStmt->bind_result($totalBookmarks); // Bind the result to a variable
-$totalBookmarksStmt->fetch(); // Fetch the result
+$totalBookmarksStmt->bind_result($totalBookmarks); 
+$totalBookmarksStmt->fetch(); 
 $totalBookmarksStmt->close()
 ?>
 <!DOCTYPE html>
@@ -89,14 +88,14 @@ $totalBookmarksStmt->close()
         background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('../../assets/background.png');
         background-size: cover;
         background-position: center;
-        background-attachment: fixed; /* This makes the background static */
+        background-attachment: fixed;
         min-height: 100vh;
         font-family: 'Poppins', sans-serif;
         padding-top: 90px;
     }
 
     .container {
-        background-color: rgba(255, 255, 255, 0); /* Slight transparency for better readability */
+        background-color: rgba(255, 255, 255, 0);
         border-radius: 15px;
         padding: 20px;
         margin-top: 20px;
@@ -118,14 +117,14 @@ $totalBookmarksStmt->close()
     }
 
     .folktale-details {
-        flex: 1; /* Takes up remaining space */
+        flex: 1; 
     }
 
     .folktale-buttons {
         display: flex;
-        flex-direction: column; /* Stack buttons vertically */
-        gap: 10px; /* Space between buttons */
-        margin-left: 20px; /* Space between details and buttons */
+        flex-direction: column; 
+        gap: 10px; 
+        margin-left: 20px; 
     }
 
     .btn-folktale {
@@ -185,11 +184,11 @@ $totalBookmarksStmt->close()
 
     .comment .user-icon {
         font-size: 40px;
-        color: #44749c; /* Match your theme color */
+        color: #44749c; 
     }
 
     .comment .comment-content {
-        flex: 1; /* Take up remaining space */
+        flex: 1; 
     }
 
     .comment .comment-content .comment-meta {
@@ -235,7 +234,6 @@ $totalBookmarksStmt->close()
     .delete-comment i:hover {
         color: #cc0000;
     }
-    /* Animations */
     @keyframes fadeInDown {
             from {
                 opacity: 0;
@@ -277,7 +275,7 @@ $totalBookmarksStmt->close()
 <?php include '../header_guest.php'; ?>
 <?php endif; ?>
   <div class="container">
-    <!-- Folktale Details -->
+    <!-- Folktale Details Card-->
     <div class="folktale-card">
       <div class="folktale-header">
           <div class="folktale-details">
@@ -305,47 +303,46 @@ $totalBookmarksStmt->close()
               <?php echo nl2br(htmlspecialchars($folktale['synopsis'], ENT_QUOTES, 'UTF-8')); ?>
           </div>
       </div>
-  </div>
-
-  <div class="comment-section">
-    <h3>💬 Comments</h3>
-    <div id="comments" style="max-height: 320px; overflow-y: auto;">
-        <?php while ($comment = $commentsResult->fetch_assoc()): ?>
-            <div class="comment">
-                <!-- Default user icon -->
-                <div class="user-icon">
-                    <i class="bi bi-person-circle"></i> <!-- Bootstrap Icons user icon -->
-                </div>
-                <!-- Comment content -->
-                <div class="comment-content">
-                    <div class="comment-meta">
-                        <strong><?php echo htmlspecialchars($comment['name']); ?></strong> <!-- User name -->
-                        <span>• <?php echo date('F j, Y', strtotime($comment['datePosted'])); ?></span> <!-- Formatted date -->
-                    </div>
-                    <p><?php echo htmlspecialchars($comment['content']); ?></p> <!-- Comment text -->
-                </div>
-                <!-- Delete button (only show if the comment belongs to the logged-in user) -->
-                <?php if ($userID && $comment['userID'] == $userID): ?>
-                    <div class="delete-comment">
-                        <i class="bi bi-trash" data-bs-toggle="modal" data-bs-target="#deleteModal" data-comment-id="<?php echo $comment['commentID']; ?>"></i>
-                    </div>
-                <?php endif; ?>
-            </div>
-        <?php endwhile; ?>
     </div>
-    <?php if ($userID): ?>
-        <div class="comment-form-container">
-            <form method="POST" action="" onsubmit="return confirmPost()">
-                <textarea name="comment_content" id="comment-input" class="form-control mb-2" placeholder="Write your comment..." required></textarea>
-                <button type="submit" class="btn-custom btn-comment"><i class="bi bi-send-plus"></i> Post</button>
-            </form>
-        </div>
-    <?php else: ?>
-        <button class="btn-signin" onclick="window.location.href = '../login.php'">Please login to post a comment.</button>
-    <?php endif; ?>
-</div>
 
-  <!-- Delete Confirmation -->
+    <!-- Comment card section -->
+    <div class="comment-section">
+        <h3>💬 Comments</h3>
+        <div id="comments" style="max-height: 320px; overflow-y: auto;">
+            <?php while ($comment = $commentsResult->fetch_assoc()): ?>
+                <div class="comment">
+                    <div class="user-icon">
+                        <i class="bi bi-person-circle"></i> 
+                    </div>
+                    <!-- Comment content -->
+                    <div class="comment-content">
+                        <div class="comment-meta">
+                            <strong><?php echo htmlspecialchars($comment['name']); ?></strong> 
+                            <span>• <?php echo date('F j, Y', strtotime($comment['datePosted'])); ?></span> 
+                        </div>
+                        <p><?php echo htmlspecialchars($comment['content']); ?></p> 
+                    </div>
+                    <?php if ($userID && $comment['userID'] == $userID): ?>
+                        <div class="delete-comment">
+                            <i class="bi bi-trash" data-bs-toggle="modal" data-bs-target="#deleteModal" data-comment-id="<?php echo $comment['commentID']; ?>"></i>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php endwhile; ?>
+        </div>
+        <?php if ($userID): ?>
+            <div class="comment-form-container">
+                <form method="POST" action="" onsubmit="return confirmPost()">
+                    <textarea name="comment_content" id="comment-input" class="form-control mb-2" placeholder="Write your comment..." required></textarea>
+                    <button type="submit" class="btn-custom btn-comment"><i class="bi bi-send-plus"></i> Post</button>
+                </form>
+            </div>
+        <?php else: ?>
+            <button class="btn-signin" onclick="window.location.href = '../login.php'">Please login to post a comment.</button>
+        <?php endif; ?>
+    </div>
+
+  <!-- Delete Comment Confirmation -->
   <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deletekModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -412,12 +409,10 @@ $totalBookmarksStmt->close()
                         $fileName = "file_" . $folktale["title"] . ".pdf";
                         $filePath = "uploads/" . $fileName;
 
-                        // Save the PDF to a file if it doesn't exist
                         if (!file_exists($filePath)) {
                             file_put_contents($filePath, base64_decode($pdfData));
                         }
 
-                        // Display the download button with a valid link
                         echo "<a href='$filePath' download='$fileName' class='btn btn-primary'>Download</a>";
                     } else {
                         echo "<p>No file available for download.</p>";
@@ -429,13 +424,10 @@ $totalBookmarksStmt->close()
           </div>
     </div>
 
-
-  <!-- Bootstrap JS and dependencies -->
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-  <!-- Custom JS -->
-   
+
   <script>
         function toggleBookmark(folktaleID) {
         console.log('Toggling bookmark for folktaleID:', folktaleID);
@@ -474,7 +466,6 @@ $totalBookmarksStmt->close()
     function confirmPost() {
         return confirm("Are you sure you want to post this comment?");
     }
-    // Function to set the commentID in the modal
     document.addEventListener('DOMContentLoaded', function () {
         var deleteModal = document.getElementById('deleteModal');
         deleteModal.addEventListener('show.bs.modal', function (event) {
@@ -485,7 +476,6 @@ $totalBookmarksStmt->close()
         });
     });
 
-    // Function to delete the comment
     function deleteComment(commentID) {
         fetch(`delete_comment.php?commentID=${commentID}`, {
             method: 'GET',
@@ -493,7 +483,6 @@ $totalBookmarksStmt->close()
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Reload the comments section
                 location.reload();
             } else {
                 alert("Failed to delete the comment. Error: " + (data.error || 'Unknown error'));
@@ -511,21 +500,18 @@ $totalBookmarksStmt->close()
 
         downloadButtons.forEach(button => {
             button.addEventListener('click', function () {
-                // Retrieve PDF data
                 const pdfData = 'data:application/pdf;base64,<?php echo $pdfData; ?>';
                 const pdfjsLib = window['pdfjs-dist/build/pdf'];
 
-                // PDF.js setup
                 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
                 let pdfDoc = null;
                 let currentPage = 1;
                 const canvas = document.getElementById('pdf-render');
                 const ctx = canvas.getContext('2d');
 
-                // Render a specific page
                 function renderPage(pageNum) {
                     pdfDoc.getPage(pageNum).then(page => {
-                        const viewport = page.getViewport({ scale: 1.5 }); // Adjust scale for better readability
+                        const viewport = page.getViewport({ scale: 1.5 }); 
                         canvas.height = viewport.height;
                         canvas.width = viewport.width;
 
@@ -537,11 +523,9 @@ $totalBookmarksStmt->close()
                     });
                 }
 
-                // Load the PDF and display the first page
                 pdfjsLib.getDocument(pdfData).promise.then(doc => {
                     pdfDoc = doc;
                     renderPage(currentPage);
-                    // Show the modal
                     const modal = new bootstrap.Modal(document.getElementById('downloadModal'));
                     modal.show();
                 }).catch(error => {

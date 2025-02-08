@@ -1,11 +1,8 @@
 <?php
-// Database connection
 include '../dbconn.php';
 
-// Fetch top 5 genres
 $queryG = "SELECT genre, count(folktaleID) AS count FROM folktales GROUP BY genre ORDER BY count DESC LIMIT 5";
 $resultG = mysqli_query($conn, $queryG);
-// Prepare data for the genre chart
 $genre = [];
 $genrecount = [];
 
@@ -14,11 +11,8 @@ while ($row = mysqli_fetch_assoc($resultG)) {
     $genrecount[] = $row['count'];
 }
 
-// Fetch top 5 states
 $queryS = "SELECT state, count(folktaleID) AS count FROM folktales GROUP BY state ORDER BY count DESC LIMIT 5";
 $resultS = mysqli_query($conn, $queryS);
-
-// Prepare data for the state chart
 $state = [];
 $stateCount = [];
 
@@ -107,12 +101,10 @@ while ($row = mysqli_fetch_assoc($resultS)) {
         .chart-toggle {
             display: flex;
             border-radius: 10px 10px 0 0;
-            /* overflow: hidden; */
             background-color: #f0f0f0;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        /* Style for the tab buttons */
         .tab-button {
             flex: 1;
             padding: 10px 20px;
@@ -124,18 +116,15 @@ while ($row = mysqli_fetch_assoc($resultS)) {
             transition: all 0.3s ease;
         }
 
-        /* Hover effect for the tab buttons */
         .tab-button:hover {
             background-color: #ddd;
         }
 
-        /* Active tab button style */
         .tab-button.active {
-            background-color:rgb(147, 196, 229); /* Green background for the active tab */
+            background-color:rgb(147, 196, 229);
             color: white;
         }
 
-        /* Add a cute rounded corner effect */
         .tab-button:first-child {
             border-radius: 10px 0 0 0;
         }
@@ -155,22 +144,18 @@ while ($row = mysqli_fetch_assoc($resultS)) {
     <!-- Content Section -->
     <div class="content">
         <div class="container">
-            <!-- Card Section -->
             <div class="card-section">
-                <!-- Card 1: ADD FOLKTALES -->
                 <a href="addfolktales.php" class="card">
                     <i class="bi bi-file-earmark-plus-fill icon-pic"></i>
                     <h3>ADD FOLKTALES</h3>
                 </a>
 
-                <!-- Card 3: EDIT FOLKTALES -->
                 <a href="clerklisting.php" class="card">
                     <i class="bi bi-pen-fill icon-pic"></i>
                     <h3>UPDATE FOLKTALES</h3>
                 </a>
             </div>
 
-            <!-- Chart Section -->
             <div class="chart-section">
                 <div class="chart-toggle">
                     <button id="genreButton" class="tab-button active">View Genre Chart</button>
@@ -182,13 +167,11 @@ while ($row = mysqli_fetch_assoc($resultS)) {
     </div>
 
     <script>
-        // Pass PHP data to JavaScript
         const genreLabels = <?php echo json_encode($genre); ?>;
         const genreCounts = <?php echo json_encode($genrecount); ?>;
         const stateLabels = <?php echo json_encode($state); ?>;
         const stateCounts = <?php echo json_encode($stateCount); ?>;
 
-        // Render Chart
         const ctx = document.getElementById('salesChart').getContext('2d');
         const salesChart = new Chart(ctx, {
             type: 'bar',
@@ -234,7 +217,6 @@ while ($row = mysqli_fetch_assoc($resultS)) {
             }
         });
 
-        // Add event listeners to the buttons
         document.getElementById('genreButton').addEventListener('click', function() {
             salesChart.data.labels = genreLabels;
             salesChart.data.datasets[0].data = genreCounts;

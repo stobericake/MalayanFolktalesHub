@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Database connection
 include '../dbconn.php';
 
 $search = isset($_GET['search']) ? $_GET['search'] : '';
@@ -182,7 +181,6 @@ $result = $conn->query($sql);
 </head>
 <body>
 <?php include '../header.php'; ?>
- <!-- Content Section -->
  <div class="container">
     <h2 class="mb-4">Folktales's Origin List Report </h2>
     <form method="GET" action="" class="search-bar">
@@ -229,7 +227,6 @@ $result = $conn->query($sql);
         </table>
     </div>
 
-   <!-- Pagination -->
    <nav aria-label="Page navigation">
             <ul class="pagination">
                 <li class="page-item <?php echo ($page <= 1) ? 'disabled' : ''; ?>">
@@ -254,11 +251,11 @@ $result = $conn->query($sql);
         const tableRows = document.querySelectorAll('#folktales-table-body tr');
 
         tableRows.forEach(row => {
-            const origin = row.cells[1].textContent.toLowerCase(); // Search in "Origin" column
+            const origin = row.cells[1].textContent.toLowerCase();
             if (origin.includes(searchInput)) {
-                row.style.display = ''; // Show matching rows
+                row.style.display = ''; 
             } else {
-                row.style.display = 'none'; // Hide non-matching rows
+                row.style.display = 'none';
             }
         });
     }

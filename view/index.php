@@ -3,58 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Index Page - Links to All Pages</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Malayan Folktales Hub</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background-color: #f8f9fa;
+            font-family: 'Poppins', sans-serif;
+            background: url('../assets/background.png') no-repeat center center/cover;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
         }
-        .container {
-            margin-top: 50px;
-        }
-        .link-list {
-            padding: 15px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .link-list a {
+
+
+        .navbar .nav-link {
+            margin-left: 15px;
             text-decoration: none;
-            color: #007bff;
-            display: block;
-            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.3s;
         }
-        .link-list a:hover {
-            text-decoration: underline;
+
+        .navbar .nav-link:hover {
+            color: #32607C;
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.5);
+            padding: 100px 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            max-width: 100%;
+        }
+
+        .welcome-section h1 {
+            font-size: 700px; 
+            font-weight: bold;
+            color: #444;
+            margin-bottom: 10px;
+        }
+
+        .welcome-section h2 {
+            font-size: 300px;
+            font-weight: bold; 
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .buttons {
+            margin-top: 20px;
+            display: flex; 
+            justify-content: center; 
+            gap: 15px; 
+        }
+
+        .btn {
+            padding: 20px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .btn-guest {
+            padding: 20px 30px;
+            margin: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            color: black;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .btn-guest:hover {
+            background-color:rgba(219, 234, 239, 0.51);
+        }
+
+        .btn-signin {
+            background-color: #32607C;
+        }
+
+        .btn-register {
+            background-color: #68A0A8;
+        }
+
+        .btn-signin:hover,
+        .btn-register:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-signin:hover {
+            background-color: #234956;
+        }
+
+        .btn-register:hover {
+            background-color: #4D8A91;
+        }
+
+        /* Responsive Design */
+        @media (min-width: 768px) {
+            .welcome-section {
+                padding: 100px 80px;
+            }
+
+            .welcome-section h1 {
+                font-size: 80px;
+            }
+
+            .welcome-section h2 {
+                font-size: 40px;
+            }
+
+            .btn {
+                padding: 20px 40px;
+                font-size: 18px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .welcome-section {
+                padding: 150px 300px;
+            }
         }
     </style>
 </head>
 <body>
+    
 
-    <div class="container">
-        <h2 class="mb-4">Index of Pages</h2>
-        <div class="link-list">
-            <h5>View Pages</h5>
-            <a href="landing_page.php">landing</a>
-            <a href="bookmark.php">Bookmark</a>
-            <a href="clerklisting.php">Clerk Listing</a>
-            <a href="addfolktales.php">Add Folktales</a>
-            <a href="editfolktales.php">Edit Folktales</a>
-            <a href="folktaledetails.php">Folktale Details</a>
-            <a href="folktalelist.php">Folktale List</a>
-            <a href="generatereport.php">Generate Report</a>
-            <a href="login.php">Login</a>
-            <a href="managerdashboard.php">Manager Dashboard</a>
-            <a href="register.php">Register</a>
-            <a href="userdashboard2.php">User Dashboard 2</a>
-            <a href="userhomedashboard.php">User Home Dashboard</a>
-            <a href="userhome.php">User Home</a>
-            <a href="userprofile.php">User Profile</a>
+    <main class="main">
+        <div class="welcome-section">
+            <h1>WELCOME TO</h1>
+            <h2>Malayan Folktales Hub</h2>
+            <div class="buttons">
+                <button class="btn btn-signin" onclick="navigateToPage('login.php')">Login</button>
+                <button class="btn btn-register" onclick="navigateToPage('register.php')">Register</button>
+            </div>
+            <button class="btn-guest" onclick="navigateToPage('user/home.php')">Continue as Guest?</button>
         </div>
-    </div>
+    </main>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function navigateToPage(page) {
+            window.location.href = page;
+        }
+    </script>
 </body>
 </html>

@@ -2,13 +2,11 @@
 session_start();
 include '../dbconn.php';
 
-
 $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : null;
-// Fetch unique genres
+
 $genres_query = "SELECT DISTINCT LOWER(TRIM(genre)) AS genre FROM folktales";
 $genres_result = mysqli_query($conn, $genres_query);
 
-// Fetch unique states
 $states_query = "SELECT DISTINCT LOWER(TRIM(state)) AS state FROM folktales";
 $states_result = mysqli_query($conn, $states_query);
 ?>
@@ -258,7 +256,7 @@ $states_result = mysqli_query($conn, $states_query);
     <?php else: ?>
     <?php include '../header_guest.php'; ?>
     <?php endif; ?>
-   <!-- Main Section - Full Page -->
+
    <section id="main-section">
         <div class="content">
             <div class="row">
@@ -294,7 +292,7 @@ $states_result = mysqli_query($conn, $states_query);
                     if ($states_result && mysqli_num_rows($states_result) > 0) {
                         $unique_states = [];
                         while ($row = mysqli_fetch_assoc($states_result)) {
-                            $state = ucfirst($row['state']); // Capitalize the first letter for display
+                            $state = ucfirst($row['state']);
                             if (!in_array($state, $unique_states)) {
                                 $unique_states[] = $state;
                                 echo "<button data-bs-toggle='modal' data-bs-target='#titlesModal' onclick=\"fetchTitles('state', '" . htmlspecialchars($row['state']) . "')\">" 
@@ -311,64 +309,61 @@ $states_result = mysqli_query($conn, $states_query);
         </div>
     </section>
 
-<!-- Top 3 Folktales Section -->
-<section id="top-folktales-section" class="py-5">
-    <div class="container">
-        <h2 class="text-center mb-4"><i class="bi bi-stars text-warning"></i> Top 3 Most Bookmarked Folktales <i class="bi bi-stars text-warning"></i></h2>
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            <?php
-            // Fetch top 3 folktales with highest bookmarks
-            $top_folktales_query = "
-                SELECT f.folktaleID, f.title, f.genre, f.state, bf.count AS bookmark_count
-                FROM folktales f
-                LEFT JOIN bookmark_folktale bf ON f.folktaleID = bf.folktaleID
-                GROUP BY f.folktaleID
-                ORDER BY bookmark_count DESC
-                LIMIT 3;
-            ";
-            $top_folktales_result = mysqli_query($conn, $top_folktales_query);
+    <section id="top-folktales-section" class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-4"><i class="bi bi-stars text-warning"></i> Top 3 Most Bookmarked Folktales <i class="bi bi-stars text-warning"></i></h2>
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                <?php
+                $top_folktales_query = "
+                    SELECT f.folktaleID, f.title, f.genre, f.state, bf.count AS bookmark_count
+                    FROM folktales f
+                    LEFT JOIN bookmark_folktale bf ON f.folktaleID = bf.folktaleID
+                    GROUP BY f.folktaleID
+                    ORDER BY bookmark_count DESC
+                    LIMIT 3;
+                ";
+                $top_folktales_result = mysqli_query($conn, $top_folktales_query);
 
-            if ($top_folktales_result && mysqli_num_rows($top_folktales_result) > 0) {
-                $rank = 1; // Initialize rank counter
-                while ($row = mysqli_fetch_assoc($top_folktales_result)) {
-                    // Assign medal emoji based on rank
-                    $medal_emoji = '';
-                    if ($rank == 1) {
-                        $medal_emoji = '🥇'; // Gold medal for 1st place
-                    } elseif ($rank == 2) {
-                        $medal_emoji = '🥈'; // Silver medal for 2nd place
-                    } elseif ($rank == 3) {
-                        $medal_emoji = '🥉'; // Bronze medal for 3rd place
-                    }
+                if ($top_folktales_result && mysqli_num_rows($top_folktales_result) > 0) {
+                    $rank = 1; 
+                    while ($row = mysqli_fetch_assoc($top_folktales_result)) {
+                        $medal_emoji = '';
+                        if ($rank == 1) {
+                            $medal_emoji = '🥇';
+                        } elseif ($rank == 2) {
+                            $medal_emoji = '🥈'; 
+                        } elseif ($rank == 3) {
+                            $medal_emoji = '🥉'; 
+                        }
 
-                    echo '
-                    <div class="col">
-                        <div class="card h-100 shadow-sm animate__animated animate__fadeInUp border-0" style="border-radius: 20px; background: linear-gradient(145deg, #f9f9f9, #fff5f5);">
-                            <div class="card-body text-center p-4">
-                                <div class="icon-container mb-3" style="font-size: 2.5rem;">
-                                    ' . $medal_emoji . '
+                        echo '
+                        <div class="col">
+                            <div class="card h-100 shadow-sm animate__animated animate__fadeInUp border-0" style="border-radius: 20px; background: linear-gradient(145deg, #f9f9f9, #fff5f5);">
+                                <div class="card-body text-center p-4">
+                                    <div class="icon-container mb-3" style="font-size: 2.5rem;">
+                                        ' . $medal_emoji . '
+                                    </div>
+                                    <h5 class="card-title fw-bold" style="color:rgb(11, 107, 251);">' . htmlspecialchars($row['title']) . '</h5>
+                                    <p class="card-text" style="color:rgb(81, 88, 94);">
+                                        <strong><i class="bi bi-music-note-beamed"></i> Genre:</strong> ' . htmlspecialchars($row['genre']) . '<br>
+                                        <strong><i class="bi bi-geo-alt"></i> State:</strong> ' . htmlspecialchars($row['state']) . '<br>
+                                        <strong><i class="bi bi-bookmark-check"></i> Bookmarks:</strong> ' . $row['bookmark_count'] . '
+                                    </p>
+                                    <a href="folktaledetails.php?id=' . $row['folktaleID'] . '" class="btn view-details-btn" style="background-color:rgb(85, 139, 255); color: white; border-radius: 20px; padding: 8px 20px;">
+                                        <i class="bi bi-eye"></i> View Details
+                                    </a>
                                 </div>
-                                <h5 class="card-title fw-bold" style="color:rgb(11, 107, 251);">' . htmlspecialchars($row['title']) . '</h5>
-                                <p class="card-text" style="color:rgb(81, 88, 94);">
-                                    <strong><i class="bi bi-music-note-beamed"></i> Genre:</strong> ' . htmlspecialchars($row['genre']) . '<br>
-                                    <strong><i class="bi bi-geo-alt"></i> State:</strong> ' . htmlspecialchars($row['state']) . '<br>
-                                    <strong><i class="bi bi-bookmark-check"></i> Bookmarks:</strong> ' . $row['bookmark_count'] . '
-                                </p>
-                                <a href="folktaledetails.php?id=' . $row['folktaleID'] . '" class="btn view-details-btn" style="background-color:rgb(85, 139, 255); color: white; border-radius: 20px; padding: 8px 20px;">
-                                    <i class="bi bi-eye"></i> View Details
-                                </a>
                             </div>
-                        </div>
-                    </div>';
-                    $rank++; // Increment rank counter
+                        </div>';
+                        $rank++; 
+                    }
+                } else {
+                    echo '<div class="col"><p class="text-center">No folktales found.</p></div>';
                 }
-            } else {
-                echo '<div class="col"><p class="text-center">No folktales found.</p></div>';
-            }
-            ?>
+                ?>
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
     <!-- Modal for Titles -->
     <div class="modal fade" id="titlesModal" tabindex="-1" aria-labelledby="titlesModalLabel" aria-hidden="true">
@@ -387,7 +382,6 @@ $states_result = mysqli_query($conn, $states_query);
         </div>
     </div>
 
-    <!-- Bootstrap JS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function fetchTitles(type, value) {
@@ -395,7 +389,7 @@ $states_result = mysqli_query($conn, $states_query);
                 .then(response => response.json())
                 .then(data => {
                     const titlesList = document.getElementById('titlesList');
-                    titlesList.innerHTML = ''; // Clear previous content
+                    titlesList.innerHTML = '';
                     if (data.length > 0) {
                         data.forEach(item => {
                             const li = document.createElement('li');

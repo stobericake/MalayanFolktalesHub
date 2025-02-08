@@ -6,9 +6,9 @@ if(isset($_SESSION['userID'])){
 
     session_destroy();
 
-    echo "<script>location.href='landing_page.php'</script>";
+    echo "<script>location.href='index.php'</script>";
 }
 else{
 
-    echo "<script>location.href='landing_page.php'</script>";
+    echo "<script>location.href='index.php'</script>";
 }

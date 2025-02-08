@@ -1,14 +1,13 @@
 <?php
-session_start(); // Ensure session is started
+session_start(); 
 include '../dbconn.php';
 
 $commentID = isset($_GET['commentID']) ? intval($_GET['commentID']) : 0;
 $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : null;
 
-header('Content-Type: application/json'); // Set response type to JSON
+header('Content-Type: application/json');
 
 if ($commentID > 0 && $userID) {
-    // Check if the comment belongs to the logged-in user
     $checkQuery = "SELECT userID FROM comment WHERE commentID = ?";
     $checkStmt = $conn->prepare($checkQuery);
     if (!$checkStmt) {
@@ -25,7 +24,6 @@ if ($commentID > 0 && $userID) {
     if ($checkResult->num_rows > 0) {
         $comment = $checkResult->fetch_assoc();
         if ($comment['userID'] == $userID) {
-            // Delete the comment
             $deleteQuery = "DELETE FROM comment WHERE commentID = ?";
             $deleteStmt = $conn->prepare($deleteQuery);
             if (!$deleteStmt) {

@@ -35,11 +35,9 @@ $result = mysqli_query($conn, $query);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Folktales List</title>
-    <!-- Bootstrap CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Fredoka+One&display=swap" rel="stylesheet">
-    <!-- Custom CSS -->
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -212,7 +210,6 @@ $result = mysqli_query($conn, $query);
                 <?php endif; ?>
             </form>
 
-            <!-- Table -->
             <div class="table-responsive table-container">
                 <table class="table table-bordered table-striped">
                     <thead class="thead">
@@ -227,7 +224,7 @@ $result = mysqli_query($conn, $query);
                     <tbody class="tbody" id="bookmarks-table-body">
                         <?php
                         if ($result->num_rows > 0) {
-                            $bil = $start + 1; // Serial number starts from the offset + 1
+                            $bil = $start + 1; 
                             while ($row = $result->fetch_assoc()) {
                                 echo "<tr>
                                         <td>{$bil}</td>
@@ -238,7 +235,7 @@ $result = mysqli_query($conn, $query);
                                             <a href='folktaledetails.php?id={$row['folktaleID']}' class='btn-primary btn-sm'><i class='bi bi-eye'></i></a>
                                         </td>
                                       </tr>";
-                                $bil++; // Increment serial number
+                                $bil++;
                             }
                         } else {
                             echo "<tr><td colspan='5'>No folktales found</td></tr>";
@@ -248,26 +245,24 @@ $result = mysqli_query($conn, $query);
                 </table>
             </div>
 
-            <!-- Pagination -->
-        <nav aria-label="Page navigation">
-            <ul class="pagination">
-                <li class="page-item <?php echo ($page <= 1) ? 'disabled' : ''; ?>">
-                    <a class="page-link" href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>"><<</a>
-                </li>
-                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                    <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
-                        <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>"><?php echo $i; ?></a>
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item <?php echo ($page <= 1) ? 'disabled' : ''; ?>">
+                        <a class="page-link" href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>"><<</a>
                     </li>
-                <?php endfor; ?>
-                <li class="page-item <?php echo ($page >= $totalPages) ? 'disabled' : ''; ?>">
-                    <a class="page-link" href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>">>></a>
-                </li>
-            </ul>
-        </nav>
+                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                        <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
+                            <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>"><?php echo $i; ?></a>
+                        </li>
+                    <?php endfor; ?>
+                    <li class="page-item <?php echo ($page >= $totalPages) ? 'disabled' : ''; ?>">
+                        <a class="page-link" href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>">>></a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
 
-    <!-- Bootstrap JS CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

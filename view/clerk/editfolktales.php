@@ -1,65 +1,50 @@
 
 <?php
 session_start();
-
-// Database connection
 include '../dbconn.php';
 
-// Check if an ID is passed as a parameter
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     die("Folktale ID not provided!");
 }
 
 $folktaleId = $_GET['id'];
 
-// Retrieve existing data for the given folktale ID
 $query = "SELECT * FROM folktales WHERE folktaleID = ?";
 $stmt = $conn->prepare($query);
 
-// Check if the statement was prepared successfully
 if (!$stmt) {
     die("Error preparing statement: " . $conn->error);
 }
 
-// Bind the parameter
 $stmt->bind_param("s", $folktaleId);
 
-// Execute the query
 $stmt->execute();
 $result = $stmt->get_result();
-
-// Fetch the data
 $folktale = $result->fetch_assoc();
 
 if (!$folktale) {
     die("Folktale not found!");
 }
 
-// Close the statement
 $stmt->close();
 
-// Check if the form was submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Retrieve updated form data
     $title = $_POST['title'];
     $synopsis = $_POST['synopsis'];
     $state = $_POST['state'];
     $genre = $_POST['genre'];
 
-    // Handle file upload
-    $uploadDir = 'uploads/'; // Directory to store uploaded files
-    $pdfPath = $folktale['pdfPath']; // Default to existing file path
+    $uploadDir = 'uploads/'; 
+    $pdfPath = $folktale['pdfPath']; 
     if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
         $fileName = basename($_FILES['file']['name']);
         $pdfPath = $uploadDir . $fileName;
 
-        // Move the uploaded file to the upload directory
         if (!move_uploaded_file($_FILES['file']['tmp_name'], $pdfPath)) {
             die("File upload failed!");
         }
     }
 
-    // Update data in the database
     $updateQuery = "UPDATE folktales SET title = ?, synopsis = ?, state = ?, genre = ?, pdfPath = ? WHERE folktaleID = ?";
     $updateStmt = $conn->prepare($updateQuery);
 
@@ -67,10 +52,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die("Error preparing update statement: " . $conn->error);
     }
 
-    // Bind the parameters
     $updateStmt->bind_param("ssssss", $title, $synopsis, $state, $genre, $pdfPath, $folktaleId);
 
-    // Execute the query
     if ($updateStmt->execute()) {
         $_SESSION['message'] = "Data updated successfully!";
         $_SESSION['message_type'] = "success";
@@ -79,15 +62,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['message_type'] = "error";
     }
 
-    // Close the statement
     $updateStmt->close();
-
-    // Redirect to the same page to avoid form resubmission
     header("Location: editfolktales.php?id=" . $folktaleId);
     exit();
 }
-
-// Close the database connection
 $conn->close();
 ?>
 <!DOCTYPE html>
@@ -101,7 +79,7 @@ $conn->close();
         body {
             font-family: 'Poppins', sans-serif;
             padding-top: 100px;
-            position: relative; /* Required for pseudo-element positioning */
+            position: relative; 
             background: url('../../assets/background.png') no-repeat center center/cover;
             background-size: cover;
         }
@@ -144,7 +122,7 @@ $conn->close();
         }
 
         .btn-primary:hover {
-            background-color: #0056b3; /* Darker blue on hover */
+            background-color: #0056b3;
         }
         .btn-secondary {
             background-color:rgb(147, 151, 154);
@@ -155,7 +133,7 @@ $conn->close();
         }
 
         .btn-secondary:hover {
-            background-color:rgb(89, 93, 97); /* Darker blue on hover */
+            background-color:rgb(89, 93, 97);
         }
 
         .input-group .form-control {
@@ -324,10 +302,8 @@ $conn->close();
     <button class="popup-close" onclick="closePopup()">Close</button>
 </div>
 
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Function to show the popup
     function showPopup(message, type) {
         const popup = document.getElementById('popup');
         const overlay = document.getElementById('overlay');
@@ -339,22 +315,17 @@ $conn->close();
         overlay.style.display = 'block';
     }
 
-    // Function to close the popup
     function closePopup() {
         const popup = document.getElementById('popup');
         const overlay = document.getElementById('overlay');
         popup.style.display = 'none';
         overlay.style.display = 'none';
-
-        // Redirect to clerklisting.php
         window.location.href = 'clerklisting.php';    
     }
 
-    // Check for session message and show popup
     <?php if (isset($_SESSION['message'])): ?>
         showPopup("<?= $_SESSION['message'] ?>", "<?= $_SESSION['message_type'] ?>");
         <?php
-        // Clear the session message
         unset($_SESSION['message']);
         unset($_SESSION['message_type']);
         ?>

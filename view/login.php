@@ -3,17 +3,15 @@ session_start();
 include 'dbconn.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $identifier = trim($_POST['identifier']); // This will hold either email or ID
+    $identifier = trim($_POST['identifier']); 
     $password = trim($_POST['password']);
-    $role = trim($_POST['role']); // Get the selected role
+    $role = trim($_POST['role']);
 
     if (!empty($identifier) && !empty($password) && !empty($role)) {
-        // Function to validate user from a table
         function validateUser ($table, $identifier, $password, $conn, $isId = false) {
             // Determine the ID column name based on the table
-            $idColumn = $table . 'ID'; // e.g., 'userid', 'clerkid', 'managerid'
+            $idColumn = $table . 'ID';
 
-            // Use prepared statements to prevent SQL injection
             if ($isId) {
                 $query = "SELECT `$idColumn` AS id, `email`, `password` FROM `$table` WHERE `$idColumn` = ?";
             } else {
@@ -27,15 +25,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             if ($result && $result->num_rows > 0) {
                 $row = $result->fetch_assoc();
-                // Direct password comparison
                 if ($password == $row['password']) {
-                    return $row; // Return the row data if valid
+                    return $row; 
                 }
             }
-            return null; // Return null if invalid
+            return null;
         }
 
-        // Check the selected role
         $userData = null;
         switch ($role) {
             case 'user':
@@ -51,12 +47,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if ($userData) {
             // Store user data in the session
-            $_SESSION['userID'] = $userData['id']; // Use the dynamically selected ID column
+            $_SESSION['userID'] = $userData['id']; 
             $_SESSION['email'] = $userData['email'];
             $_SESSION['role'] = $role;
             $_SESSION['loggedin'] = true;
 
-            // Redirect based on role
             switch ($role) {
                 case 'user':
                     header("Location: user/home.php");
@@ -96,8 +91,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             justify-content: center;
             align-items: center;
             height: 100vh;
-            overflow: hidden; /* Prevent scrollbars */
-            position: relative; /* Required for the pseudo-element */
+            overflow: hidden;
+            position: relative; 
         }
 
         body::before {
@@ -108,8 +103,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             width: 100%;
             height: 100%;
             background: url('../assets/background.png') no-repeat center center/cover;
-            opacity: 0.5; /* Adjust the value (0 to 1) for transparency */
-            z-index: -1; /* Place it behind everything else */
+            opacity: 0.5; 
+            z-index: -1; 
         }
 
         .container {
@@ -121,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0 .2);
-            position: relative; /* To ensure proper stacking with ::before */
+            position: relative;
         }
 
         .form-section {
@@ -225,14 +220,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         const identifierInput = document.getElementById('identifier');
         const registerLink = document.getElementById('register-link');
 
-        // Update the placeholder based on the selected role
         identifierInput.placeholder = role === 'user' ? 'Email' : 'ID';
 
-        // Show or hide the register link based on the selected role
         if (role === 'user') {
-            registerLink.style.display = 'inline'; // Show the link
+            registerLink.style.display = 'inline';
         } else {
-            registerLink.style.display = 'none'; // Hide the link
+            registerLink.style.display = 'none';
         }
     }
 </script>

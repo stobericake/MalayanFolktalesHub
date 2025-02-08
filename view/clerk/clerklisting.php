@@ -1,12 +1,8 @@
 <?php
 session_start();
-
-// Database connection
 include '../dbconn.php';
 
 $search = isset($_GET['search']) ? $_GET['search'] : '';
-
-// Fetch total number of folktales (with search condition if applicable)
 $totalRecordsQuery = "SELECT COUNT(*) AS total FROM folktales";
 if (!empty($search)) {
     $totalRecordsQuery .= " WHERE (title LIKE '%" . $conn->real_escape_string($search) . "%' 
@@ -16,13 +12,11 @@ if (!empty($search)) {
 $totalRecordsResult = mysqli_query($conn, $totalRecordsQuery);
 $totalRecords = mysqli_fetch_assoc($totalRecordsResult)['total'];
 
-// Pagination logic
 $recordsPerPage = 10;
 $totalPages = ceil($totalRecords / $recordsPerPage);
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $start = ($page - 1) * $recordsPerPage;
 
-// Fetch folktales with pagination and search
 $query = "SELECT * FROM folktales";
 if (!empty($search)) {
     $query .= " WHERE (title LIKE '%" . $conn->real_escape_string($search) . "%' 
@@ -62,27 +56,27 @@ $result = mysqli_query($conn, $query);
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
         .new-bar {
-            display: inline-block; /* Make the link behave like a block element */
+            display: inline-block; 
             padding: 10px 20px;
             border: none;
             background-color: rgb(46, 182, 114);
             color: white;
             cursor: pointer;
             border-radius: 25px;
-            text-decoration: none; /* Remove underline from the link */
-            font-size: 16px; /* Adjust font size as needed */
+            text-decoration: none; 
+            font-size: 16px; 
             text-align: center;
-            transition: background-color 0.3s ease, transform 0.3s ease; /* Add transform for hover effect */
+            transition: background-color 0.3s ease, transform 0.3s ease;
         }
 
         .new-bar:hover {
-            background-color: rgb(36, 142, 89); /* Darker shade for hover */
-            transform: scale(1.05); /* Slightly enlarge on hover */
+            background-color: rgb(36, 142, 89);
+            transform: scale(1.05); 
         }
 
         .new-bar:active {
-            background-color: rgb(28, 110, 69); /* Even darker shade for active state */
-            transform: scale(0.95); /* Slightly shrink on click */
+            background-color: rgb(28, 110, 69); 
+            transform: scale(0.95);
         }
 
         .table-responsive {
@@ -105,15 +99,14 @@ $result = mysqli_query($conn, $query);
             background-color:rgb(255, 251, 251);
         }
 
-        /* Action icons styling */
         .action-icons i {
             cursor: pointer;
-            font-size: 13px; /* Icon size */
-            color: #6c757d; /* Default icon color */
+            font-size: 13px; 
+            color: #6c757d;
         }
 
         .action-icons i:hover {
-            color: #007bff; /* Blue color on hover */
+            color: #007bff;
         }
         .search-bar {
             display: inline-block;
@@ -267,27 +260,26 @@ $result = mysqli_query($conn, $query);
         }
 
         .pagination .page-item {
-            margin: 0 2px; /* Spacing between pagination items */
+            margin: 0 2px; 
         }
 
         .pagination .page-link {
-            color:rgb(140, 148, 157); /* Blue text color */
-            background-color: #fff; /* White background */
-            border: 1px solid #dee2e6; /* Light gray border */
-            border-radius: 20px; /* Rounded corners */
-            padding: 8px 12px; /* Padding for links */
-            font-size: 14px; /* Font size */
-            transition: all 0.3s ease; /* Smooth transition for hover effects */
+            color:rgb(140, 148, 157);
+            background-color: #fff; 
+            border: 1px solid #dee2e6;
+            border-radius: 20px; 
+            padding: 8px 12px; 
+            font-size: 14px;
+            transition: all 0.3s ease; 
         }
-        /* Responsive adjustments */
         @media (max-width: 768px) {
             .search-box input {
-                width: 200px; /* Smaller search box on mobile */
+                width: 200px; 
             }
 
             .table thead th,
             .table tbody td {
-                padding: 8px 10px; /* Smaller padding on mobile */
+                padding: 8px 10px;
             }
         }
         @keyframes slideIn {
@@ -341,9 +333,9 @@ $result = mysqli_query($conn, $query);
                 <tbody id="bookmarks-table-body">
                     <?php
                     if ($result && $result->num_rows > 0) {
-                        $bil = $start + 1; // Serial number starts from the current page start
+                        $bil = $start + 1; 
                         while ($row = $result->fetch_assoc()) {
-                            $editLink = "editfolktales.php?id=" . $row['folktaleID']; // Edit URL
+                            $editLink = "editfolktales.php?id=" . $row['folktaleID']; 
                             echo "<tr>
                                 <td>$bil</td>
                                 <td style='text-align:left'>{$row['title']}</td>
@@ -421,26 +413,22 @@ $result = mysqli_query($conn, $query);
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Function to handle the delete confirmation
     let folktaleIDToDelete = null;
 
-    // Set the folktale ID when the delete button is clicked
     document.querySelectorAll('[data-bs-target="#deleteConfirmationModal"]').forEach(button => {
         button.addEventListener('click', () => {
             folktaleIDToDelete = button.getAttribute('data-id');
         });
     });
 
-    // Handle the delete button in the modal
     document.getElementById('confirmDelete').addEventListener('click', () => {
         if (folktaleIDToDelete) {
-            // Send AJAX request to delete the folktale
             fetch(`delete_folktale.php?id=${folktaleIDToDelete}`, { method: "GET" })
                 .then(response => response.text())
                 .then(data => {
                     if (data.trim() === "success") {
                         alert("Folktale deleted successfully!");
-                        location.reload(); // Reload the page to refresh the table
+                        location.reload(); 
                     } else {
                         alert("Error deleting folktale: " + data);
                     }
@@ -450,7 +438,6 @@ $result = mysqli_query($conn, $query);
                     alert("An error occurred while trying to delete the folktale.");
                 });
         }
-        // Close the modal
         const modal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmationModal'));
         modal.hide();
     });
@@ -461,10 +448,9 @@ $result = mysqli_query($conn, $query);
         const input = document.getElementById("searchInput").value.toLowerCase();
         const rows = document.querySelectorAll("#bookmarks-table-body tr");
         
-        // Update the URL for pagination purposes with the search term
         const url = new URL(window.location.href);
-        url.searchParams.set("search", input);  // Update the search query parameter in URL
-        history.pushState(null, "", url);  // Change URL without reloading the page
+        url.searchParams.set("search", input);
+        history.pushState(null, "", url);
         
         rows.forEach(row => {
             const title = row.cells[1].textContent.toLowerCase();
@@ -476,13 +462,10 @@ $result = mysqli_query($conn, $query);
 </script>
 
 <script>
-    // Handle the confirmation button click
     document.getElementById('confirmAdd').addEventListener('click', function () {
-        // Submit the form
         document.getElementById('folktaleForm').submit();
     });
 
-        // Function to show the popup
         function showPopup(message, type) {
         const popup = document.getElementById('popup');
         const overlay = document.getElementById('overlay');
@@ -494,22 +477,17 @@ $result = mysqli_query($conn, $query);
         overlay.style.display = 'block';
     }
 
-    // Function to close the popup
     function closePopup() {
         const popup = document.getElementById('popup');
         const overlay = document.getElementById('overlay');
         popup.style.display = 'none';
         overlay.style.display = 'none';
-
-        // Redirect to clerklisting.php
         window.location.href = 'clerklisting.php';    
     }
 
-    // Check for session message and show popup
     <?php if (isset($_SESSION['message'])): ?>
         showPopup("<?= $_SESSION['message'] ?>", "<?= $_SESSION['message_type'] ?>");
         <?php
-        // Clear the session message
         unset($_SESSION['message']);
         unset($_SESSION['message_type']);
         ?>

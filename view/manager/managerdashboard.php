@@ -1,26 +1,20 @@
 <?php
-// Database connection
 include '../dbconn.php';
 
-// Fetch total origin of folktales
 $totalOriginResult = $conn->query("SELECT COUNT(DISTINCT state) AS total_origin FROM folktales");
 $totalOriginRow = $totalOriginResult->fetch_assoc();
 $totalOrigins = $totalOriginRow['total_origin'];
 
-// Fetch total user
 $totalUserResult = $conn->query("SELECT COUNT(*) as total_user FROM user");
 $totalUserRow = $totalUserResult->fetch_assoc();
 $totalUser = $totalUserRow['total_user'];
 
-// Fetch total genre
 $totalGenreResult = $conn->query("SELECT COUNT(DISTINCT genre) AS genre_count FROM folktales");
 $totalGenreRow = $totalGenreResult->fetch_assoc();
 $totalGenre = $totalGenreRow['genre_count'];
 
-// Fetch top 5 genres
 $queryG = "SELECT genre, count(folktaleID) AS count FROM folktales GROUP BY genre ORDER BY count DESC LIMIT 5";
 $resultG = mysqli_query($conn, $queryG);
-// Prepare data for the genre chart
 $genre = [];
 $genrecount = [];
 
@@ -29,11 +23,9 @@ while ($row = mysqli_fetch_assoc($resultG)) {
     $genrecount[] = $row['count'];
 }
 
-// Fetch top 5 states
 $queryS = "SELECT state, count(folktaleID) AS count FROM folktales GROUP BY state ORDER BY count DESC LIMIT 5";
 $resultS = mysqli_query($conn, $queryS);
 
-// Prepare data for the state chart
 $state = [];
 $stateCount = [];
 
@@ -132,12 +124,10 @@ while ($row = mysqli_fetch_assoc($resultS)) {
         .chart-toggle {
             display: flex;
             border-radius: 10px 10px 0 0;
-            /* overflow: hidden; */
             background-color: #f0f0f0;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        /* Style for the tab buttons */
         .tab-button {
             flex: 1;
             padding: 10px 20px;
@@ -149,18 +139,15 @@ while ($row = mysqli_fetch_assoc($resultS)) {
             transition: all 0.3s ease;
         }
 
-        /* Hover effect for the tab buttons */
         .tab-button:hover {
             background-color: #ddd;
         }
 
-        /* Active tab button style */
         .tab-button.active {
-            background-color:rgb(147, 196, 229); /* Green background for the active tab */
+            background-color:rgb(147, 196, 229);
             color: white;
         }
 
-        /* Add a cute rounded corner effect */
         .tab-button:first-child {
             border-radius: 10px 0 0 0;
         }
@@ -180,23 +167,19 @@ while ($row = mysqli_fetch_assoc($resultS)) {
  <!-- Content Section -->
  <div class="content">
     <div class="container">
-        <!-- Card Section -->
         <div class="card-section">
-            <!-- Card 1: User Report -->
             <a href="user_report.php" class="card">
                 <i class="bi bi-person-heart icon-pic"></i>
                 <h3>USER REPORT</h3>
                 <p class="total">Total: <span id="genre-total"><?php echo $totalUser; ?></span></p>
             </a>
 
-            <!-- Card 2: Folktales Origin -->
             <a href="origin_report.php" class="card">
                 <i class="bi bi-geo-fill icon-pic"></i>
                 <h3>FOLKTALES ORIGIN</h3>
                 <p class="total">Total: <span id="genre-total"><?php echo $totalOrigins; ?></span></p>
             </a>
 
-            <!-- Card 3: Folktales Genre -->
             <a href="genre_report.php" class="card">
                 <i class="bi bi-journal icon-pic"></i>
                 <h3>FOLKTALES GENRE</h3>
@@ -204,7 +187,6 @@ while ($row = mysqli_fetch_assoc($resultS)) {
             </a>
         </div>
 
-        <!-- Chart Section -->
         <div class="chart-section">
             <div class="chart-toggle">
                 <button id="genreButton" class="tab-button active">View Genre Chart</button>
@@ -214,13 +196,11 @@ while ($row = mysqli_fetch_assoc($resultS)) {
         </div>
     </div>
     <script>
-        // Pass PHP data to JavaScript
         const genreLabels = <?php echo json_encode($genre); ?>;
         const genreCounts = <?php echo json_encode($genrecount); ?>;
         const stateLabels = <?php echo json_encode($state); ?>;
         const stateCounts = <?php echo json_encode($stateCount); ?>;
 
-        // Render Chart
         const ctx = document.getElementById('salesChart').getContext('2d');
         const salesChart = new Chart(ctx, {
             type: 'bar',
@@ -266,7 +246,6 @@ while ($row = mysqli_fetch_assoc($resultS)) {
             }
         });
 
-        // Add event listeners to the buttons
         document.getElementById('genreButton').addEventListener('click', function() {
             salesChart.data.labels = genreLabels;
             salesChart.data.datasets[0].data = genreCounts;

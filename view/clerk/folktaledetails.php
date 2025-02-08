@@ -13,7 +13,7 @@ $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $folktale = $result->fetch_assoc();
-    $pdfData = base64_encode($folktale['pdfPath']); // Convert the blob to base64
+    $pdfData = base64_encode($folktale['pdfPath']); 
 } else {
     die("Folktale not found.");
 }
@@ -53,7 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_content'])) {
 // Check if the current user has bookmarked this folktale
 $isBookmarked = false;
 if ($userID) {
-    // Check if the folktale is already bookmarked by the user
     $checkBookmark = $conn->prepare("SELECT bookmarkID FROM bookmark WHERE userID = ?
                                       AND bookmark_folktaleID = ( 
                                       SELECT bookmark_folktaleID FROM bookmark_folktale 
@@ -65,13 +64,12 @@ if ($userID) {
     $checkBookmark->close();
 }
 
-// Get total number of bookmarks for this folktale
 $totalBookmarksStmt = $conn->prepare("SELECT count FROM bookmark_folktale WHERE folktaleID = ?");
 $totalBookmarksStmt->bind_param("i", $folktaleID);
 $totalBookmarksStmt->execute();
 $totalBookmarksStmt->store_result();
-$totalBookmarksStmt->bind_result($totalBookmarks); // Bind the result to a variable
-$totalBookmarksStmt->fetch(); // Fetch the result
+$totalBookmarksStmt->bind_result($totalBookmarks); 
+$totalBookmarksStmt->fetch(); 
 $totalBookmarksStmt->close()
 ?>
 <!DOCTYPE html>
@@ -89,14 +87,14 @@ $totalBookmarksStmt->close()
         background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('../../assets/background.png');
         background-size: cover;
         background-position: center;
-        background-attachment: fixed; /* This makes the background static */
+        background-attachment: fixed; 
         min-height: 100vh;
         font-family: 'Poppins', sans-serif;
         padding-top: 90px;
     }
 
     .container {
-        background-color: rgba(255, 255, 255, 0); /* Slight transparency for better readability */
+        background-color: rgba(255, 255, 255, 0); 
         border-radius: 15px;
         padding: 20px;
         margin-top: 20px;
@@ -118,14 +116,14 @@ $totalBookmarksStmt->close()
     }
 
     .folktale-details {
-        flex: 1; /* Takes up remaining space */
+        flex: 1; 
     }
 
     .folktale-buttons {
         display: flex;
-        flex-direction: column; /* Stack buttons vertically */
-        gap: 10px; /* Space between buttons */
-        margin-left: 20px; /* Space between details and buttons */
+        flex-direction: column; 
+        gap: 10px; 
+        margin-left: 20px; 
     }
 
     .btn-folktale {
@@ -185,11 +183,11 @@ $totalBookmarksStmt->close()
 
     .comment .user-icon {
         font-size: 40px;
-        color: #44749c; /* Match your theme color */
+        color: #44749c; 
     }
 
     .comment .comment-content {
-        flex: 1; /* Take up remaining space */
+        flex: 1; 
     }
 
     .comment .comment-content .comment-meta {
@@ -235,7 +233,6 @@ $totalBookmarksStmt->close()
     .delete-comment i:hover {
         color: #cc0000;
     }
-    /* Animations */
     @keyframes fadeInDown {
             from {
                 opacity: 0;
@@ -292,7 +289,7 @@ $totalBookmarksStmt->close()
               <button class="btn-custom btn-folktale bookmarkBtn" onclick="window.location.href = 'editfolktales.php?id=<?php echo $folktaleID; ?>'">
                 <i class='bi bi-pencil-square'></i> Edit folktale
               </button>
-              <button class="btn-custom btn-folktale delete-btn" title="Delete" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal" data-id='<?php echo $folktaleID; ?>'">
+              <button class="btn-custom btn-folktale delete-btn" title="Delete" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal" data-id='<?php echo $folktaleID; ?>'>
                 <i class='bi bi-trash3'></i> Delete folktale
               </button>
           </div>
@@ -310,9 +307,8 @@ $totalBookmarksStmt->close()
     <div id="comments" style="max-height: 320px; overflow-y: auto;">
         <?php while ($comment = $commentsResult->fetch_assoc()): ?>
             <div class="comment">
-                <!-- Default user icon -->
                 <div class="user-icon">
-                    <i class="bi bi-person-circle"></i> <!-- Bootstrap Icons user icon -->
+                    <i class="bi bi-person-circle"></i> 
                 </div>
                 <!-- Comment content -->
                 <div class="comment-content">
@@ -329,26 +325,6 @@ $totalBookmarksStmt->close()
         <?php endwhile; ?>
     </div>
 </div>
-
-  <!-- Delete Comment Confirmation -->
-  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deletekModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="deletekModalLabel">Delete Comment ?</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            Are you sure you want to delete this comment ?
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" id="confirmDeleteButton" data-bs-dismiss="modal" onclick="deleteComment(<?php echo $comment['commentID']; ?>)">Confirm</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
 
 <!-- Delete Folktale Modal -->
 <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
@@ -369,13 +345,10 @@ $totalBookmarksStmt->close()
     </div>
 </div>
 
-
-  <!-- Bootstrap JS and dependencies -->
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-  <!-- Custom JS -->
-   
+ 
   <script>
         function toggleBookmark(folktaleID) {
         console.log('Toggling bookmark for folktaleID:', folktaleID);
@@ -411,7 +384,6 @@ $totalBookmarksStmt->close()
     function confirmPost() {
         return confirm("Are you sure you want to post this comment?");
     }
-    // Function to set the commentID in the modal
     document.addEventListener('DOMContentLoaded', function () {
         var deleteModal = document.getElementById('deleteModal');
         deleteModal.addEventListener('show.bs.modal', function (event) {
@@ -421,26 +393,6 @@ $totalBookmarksStmt->close()
             confirmDeleteButton.setAttribute('onclick', `deleteComment(${commentID})`);
         });
     });
-
-    // Function to delete the comment
-    function deleteComment(commentID) {
-        fetch(`delete_comment.php?commentID=${commentID}`, {
-            method: 'GET',
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Reload the comments section
-                location.reload();
-            } else {
-                alert("Failed to delete the comment. Error: " + (data.error || 'Unknown error'));
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert("Failed to delete the comment. Please try again.");
-        });
-    }
   </script>
   <script>
     let folktaleIDToDelete = null;
@@ -449,10 +401,8 @@ $totalBookmarksStmt->close()
             folktaleIDToDelete = button.getAttribute('data-id');
         });
     });
-    // Handle the delete button in the modal
     document.getElementById('confirmDelete').addEventListener('click', () => {
         if (folktaleIDToDelete) {
-            // Send AJAX request to delete the folktale
             fetch(`delete_folktale.php?id=${folktaleIDToDelete}`, { method: "GET" })
                 .then(response => response.text())
                 .then(data => {

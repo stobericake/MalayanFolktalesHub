@@ -1,12 +1,10 @@
 <?php
 session_start();
 include 'dbconn.php';
-
-// Handle registration
 $errors = [];
 
 if (isset($_POST['submit'])) {
-    $userID = uniqid('USR'); // Generate a unique userID
+    $userID = uniqid('USR'); 
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $phone_number = isset($_POST['phone_number']) ? mysqli_real_escape_string($conn, $_POST['phone_number']) : '';
     $name = mysqli_real_escape_string($conn, $_POST['name']);
@@ -21,7 +19,6 @@ if (isset($_POST['submit'])) {
         $errors[] = 'An account with this email already exists.';
     }
 
-    // If there are no errors, insert into the database
     if (empty($errors)) {
         $insert = "INSERT INTO user(email, phone_number, name, password) 
                    VALUES ('$email', '$phone_number', '$name', '$password')";
@@ -42,7 +39,6 @@ if (isset($_POST['submit'])) {
   <title>Sign Up</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    /* General reset and styling */
     body {
       margin: 0;
       padding: 0;
@@ -247,7 +243,6 @@ if (isset($_POST['submit'])) {
       const passwordValidation = document.getElementById('passwordValidation');
       const confirmPasswordValidation = document.getElementById('confirmPasswordValidation');
 
-      // Name validation
       if (event.target === nameInput) {
         if (!/^[a-zA-Z ]+$/.test(nameInput.value)) {
           nameValidation.style.display = 'block';
@@ -256,7 +251,6 @@ if (isset($_POST['submit'])) {
         }
       }
 
-      // Email validation
       if (event.target === emailInput) {
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value)) {
           emailValidation.style.display = 'block';
@@ -265,7 +259,6 @@ if (isset($_POST['submit'])) {
         }
       }
 
-      // Phone number validation
       if (event.target === phoneInput) {
         if (!/^\d{10,11}$/.test(phoneInput.value)) {
           phoneValidation.style.display = 'block';
@@ -274,7 +267,6 @@ if (isset($_POST['submit'])) {
         }
       }
 
-      // Password validation
       if (event.target === passwordInput) {
         if (passwordInput.value.length < 8) {
           passwordValidation.style.display = 'block';
@@ -283,7 +275,6 @@ if (isset($_POST['submit'])) {
         }
       }
 
-      // Confirm password validation
       if (event.target === confirmPasswordInput) {
         if (confirmPasswordInput.value !== passwordInput.value) {
           confirmPasswordValidation.style.display = 'block';

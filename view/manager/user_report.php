@@ -1,7 +1,5 @@
 <?php
 session_start();
-
-// Database connection
 include '../dbconn.php';
 
 $search = isset($_GET['search']) ? $_GET['search'] : '';
@@ -274,9 +272,9 @@ $result = mysqli_query($conn, $query);
                 const name = row.cells[1].textContent.toLowerCase();
                 const email = row.cells[2].textContent.toLowerCase();
                 if (name.includes(searchInput) || email.includes(searchInput)) {
-                    row.style.display = ''; // Show matching rows
+                    row.style.display = ''; 
                 } else {
-                    row.style.display = 'none'; // Hide non-matching rows
+                    row.style.display = 'none'; 
                 }
             });
         }
